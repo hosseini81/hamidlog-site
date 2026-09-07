@@ -1,4 +1,4 @@
-// ==================== موتور استعلام، پیش‌فاکتور زنده و پرداخت شاپرک ====================
+// ==================== موتور استعلام، انتخاب خدمات و برآورد زنده ====================
 let currentStep = 1;
 let appData = { packages: [], services: [], downloadProducts: [] };
 let selectedPackage = null;
@@ -12,7 +12,6 @@ let deductViewMode = 'list';
 let currentExtraCategory = 'all';
 let currentDeductCategory = 'all';
 
-let appliedCoupon = null;
 let calculatedFinalPrice = 0;
 let calculatedFinalDays = 0;
 let pkgBaseSum = 0;
@@ -41,7 +40,7 @@ async function loadOrderEngineData() {
       throw new Error();
     }
   } catch (err) {
-    // روش جبرانی JSONP
+    // روش پشتیبان در صورت بروز اختلال در واکشی عادی
     window.onSheetFallbackLoaded = function(res) {
       if (res && res.success && res.data) {
         appData = res.data;
@@ -56,7 +55,7 @@ async function loadOrderEngineData() {
   }
 }
 
-// سوئیچ تب‌های سامانه سفارش
+// سوئیچ تب‌های خدمات و محصولات
 window.switchNavTab = function(tabId) {
   document.querySelectorAll('.hub-tab-panel').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.hub-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -112,10 +111,7 @@ function onPackageSelected() {
   deductedIds.clear();
   selectedVariants = {};
   selectedCycles = {};
-  appliedCoupon = null;
 
-  const msgEl = document.getElementById('couponMessage');
-  if (msgEl) msgEl.textContent = '';
   if (!selectedPackage) return;
 
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
@@ -438,12 +434,7 @@ function calculateSummary() {
   const discountAmount = netPackage * (discountPercent / 100);
   const netExtra = Math.max(0, extraSum - extraDeductedSum);
 
-  let subTotal = Math.round((netPackage - discountAmount) + netExtra);
-  if (appliedCoupon && appliedCoupon.valid) {
-    subTotal = Math.max(0, subTotal - appliedCoupon.discountAmount);
-  }
-
-  calculatedFinalPrice = subTotal;
+  calculatedFinalPrice = Math.round((netPackage - discountAmount) + netExtra);
   calculatedFinalDays = Math.max(0, Math.round(selectedPackage.days - (deductedDays * 0.3) + extraDays));
 
   const kpiDisc = document.getElementById('kpiDiscount');
@@ -456,50 +447,8 @@ function calculateSummary() {
   if (kpiDays) kpiDays.textContent = calculatedFinalDays + ' روز';
   if (kpiTot) kpiTot.textContent = calculatedFinalPrice.toLocaleString('fa-IR') + ' تومان';
 
-  updatePaymentOptionLabels();
   renderOrderItemsSummary();
 }
-
-function updatePaymentOptionLabels() {
-  const cashPrice = Math.round(calculatedFinalPrice * 0.95);
-  const installmentTotal = Math.round(calculatedFinalPrice * 1.05);
-  const firstInstallment = Math.round(installmentTotal * 0.4);
-  const remainingTwo = Math.round((installmentTotal - firstInstallment) / 2);
-
-  const fullEl = document.getElementById('fullPaySummary');
-  const instEl = document.getElementById('installmentPaySummary');
-  if (fullEl) fullEl.textContent = `مبلغ تسویه کامل: ${cashPrice.toLocaleString('fa-IR')} تومان`;
-  if (instEl) instEl.textContent = `پیش‌پرداخت اول: ${firstInstallment.toLocaleString('fa-IR')} ت + ۲ قسط ${remainingTwo.toLocaleString('fa-IR')} ت`;
-}
-
-window.onPaymentPlanChanged = function(plan) { calculateSummary(); };
-
-window.applyCoupon = async function() {
-  const couponInput = document.getElementById('couponInput');
-  if (!couponInput) return;
-  const code = couponInput.value.trim();
-  if (!code) return;
-
-  const msg = document.getElementById('couponMessage');
-  msg.textContent = 'در حال اعتبارسنجی کد...';
-  msg.style.color = '#2563eb';
-
-  try {
-    const res = await sendToAppScript({ action: 'validateCoupon', code: code, total: calculatedFinalPrice });
-    if (res.valid) {
-      appliedCoupon = res;
-      msg.style.color = '#16a34a';
-      msg.textContent = res.message;
-    } else {
-      appliedCoupon = null;
-      msg.style.color = '#dc2626';
-      msg.textContent = res.message;
-    }
-    calculateSummary();
-  } catch (err) {
-    showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور تخفیف.');
-  }
-};
 
 window.goStep = function(step) {
   currentStep = step;
@@ -517,93 +466,26 @@ window.goStep = function(step) {
 
 window.changeStep = function(delta) { goStep(currentStep + delta); };
 
-window.finishOrder = async function() {
-  const nameEl = document.getElementById('custName');
-  const phoneEl = document.getElementById('custPhone');
-  const name = nameEl ? nameEl.value.trim() : '';
-  const phone = phoneEl ? phoneEl.value.trim() : '';
-
-  if (!name || !phone) {
-    return showCustomAlert('اطلاعات ناقص', 'لطفاً نام و شماره همراه را وارد فرمایید.');
-  }
-
-  const payTypeEl = document.querySelector('input[name="payType"]:checked');
-  const payType = payTypeEl ? payTypeEl.value : 'full';
-
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'در حال صدور فاکتور و اتصال به درگاه شاپرک...';
+// انتقال سبد انتخاب‌شده خدمات به صفحه اختصاصی تسویه حساب (checkout.html)
+window.proceedToCheckout = function() {
+  if (!selectedPackage) {
+    return showCustomAlert("خطا", "لطفاً ابتدا یک پکیج پایه انتخاب فرمایید.");
   }
 
   const addedList = appData.services.filter(s => extraSelectedIds.has(s.id));
   const deductedList = appData.services.filter(s => deductedIds.has(s.id));
 
-  const payload = {
-    customerName: name,
-    customerPhone: phone,
+  const pendingOrder = {
     packageName: selectedPackage.title,
     pkgBaseSum: pkgBaseSum,
     discountPercent: selectedPackage.discount || 0,
     deductedSum: calculatedDeductedSum,
     finalPriceNumeric: calculatedFinalPrice,
     totalDaysNumeric: calculatedFinalDays,
-    paymentType: payType,
-    appliedCouponCode: appliedCoupon ? appliedCoupon.code : 'ندارد',
     addedServicesSummary: addedList.map(s => `${s.title} ${getEffectiveService(s).variantTitle ? '(' + getEffectiveService(s).variantTitle + ')' : ''}`),
     deductedServicesSummary: deductedList.map(s => s.title)
   };
 
-  try {
-    const res = await sendToAppScript({ action: 'submitOrder', payload: payload });
-    if (res && res.success) {
-      document.getElementById('step4FormWrap').style.display = 'none';
-      document.getElementById('orderSuccessWrap').style.display = 'block';
-      document.getElementById('successTrackCodeText').textContent = res.trackingCode;
-      document.getElementById('successInvoiceLink').href = res.pdfUrl;
-
-      if (res.paymentUrl) {
-        document.getElementById('successGatewayLink').href = res.paymentUrl;
-        window.location.href = res.paymentUrl;
-      }
-    } else {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '💳 ثبت نهایی و اتصال به شاپرک';
-      }
-      showCustomAlert('خطا در ثبت سفارش', res ? res.error : 'خطا در اتصال به درگاه.');
-    }
-  } catch (err) {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '💳 ثبت نهایی و اتصال به شاپرک';
-    }
-    showCustomAlert('خطای ارتباطی', 'خطا در برقراری ارتباط با سرور.');
-  }
-};
-
-window.resetFormForNewOrder = function() {
-  document.getElementById('step4FormWrap').style.display = 'block';
-  document.getElementById('orderSuccessWrap').style.display = 'none';
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.textContent = '💳 ثبت نهایی و اتصال به شاپرک';
-  }
-  extraSelectedIds.clear();
-  deductedIds.clear();
-  selectedVariants = {};
-  selectedCycles = {};
-  appliedCoupon = null;
-
-  const couponMsg = document.getElementById('couponMessage');
-  const couponInp = document.getElementById('couponInput');
-  if (couponMsg) couponMsg.textContent = '';
-  if (couponInp) couponInp.value = '';
-
-  if (appData.packages && appData.packages.length > 0) {
-    selectedPackage = appData.packages[0];
-  }
-  goStep(1);
-  renderPackages();
+  sessionStorage.setItem("pending_order_data", JSON.stringify(pendingOrder));
+  window.location.href = "checkout.html";
 };
