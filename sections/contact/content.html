@@ -1,0 +1,125 @@
+<div class="contact-wrapper">
+
+  <!-- ۱. سربرگ هیرو تماس -->
+  <div class="contact-hero">
+    <span class="contact-badge">ارتباط مستقیم و بی‌واسطه</span>
+    <h1>همیشه آماده <span>پاسخگویی و گفتگو</span> هستیم</h1>
+    <p>جهت دریافت مشاوره پیش از سفارش، پیگیری پروژه‌های در حال اجرا یا طرح هرگونه پرسش فنی، از راه‌های زیر با ما در ارتباط باشید.</p>
+  </div>
+
+  <!-- ۲. کارت‌های راه‌های ارتباطی سریع -->
+  <div class="contact-cards-grid">
+    
+    <div class="info-card">
+      <div class="info-icon-box icon-tel">📞</div>
+      <div class="info-content">
+        <h3>تماس تلفنی مستقیم</h3>
+        <p><a href="tel:09965206696" dir="ltr">۰۹۹۶ ۵۲۰ ۶۶۹۶</a></p>
+        <p style="font-size:10px; color:#94a3b8; margin-top:2px;">پاسخگویی مستقیم</p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon-box icon-tg">💬</div>
+      <div class="info-content">
+        <h3>پشتیبانی در تلگرام</h3>
+        <p><a href="https://t.me/seeep7" target="_blank" dir="ltr">@seeep7</a></p>
+        <p style="font-size:10px; color:#94a3b8; margin-top:2px;">ارسال ویس، متن و فایل نیازمندی‌ها</p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon-box icon-time">⏰</div>
+      <div class="info-content">
+        <h3>ساعات کاری و پشتیبانی</h3>
+        <p>شنبه تا پنج‌شنبه: ۹ الی ۲۱</p>
+        <p style="font-size:10px; color:#94a3b8; margin-top:2px;">جمعه‌ها: بررسی موارد ضروری</p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon-box icon-loc">📍</div>
+      <div class="info-content">
+        <h3>پوشش خدمات</h3>
+        <p>ارائه آنلاین به سراسر کشور</p>
+        <p style="font-size:10px; color:#94a3b8; margin-top:2px;">جلسات آنلاین در بستر Google Meet</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ۳. فرم تماس و کارت کناری -->
+  <div class="contact-main-grid">
+
+    <!-- فرم ارسال پیام -->
+    <div class="form-container">
+      <h2>ارسال پیام و شرح نیاز پروژه</h2>
+      <p>اطلاعات اولیه خود را درج کنید؛ در کمترین زمان با شما تماس می‌گیریم.</p>
+
+      <form onsubmit="handleContactFormSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userName">نام و نام خانوادگی:</label>
+            <input type="text" id="userName" class="form-control" placeholder="مثال: علی محمدی" required />
+          </div>
+          <div class="form-group">
+            <label for="userPhone">شماره تماس مستقیم:</label>
+            <input type="tel" id="userPhone" dir="ltr" class="form-control" placeholder="مثال: 09121234567" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="projectSubject">موضوع گفتگو:</label>
+          <select id="projectSubject" class="form-control">
+            <option value="new">طراحی وب‌سایت جدید</option>
+            <option value="edit">بازطراحی، تغییر قالب یا رفع باگ</option>
+            <option value="module">افزودن امکانات یا ماژول‌های اختصاصی</option>
+            <option value="support">پیگیری وضعیت سفارش ثبت‌شده</option>
+            <option value="other">سایر موارد و همکاری</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="userMessage">توضیحات و نیازمندی‌ها:</label>
+          <textarea id="userMessage" class="form-control" placeholder="خلاصه‌ای از امکاناتی که مد نظر دارید بنویسید..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-contact-submit" id="submitBtn">
+          ✉️ ارسال درخواست مشاوره
+        </button>
+      </form>
+
+      <div id="formSuccessAlert" class="contact-success-alert">
+        ✔ پیام شما با موفقیت ثبت شد. به زودی با شما تماس خواهیم گرفت.
+      </div>
+    </div>
+
+    <!-- کارت کناری و میان‌برها -->
+    <div class="side-card">
+      
+      <div class="telegram-highlight-box">
+        <h3>⚡ گفتگو و استعلام آنی در تلگرام</h3>
+        <p>اگر فایل نمونه، کاتالوگ یا توضیح صوتی دارید، گفتگو در تلگرام سریع‌ترین مسیر ارتباط با ماست.</p>
+        <a href="https://t.me/seeep7" target="_blank" class="btn-telegram-direct">
+          💬 شروع گفتگو در تلگرام
+        </a>
+      </div>
+
+      <div class="faq-mini-prompt">
+        <strong>دنبال قیمت و زمان‌بندی دقیق هستید؟</strong>
+        نیازی به انتظار نیست! در کمتر از ۱ دقیقه می‌توانید خدمات مد نظرتان را در سامانه انتخاب کرده و پیش‌فاکتور رسمی را دریافت کنید.
+        <div style="margin-top:6px;">
+          <a href="order.html">رفتن به سامانه آنلاین استعلام ➔</a>
+        </div>
+      </div>
+
+      <div class="faq-mini-prompt" style="border-right: 3px solid var(--primary);">
+        <strong>تضمین حریم خصوصی داده‌ها</strong>
+        تمام اطلاعات تماس و دسترسی‌های پروژه‌ها به صورت محرمانه نگهداری شده و پس از اتمام دوره پشتیبانی امحا می‌شوند.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
