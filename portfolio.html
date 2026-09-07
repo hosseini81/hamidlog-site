@@ -5,27 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نمونه‌کارها | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <!-- استایل عمومی سایت -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- استایل اختصاصی کارت‌ها و فیلترهای نمونه‌کار -->
-  <link rel="stylesheet" href="css/portfolio.css">
+  
+  <!-- فایل استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-  <!-- هدر -->
+  <!-- هدر ماژولار -->
   <div id="header-slot"></div>
 
-  <!-- محتوای نمونه‌کارها -->
+  <!-- محتوای بخش‌های نمونه‌کارها -->
   <main>
     <div data-include="sections/portfolio/gallery.html"></div>
     <div data-include="sections/portfolio/cta.html"></div>
   </main>
 
-  <!-- فوتر -->
+  <!-- فوتر ماژولار -->
   <div id="footer-slot"></div>
 
-  <!-- اسکریپت عمومی (شامل تابع filterProjects) -->
+  <!-- اسکریپت‌های ماژولار قالب و فیلتر نمونه‌کارها -->
   <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
