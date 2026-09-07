@@ -58,6 +58,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.dispatchEvent(new Event("allModulesLoaded"));
 });
 
+// ==================== ۲. سوئیچر تب‌های منوی کشویی موبایل ====================
+window.switchDrawerTab = function(tabName) {
+  const tabPages = document.getElementById("drawerTabPages");
+  const tabSocials = document.getElementById("drawerTabSocials");
+  const btnPages = document.getElementById("btnDrawerPages");
+  const btnSocials = document.getElementById("btnDrawerSocials");
+
+  if (tabName === "pages") {
+    if (tabPages) tabPages.classList.add("active");
+    if (tabSocials) tabSocials.classList.remove("active");
+    if (btnPages) btnPages.classList.add("active");
+    if (btnSocials) btnSocials.classList.remove("active");
+  } else {
+    if (tabSocials) tabSocials.classList.add("active");
+    if (tabPages) tabPages.classList.remove("active");
+    if (btnSocials) btnSocials.classList.add("active");
+    if (btnPages) btnPages.classList.remove("active");
+  }
+};
+
+// ==================== ۳. توابع کمکی و ماژولار ====================
 // تابع هوشمند برای بارگذاری فایل‌های include تودرتو
 async function loadAllNestedIncludes() {
   let pending = document.querySelectorAll("[data-include]");
