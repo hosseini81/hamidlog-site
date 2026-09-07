@@ -127,127 +127,20 @@ window.filterProjects = function(cat, btn) {
 
 
 
-// ==================== موتور شبیه‌ساز انفجار بمب و افکت آتشین ====================
-document.addEventListener("DOMContentLoaded", () => {
-  initBoomTransitions();
-});
+// ==================== موتور تعقیب و گریز شطرنجی و بازی مینی‌ویروس‌ها ====================
 
-function initBoomTransitions() {
-  const canvas = document.getElementById("boomCanvas");
-  const shockwave = document.getElementById("fireShockwave");
-  if (!canvas || !shockwave) return;
-
-  const ctx = canvas.getContext("2d");
-  let particles = [];
-  let animId = null;
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
-
-  document.querySelectorAll(".boom-link").forEach(link => {
-    link.addEventListener("click", (e) => {
-      const href = link.getAttribute("href");
-      const target = link.getAttribute("target");
-
-      // لینک‌های تلگرام یا تماس خارج از صفحه را به حالت عادی باز می‌کند
-      if (!href || href.startsWith("tel:") || target === "_blank") return;
-
-      e.preventDefault();
-
-      const rect = link.getBoundingClientRect();
-      const originX = rect.left + rect.width / 2;
-      const originY = rect.top + rect.height / 2;
-
-      triggerBlast(originX, originY, href);
-    });
-  });
-
-  function triggerBlast(x, y, destinationUrl) {
-    canvas.style.display = "block";
-    particles = [];
-
-    // تولید ۷۵ ذره آتش، اخگر و دود نورانی
-    const colors = ["#ffedd5", "#fed7aa", "#fb923c", "#f97316", "#dc2626", "#991b1b"];
-    for (let i = 0; i < 80; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 14 + 4;
-      particles.push({
-        x: x,
-        y: y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 2,
-        size: Math.random() * 8 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        alpha: 1,
-        decay: Math.random() * 0.03 + 0.015
-      });
-    }
-
-    // پخش موج نورانی و آتش
-    shockwave.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(254, 215, 170, 1) 0%, rgba(249, 115, 22, 0.95) 30%, rgba(220, 38, 38, 0.95) 60%, #0f172a 90%)`;
-    shockwave.classList.add("detonate");
-
-    function renderExplosion() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.2; // گرانش آتش
-        p.size *= 0.96;
-        p.alpha -= p.decay;
-
-        if (p.alpha > 0) {
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, p.alpha);
-          ctx.fillStyle = p.color;
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        }
-      });
-
-      particles = particles.filter(p => p.alpha > 0);
-
-      if (particles.length > 0) {
-        animId = requestAnimationFrame(renderExplosion);
-      }
-    }
-
-    renderExplosion();
-
-    // انتقال روان به مقصد پس از فروکش کردن انفجار
-    setTimeout(() => {
-      cancelAnimationFrame(animId);
-      window.location.href = destinationUrl;
-    }, 280);
-  }
-}
-
-
-
-// ==================== موتور کدهای نامحدود و تعقیب و گریز فوتر ====================
-
-// راه‌اندازی ایمن پس از لود کامل فوتر ماژولار
 function bootFooterAnimations() {
   const terminal = document.getElementById("codeStreamOutput");
   const virus = document.getElementById("actorVirus");
 
-  // اگر هنوز فوتر fetch نشده بود، پس از 150 میلی‌ثانیه دوباره تلاش کن
   if (!terminal || !virus) {
     setTimeout(bootFooterAnimations, 150);
     return;
   }
 
-  startCodeStream();
-  startVirusChase();
+  if (typeof startCodeStream === "function") startCodeStream();
+  startGridChaseSequence();
+  spawnClickableMiniBugs();
 }
 
 window.addEventListener("allModulesLoaded", bootFooterAnimations);
@@ -255,115 +148,214 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(bootFooterAnimations, 300);
 });
 
-// ۱. تایپر فوق‌سریع و نامحدود کدها
-function startCodeStream() {
-  const terminal = document.getElementById("codeStreamOutput");
-  const screen = document.getElementById("terminalScreen");
-  if (!terminal || !screen || terminal.dataset.running) return;
-  terminal.dataset.running = "true";
-
-  const snippets = [
-    '<span class="token-kw">import</span> { createStore } <span class="token-kw">from</span> <span class="token-val">"vuex"</span>;\n',
-    '<span class="token-kw">const</span> gateway = <span class="token-fn">connectShaparak</span>({ merchantId: <span class="token-val">"ZARIN-889"</span> });\n',
-    '<span class="token-tag">&lt;div</span> <span class="token-attr">class</span>=<span class="token-val">"cloud-service-node"</span><span class="token-tag">&gt;</span>\n',
-    '  <span class="token-tag">&lt;p&gt;</span>Database status: 200 OK • Response Time: 14ms<span class="token-tag">&lt;/p&gt;</span>\n',
-    '<span class="token-tag">&lt;/div&gt;</span>\n',
-    '<span class="token-comment">/* Real-time CSS Pipeline Engine */</span>\n',
-    '<span class="token-tag">.app-core</span> {\n',
-    '  <span class="token-attr">display</span>: flex;\n',
-    '  <span class="token-attr">backdrop-filter</span>: <span class="token-fn">blur</span>(20px);\n',
-    '  <span class="token-attr">border</span>: 1px solid <span class="token-val">#10b981</span>;\n',
-    '}\n',
-    '<span class="token-kw">async function</span> <span class="token-fn">syncSheetPipeline</span>(data) {\n',
-    '  <span class="token-kw">const</span> token = <span class="token-kw">await</span> crypto.<span class="token-fn">randomUUID</span>();\n',
-    '  <span class="token-kw">return await</span> fetch(<span class="token-val">"https://script.google.com/exec"</span>, { method: <span class="token-val">"POST"</span>, body: data });\n',
-    '}\n',
-    '<span class="token-comment">// Infinite Streaming Loop Active...</span>\n'
-  ];
-
-  let snipIdx = 0;
-  let charIdx = 0;
-  let textAccumulator = "";
-
-  function streamLoop() {
-    const currentText = snippets[snipIdx];
-
-    if (charIdx < currentText.length) {
-      if (currentText[charIdx] === '<') {
-        const closeTag = currentText.indexOf('>', charIdx);
-        if (closeTag !== -1) {
-          textAccumulator += currentText.substring(charIdx, closeTag + 1);
-          charIdx = closeTag + 1;
-        } else {
-          textAccumulator += currentText[charIdx++];
-        }
-      } else {
-        textAccumulator += currentText[charIdx++];
-      }
-
-      terminal.innerHTML = textAccumulator;
-      screen.scrollTop = screen.scrollHeight;
-      setTimeout(streamLoop, 15); // تایپ سریع خط به خط
-    } else {
-      charIdx = 0;
-      snipIdx = (snipIdx + 1) % snippets.length;
-      if (textAccumulator.length > 2000) {
-        textAccumulator = textAccumulator.substring(textAccumulator.indexOf('\n') + 1);
-      }
-      setTimeout(streamLoop, 70);
-    }
-  }
-
-  streamLoop();
-}
-
-// ۲. شبیه‌ساز تعقیب و گریز ویروس و آنتی‌ویروس با حلقه بی‌نهایت و وقفه ۱۰ ثانیه‌ای
-function startVirusChase() {
+// ۱. الگوریتم حرکت شطرنجی دقیق با توقف‌ها، حالات چهره و فرار حماسی
+function startGridChaseSequence() {
   const virus = document.getElementById("actorVirus");
   const defender = document.getElementById("actorAntivirus");
+  const virusBubble = document.getElementById("virusBubble");
+  const defBubble = document.getElementById("defenderBubble");
   const stage = document.getElementById("chaseStage");
   if (!virus || !defender || !stage || stage.dataset.running) return;
   stage.dataset.running = "true";
 
-  function runChase() {
-    const stageWidth = window.innerWidth;
-    const duration = 6000; // ۶ ثانیه مدت دویدن روی صفحه
-    const start = performance.now();
+  // محاسبه ابعاد استیج برای نقاط خالی شطرنجی (بین ستون‌ها و حاشیه‌ها)
+  function generateGridWaypoints() {
+    const w = stage.clientWidth || window.innerWidth;
+    const h = stage.clientHeight || 200;
+    
+    // نقاط کلیدی شطرنجی در کریدورهای خالی فوتر (دور از متن ستون‌ها)
+    return [
+      { x: -50, y: 30 },
+      { x: w * 0.15, y: 30 },
+      { x: w * 0.15, y: h * 0.7 },
+      { x: w * 0.38, y: h * 0.7 },
+      { x: w * 0.38, y: 20 },
+      { x: w * 0.62, y: 20 },
+      { x: w * 0.62, y: h * 0.75 },
+      { x: w * 0.85, y: h * 0.75 },
+      { x: w * 0.85, y: 25 },
+      { x: w * 0.5, y: 25 }, // توقف میانی برای مواجهه
+      { x: w + 80, y: 25 }   // خروج از صفحه
+    ];
+  }
 
-    function step(timestamp) {
-      const elapsed = timestamp - start;
-      const progress = Math.min(elapsed / duration, 1);
+  async function runGrandChase() {
+    const points = generateGridWaypoints();
+    const delay = ms => new Promise(r => setTimeout(r, ms));
 
-      // ویروس جلوتر است و آنتی‌ویروس به دنبال آن می‌دود اما به آن نمی‌رسد
-      const virusX = progress * (stageWidth + 260) - 100;
-      const defenderX = virusX - 110;
+    // حالت اولیه
+    virus.className = "grid-actor virus-claude";
+    defender.className = "grid-actor defender-bot";
+    virusBubble.classList.remove("show");
+    defBubble.classList.remove("show");
 
-      // حرکت موجی و زیگزاگی میان ستون‌ها
-      const waveY = Math.sin(progress * Math.PI * 5) * 45 + 50;
-      const defWaveY = Math.sin((progress - 0.04) * Math.PI * 5) * 45 + 50;
+    // ۱. حرکت پله‌پله و شطرنجی در طول ۲۰ ثانیه
+    for (let i = 0; i < points.length - 2; i++) {
+      const p = points[i];
 
-      // چرخش و انحنای حرکتی کاراکترها
-      const rotV = Math.cos(progress * Math.PI * 5) * 22;
-      const rotD = Math.cos((progress - 0.04) * Math.PI * 5) * 16;
+      // ویروس حرکت می‌کند
+      virus.style.transform = `translate(${p.x}px, ${p.y}px)`;
+      
+      // آنتی‌ویروس یک گام با تأخیر شطرنجی حرکت می‌کند
+      if (i > 0) {
+        const prevP = points[i - 1];
+        defender.style.transform = `translate(${prevP.x}px, ${prevP.y}px)`;
+      }
 
-      virus.style.transform = `translate(${virusX}px, ${waveY}px) rotate(${rotV}deg)`;
-      defender.style.transform = `translate(${defenderX}px, ${defWaveY}px) rotate(${rotD}deg)`;
+      await delay(1200);
 
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        // پنهان شدن پشت صفحه
-        virus.style.transform = "translate(-300px, 40px)";
-        defender.style.transform = "translate(-300px, 40px)";
+      // رویداد میانی ۱: ایستادن ویروس و خنده قهقهه (در گام ۳)
+      if (i === 2) {
+        virus.classList.add("laughing");
+        virusBubble.textContent = "HA! HA!";
+        virusBubble.classList.add("show");
+        await delay(1500);
+        virus.classList.remove("laughing");
+        virusBubble.classList.remove("show");
+      }
 
-        // توقف دقیقاً ۱۰ ثانیه‌ای قبل از تکرار مجدد چرخه
-        setTimeout(runChase, 10000);
+      // رویداد میانی ۲: ایستادن آنتی‌ویروس و چهره سوالی (در گام ۵)
+      if (i === 4) {
+        defender.classList.add("confused");
+        defBubble.textContent = "?!";
+        defBubble.classList.add("show");
+        await delay(1500);
+        defender.classList.remove("confused");
+        defBubble.classList.remove("show");
       }
     }
 
-    requestAnimationFrame(step);
+    // ۲. مرحله اوج مواجهه: آنتی‌ویروس، ویروس را می‌بیند!
+    const spot = points[points.length - 2];
+    virus.style.transform = `translate(${spot.x}px, ${spot.y}px)`;
+    defender.style.transform = `translate(${spot.x - 70}px, ${spot.y}px)`;
+    await delay(600);
+
+    // آنتی‌ویروس چهره خفن و خشمگین می‌گیرد
+    defender.classList.add("hunter");
+    defBubble.textContent = "LOCKED ON!";
+    defBubble.classList.add("show");
+
+    // ویروس چهره ترس و وحشت به خود می‌گیرد
+    virus.classList.add("panic");
+    virusBubble.textContent = "OH NOOO!";
+    virusBubble.classList.add("show");
+    await delay(1400);
+
+    // ۳. فرار سریع از صفحه فوتر
+    const exitPoint = points[points.length - 1];
+    virus.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+    defender.style.transition = "transform 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
+
+    virus.style.transform = `translate(${exitPoint.x}px, ${exitPoint.y}px)`;
+    defender.style.transform = `translate(${exitPoint.x + 50}px, ${exitPoint.y}px)`;
+
+    await delay(1200);
+
+    // ریست موقعیت برای دور بعد
+    virus.style.transition = "none";
+    defender.style.transition = "none";
+    virus.style.transform = "translate(-150px, -150px)";
+    defender.style.transform = "translate(-150px, -150px)";
+    virusBubble.classList.remove("show");
+    defBubble.classList.remove("show");
+    virus.classList.remove("panic");
+    defender.classList.remove("hunter");
+
+    // بازگرداندن ترنزیشن شطرنجی
+    setTimeout(() => {
+      virus.style.transition = "transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2)";
+      defender.style.transition = "transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2)";
+    }, 100);
+
+    // دقیقاً ۱۰ ثانیه وقفه قبل از شروع دور بعدی
+    setTimeout(runGrandChase, 10000);
   }
 
-  // شروع اولین حرکت پس از ۱ ثانیه
-  setTimeout(runChase, 1000);
+  // شروع اولین چرخه تعقیب
+  setTimeout(runGrandChase, 1500);
+}
+
+// ۲. ساخت و ترکیدن مینی‌ویروس‌های تعاملی با کلیک یا لمس
+function spawnClickableMiniBugs() {
+  const container = document.getElementById("miniBugsContainer");
+  if (!container) return;
+  container.innerHTML = "";
+
+  // موقعیت‌های امن در گوشه‌ها و فضاهای خالی فوتر
+  const safePositions = [
+    { top: "25px", left: "4%" },
+    { top: "140px", left: "28%" },
+    { top: "35px", right: "8%" },
+    { top: "135px", right: "26%" }
+  ];
+
+  safePositions.forEach((pos, idx) => {
+    const bug = document.createElement("div");
+    bug.className = "mini-bug";
+    bug.style.top = pos.top;
+    if (pos.left) bug.style.left = pos.left;
+    if (pos.right) bug.style.right = pos.right;
+    bug.title = "روی من کلیک کن تا نابود بشم!";
+
+    bug.innerHTML = `
+      <div class="mini-bug-body">
+        <span class="mini-bug-eye l"></span>
+        <span class="mini-bug-eye r"></span>
+      </div>
+    `;
+
+    // اکشن ترکیدن هنگام کلیک یا لمس
+    const popBug = (e) => {
+      e.stopPropagation();
+      if (bug.classList.contains("popping")) return;
+
+      bug.classList.add("popping");
+
+      // صدای لرزش در موبایل‌های پشتیبانی‌کننده
+      if (navigator.vibrate) navigator.vibrate(50);
+
+      // ایجاد چند پارتیکل نوری کوچک در لحظه ترکیدن
+      createPopParticles(bug.getBoundingClientRect());
+
+      setTimeout(() => {
+        bug.remove();
+        // پس از ۱۵ ثانیه ویروس جدیدی متولد می‌شود!
+        setTimeout(() => spawnClickableMiniBugs(), 15000);
+      }, 400);
+    };
+
+    bug.addEventListener("click", popBug);
+    bug.addEventListener("touchstart", popBug, { passive: true });
+
+    container.appendChild(bug);
+  });
+}
+
+// افکت ذرات هنگام ترکیدن مینی‌ویروس
+function createPopParticles(rect) {
+  for (let i = 0; i < 6; i++) {
+    const spark = document.createElement("div");
+    spark.style.position = "fixed";
+    spark.style.left = rect.left + rect.width / 2 + "px";
+    spark.style.top = rect.top + rect.height / 2 + "px";
+    spark.style.width = "4px";
+    spark.style.height = "4px";
+    spark.style.background = "#c084fc";
+    spark.style.borderRadius = "50%";
+    spark.style.pointerEvents = "none";
+    spark.style.zIndex = "9999";
+    spark.style.boxShadow = "0 0 6px #a855f7";
+    document.body.appendChild(spark);
+
+    const angle = (Math.PI * 2 / 6) * i;
+    const distance = 25;
+    const destX = Math.cos(angle) * distance;
+    const destY = Math.sin(angle) * distance;
+
+    spark.animate([
+      { transform: "translate(0, 0) scale(1)", opacity: 1 },
+      { transform: `translate(${destX}px, ${destY}px) scale(0)`, opacity: 0 }
+    ], { duration: 350, easing: "ease-out" }).onfinish = () => spark.remove();
+  }
 }
