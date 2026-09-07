@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فروشگاه محصولات و قالب‌های آماده | استودیو حمیدرضا</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <!-- هدر -->
+  <div id="header-slot"></div>
+
+  <main>
+    <!-- پاپ‌آپ سیستم -->
+    <div id="customAlert" class="custom-alert-overlay">
+      <div class="custom-alert-card">
+        <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
+        <div id="customAlertTitle" class="custom-alert-title">پیام سیستم</div>
+        <div id="customAlertText" class="custom-alert-text"></div>
+        <button type="button" class="btn-main" onclick="closeCustomAlert()" style="width: 100%;">متوجه شدم</button>
+      </div>
+    </div>
+
+    <!-- سربرگ فروشگاه -->
+    <div class="portfolio-header" style="margin-bottom:20px;">
+      <span class="portfolio-badge">محصولات آماده</span>
+      <h1>فروشگاه قالب‌ها، افزونه‌ها و بسته‌های کد</h1>
+      <p>محصولات دانلودی اورجینال با تحویل خودکار و دسترسی مادام‌العمر در پنل کاربری</p>
+    </div>
+
+    <div id="dataLoader" class="loading-box">
+      <span class="spinner"></span> در حال دریافت محصولات از سرور ابری...
+    </div>
+
+    <!-- گرید محصولات -->
+    <div id="shopProductsGrid" class="package-grid" style="margin-top:16px;"></div>
+  </main>
+
+  <!-- فوتر -->
+  <div id="footer-slot"></div>
+
+  <!-- اسکریپت‌ها -->
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+</html>
