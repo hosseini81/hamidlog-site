@@ -10,17 +10,15 @@
     </div>
   </div>
 
-  <!-- نوار تب‌های بالای سامانه -->
+  <!-- نوار تب‌های بالای سامانه سفارش -->
   <div class="hub-top-nav">
     <div class="hub-nav-tabs">
-      <button type="button" class="hub-tab-btn active" id="btn-tabOrder" onclick="switchNavTab('tabOrder')">🚀 استعلام خدمات و محاسبه فاکتور</button>
+      <button type="button" class="hub-tab-btn active" id="btn-tabOrder" onclick="switchNavTab('tabOrder')">🚀 استعلام خدمات و فاکتور</button>
       <button type="button" class="hub-tab-btn" id="btn-tabProduct" onclick="switchNavTab('tabProduct')">🛍️ محصولات دانلودی</button>
-      <button type="button" class="hub-tab-btn" id="btn-tabUserPanel" onclick="switchNavTab('tabUserPanel')">👤 حساب کاربری و اقساط</button>
     </div>
-    <div id="headerUserProfile" class="user-mini-badge" onclick="switchNavTab('tabUserPanel')">
-      <img id="headerUserAvatar" src="https://via.placeholder.com/26?text=U" alt="پروفایل" />
-      <span id="headerUserName">ورود / ثبت‌نام</span>
-    </div>
+    <a href="user.html" class="user-mini-badge" style="text-decoration:none;">
+      <span>👤 رفتن به پنل کاربری و پیگیری اقساط ➔</span>
+    </a>
   </div>
 
   <!-- ==================== تب ۱: استعلام خدمات و فاکتور ==================== -->
@@ -125,7 +123,7 @@
             </div>
             <div id="couponMessage" class="coupon-feedback-msg"></div>
 
-            <!-- نحوه تسویه حساب در ستون چپ -->
+            <!-- نحوه تسویه حساب -->
             <div class="payment-method-wrap">
               <div class="pay-title">نحوه تسویه و ثبت:</div>
               
@@ -183,65 +181,9 @@
   <div id="tabProduct" class="hub-tab-panel">
     <div class="products-tab-intro">
       <h3>🛍️ محصولات و بسته‌های آماده دانلودی</h3>
-      <p>بلافاصله پس از خرید، لینک امن و لایسنس در پنل کاربری شما فعال خواهد شد.</p>
+      <p>بلافاصله پس از خرید، لینک امن و لایسنس در پنل کاربری شما برای همیشه فعال خواهد شد.</p>
     </div>
     <div id="shopProductsGrid" class="package-grid"></div>
-  </div>
-
-  <!-- ==================== تب ۳: حساب کاربری و اقساط ==================== -->
-  <div id="tabUserPanel" class="hub-tab-panel">
-    <div class="user-panel-wrapper">
-      
-      <!-- فرم لاگین / ثبت نام -->
-      <div id="authBox" class="hub-auth-card">
-        <h3 id="authTitle">ورود به حساب کاربری</h3>
-        <p style="font-size:11px; color:#64748b; margin-bottom:16px;">برای پیگیری پروژه‌ها، تسویه اقساط و دریافت فایل‌ها وارد شوید.</p>
-
-        <div id="regNameField" style="display:none; margin-bottom:10px;">
-          <input type="text" id="authName" placeholder="نام و نام خانوادگی شما *" />
-        </div>
-        <div style="margin-bottom:10px;">
-          <input type="tel" id="authPhone" dir="ltr" placeholder="شماره همراه (09xxxxxxxxx) *" />
-        </div>
-        <div style="margin-bottom:14px;">
-          <input type="password" id="authPass" placeholder="رمز عبور *" />
-        </div>
-
-        <button type="button" class="btn-main" id="authSubmitBtn" onclick="submitAuth()" style="width:100%;">
-          ورود به حساب کاربری
-        </button>
-
-        <div class="auth-switch-text">
-          <span id="authToggleText">حساب کاربری ندارید؟</span>
-          <a href="javascript:void(0)" id="authToggleLink" onclick="toggleAuthMode()">ثبت‌نام کنید</a>
-        </div>
-      </div>
-
-      <!-- داشبورد فعال کاربر -->
-      <div id="userDashboard" style="display:none;">
-        <div class="user-dash-topbar">
-          <div class="profile-info-wrap">
-            <div class="avatar-holder">
-              <img id="dashAvatarImg" src="https://via.placeholder.com/46?text=User" alt="نمایه" />
-              <label for="avatarInput" title="تغییر تصویر نمایه">📷</label>
-              <input type="file" id="avatarInput" style="display:none;" accept="image/*" onchange="uploadAvatarFile(event)" />
-            </div>
-            <div>
-              <div id="dashUserName" class="dash-user-name">کاربر محترم</div>
-              <div id="dashUserPhone" class="dash-user-phone">09...</div>
-            </div>
-          </div>
-          <button type="button" class="btn-step-prev" onclick="logoutUser()">خروج</button>
-        </div>
-
-        <div class="dash-section-head">📦 محصولات دانلودی و لایسنس‌های شما:</div>
-        <div id="userPurchasedDownloadsList" class="downloads-list-stack"></div>
-
-        <div class="dash-section-head" style="margin-top:20px;">📋 سوابق پروژه‌ها و وضعیت اقساط:</div>
-        <div id="userProjectsList" class="projects-list-stack"></div>
-      </div>
-
-    </div>
   </div>
 
 </section>
