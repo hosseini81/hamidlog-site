@@ -15,32 +15,39 @@
     </div>
   </div>
 
-  <!-- ۲. لایه استیج تعقیب و گریز ویروس و آنتی‌ویروس -->
+  <!-- ۲. استیج تعقیب و گریز شطرنجی و ویروس‌های کوچک تعاملی -->
   <div class="chase-stage" id="chaseStage">
-    <!-- کاراکتر ویروس -->
-    <div class="chase-actor actor-virus" id="actorVirus">
-      <div class="virus-body">
-        <span class="virus-eye left"></span>
-        <span class="virus-eye right"></span>
-        <span class="virus-mouth"></span>
-        <div class="virus-spikes"></div>
+    <!-- ویروس اصلی به سبک کلود -->
+    <div class="grid-actor virus-claude" id="actorVirus">
+      <div class="claude-body">
+        <div class="claude-face">
+          <div class="claude-eye eye-l"></div>
+          <div class="claude-eye eye-r"></div>
+          <div class="claude-mouth" id="virusMouth"></div>
+        </div>
       </div>
-      <div class="actor-label">Bug.exe</div>
+      <div class="actor-bubble" id="virusBubble">HAHA!</div>
     </div>
 
-    <!-- کاراکتر آنتی‌ویروس -->
-    <div class="chase-actor actor-antivirus" id="actorAntivirus">
-      <div class="shield-body">
-        <div class="shield-core">🛡️</div>
-        <div class="laser-scanner"></div>
+    <!-- آنتی‌ویروس شکارچی -->
+    <div class="grid-actor defender-bot" id="actorAntivirus">
+      <div class="defender-body">
+        <div class="scanner-visor" id="defenderVisor">
+          <div class="visor-eye eye-l"></div>
+          <div class="visor-eye eye-r"></div>
+        </div>
+        <div class="defender-antenna"></div>
       </div>
-      <div class="actor-label">Defender.guard</div>
+      <div class="actor-bubble" id="defenderBubble">?!</div>
     </div>
+
+    <!-- جایگاه ویروس‌های کوچک تعاملی جهت کلیک و ترکیدن -->
+    <div id="miniBugsContainer"></div>
   </div>
 
   <div class="footer-container">
     <!-- ستون اول: معرفی و نشانگر وضعیت زنده -->
-    <div class="footer-brand">
+    <div class="footer-brand footer-nav-zone">
       <div class="footer-brand-title">
         <span class="brand-cube">⚡</span>
         <h3>استودیو حمیدرضا</h3>
@@ -57,7 +64,7 @@
     </div>
 
     <!-- ستون دوم: دسترسی سریع به صفحات -->
-    <div class="footer-col">
+    <div class="footer-col footer-nav-zone">
       <h4>صفحات اصلی</h4>
       <ul class="footer-links">
         <li><a href="index.html">صفحه اصلی</a></li>
@@ -70,7 +77,7 @@
     </div>
 
     <!-- ستون سوم: خدمات و راه‌حل‌ها -->
-    <div class="footer-col">
+    <div class="footer-col footer-nav-zone">
       <h4>خدمات فنی</h4>
       <ul class="footer-links">
         <li><a href="services.html">فروشگاه‌های اینترنتی ووکامرس</a></li>
@@ -82,7 +89,7 @@
     </div>
 
     <!-- ستون چهارم: ارتباط مستقیم -->
-    <div class="footer-col">
+    <div class="footer-col footer-nav-zone">
       <h4>تماس و مشاوره</h4>
       <ul class="footer-links contact-items">
         <li>
