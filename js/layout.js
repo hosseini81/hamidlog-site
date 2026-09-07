@@ -16,17 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // ب) بارگذاری سکشن‌های با ویژگی data-include
-  const includes = document.querySelectorAll("[data-include]");
-  for (const el of includes) {
-    const file = el.getAttribute("data-include");
-    try {
-      const res = await fetch(file);
-      el.outerHTML = await res.text();
-    } catch (err) {
-      console.error(`Error loading ${file}:`, err);
-    }
-  }
+  // ب) بارگذاری تمام بخش‌های data-include حتی به صورت تودرتو و لایه‌ای
+  await loadAllNestedIncludes();
 
   // ج) منوی همبرگری موبایل
   const burger = document.getElementById("hamburgerBtn");
@@ -44,7 +35,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // هـ) اجرای رفتارهای متحرک صفحه اصلی
   initDynamicFeatures();
+
+  // و) اعلام پایان لود کامل تمام بخش‌ها جهت استارت موتور سفارش و پنل
+  window.dispatchEvent(new Event("allModulesLoaded"));
 });
+
+// تابع هوشمند برای بارگذاری فایل‌های include تودرتو
+async function loadAllNestedIncludes() {
+  let pending = document.querySelectorAll("[data-include]");
+  while (pending.length > 0) {
+    for (const el of pending) {
+      const file = el.getAttribute("data-include");
+      try {
+        const res = await fetch(file);
+        el.outerHTML = await res.text();
+      } catch (err) {
+        console.error(`Error loading include file (${file}):`, err);
+        el.removeAttribute("data-include");
+      }
+    }
+    // بررسی مجدد برای فایل‌های لود شده جدید که خودشان data-include دارند
+    pending = document.querySelectorAll("[data-include]");
+  }
+}
 
 // رفتارهای متحرک صفحه اصلی (تایپ خودکار و FAQ)
 function initDynamicFeatures() {
