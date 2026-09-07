@@ -1,4 +1,4 @@
-// ==================== موتور استعلام، انتخاب خدمات و برآورد زنده ====================
+// ==================== موتور استعلام و انتخاب خدمات طراحی سایت ====================
 let currentStep = 1;
 let appData = { packages: [], services: [], downloadProducts: [] };
 let selectedPackage = null;
@@ -35,12 +35,10 @@ async function loadOrderEngineData() {
       if (grid) grid.style.display = "grid";
 
       renderPackages();
-      if (typeof renderShopProducts === "function") renderShopProducts(appData.downloadProducts);
     } else {
       throw new Error();
     }
   } catch (err) {
-    // روش پشتیبان در صورت بروز اختلال در واکشی عادی
     window.onSheetFallbackLoaded = function(res) {
       if (res && res.success && res.data) {
         appData = res.data;
@@ -48,23 +46,13 @@ async function loadOrderEngineData() {
         const grid = document.getElementById("orderMainGrid");
         if (grid) grid.style.display = "grid";
         renderPackages();
-        if (typeof renderShopProducts === "function") renderShopProducts(appData.downloadProducts);
       }
     };
-    loadSheetDataViaJsonp("onSheetFallbackLoaded");
+    if (typeof loadSheetDataViaJsonp === "function") {
+      loadSheetDataViaJsonp("onSheetFallbackLoaded");
+    }
   }
 }
-
-// سوئیچ تب‌های خدمات و محصولات
-window.switchNavTab = function(tabId) {
-  document.querySelectorAll('.hub-tab-panel').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.hub-tab-btn').forEach(btn => btn.classList.remove('active'));
-
-  const target = document.getElementById(tabId);
-  const btn = document.getElementById('btn-' + tabId);
-  if (target) target.classList.add('active');
-  if (btn) btn.classList.add('active');
-};
 
 function renderPackages() {
   const grid = document.getElementById('packagesGrid');
@@ -91,7 +79,7 @@ function renderPackages() {
           </div>
           <div class="package-card-desc">${pkg.desc}</div>
           <div class="package-card-footer">
-            <span>زمان: <strong>${pkg.days} روز</strong></span>
+            <span>زمان تحویل: <strong>${pkg.days} روز</strong></span>
             ${pkg.discount > 0 ? `<span class="badge badge-cycle">${pkg.discount}٪ تخفیف</span>` : ''}
           </div>
         </div>
@@ -264,7 +252,7 @@ function renderExtraItems() {
     const eff = getEffectiveService(s);
     const isChecked = extraSelectedIds.has(s.id);
     const hasReq = s.prerequisites && s.prerequisites.length > 0;
-    const videoBtn = (s.videoUrl && s.videoUrl.trim()) ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 ویدیوی معرفی</a>` : '';
+    const videoBtn = (s.videoUrl && s.videoUrl.trim()) ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 معرفی</a>` : '';
 
     container.innerHTML += `
       <div class="service-card ${isChecked ? 'selected' : ''}" onclick="toggleExtraFromCard('${s.id}')">
@@ -393,7 +381,7 @@ function renderOrderItemsSummary() {
   }
 
   if (addedList.length > 0) {
-    html += `<div style="font-size:11px; font-weight:800; color:#16a34a;">ماژول‌های اضافه:</div><ul style="margin:4px 14px 6px 0; padding:0; font-size:10px; color:#475569;">`;
+    html += `<div style="font-size:11px; font-weight:800; color:#16a34a;">ماژول‌های افزوده:</div><ul style="margin:4px 14px 6px 0; padding:0; font-size:10px; color:#475569;">`;
     addedList.forEach(s => {
       const eff = getEffectiveService(s);
       const isDeduct = deductedIds.has(s.id);
@@ -466,7 +454,7 @@ window.goStep = function(step) {
 
 window.changeStep = function(delta) { goStep(currentStep + delta); };
 
-// انتقال سبد انتخاب‌شده خدمات به صفحه اختصاصی تسویه حساب (checkout.html)
+// افزودن پروژه شخصی‌سازی شده به سبد خرید و هدایت به cart.html
 window.proceedToCheckout = function() {
   if (!selectedPackage) {
     return showCustomAlert("خطا", "لطفاً ابتدا یک پکیج پایه انتخاب فرمایید.");
@@ -475,7 +463,7 @@ window.proceedToCheckout = function() {
   const addedList = appData.services.filter(s => extraSelectedIds.has(s.id));
   const deductedList = appData.services.filter(s => deductedIds.has(s.id));
 
-  const pendingOrder = {
+  const serviceOrder = {
     packageName: selectedPackage.title,
     pkgBaseSum: pkgBaseSum,
     discountPercent: selectedPackage.discount || 0,
@@ -486,6 +474,11 @@ window.proceedToCheckout = function() {
     deductedServicesSummary: deductedList.map(s => s.title)
   };
 
-  sessionStorage.setItem("pending_order_data", JSON.stringify(pendingOrder));
-  window.location.href = "checkout.html";
+  if (typeof addToCartServiceProject === 'function') {
+    addToCartServiceProject(serviceOrder);
+    window.location.href = "cart.html";
+  } else {
+    sessionStorage.setItem("pending_order_data", JSON.stringify(serviceOrder));
+    window.location.href = "checkout.html";
+  }
 };
