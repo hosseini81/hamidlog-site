@@ -1,0 +1,18 @@
+/* ==================== فایل اصلی CSS سایت (7-1 Modular Architecture) ==================== */
+
+/* ۱. پایه‌ها و متغیرها */
+@import url('variables.css');
+@import url('reset.css');
+@import url('components.css');
+
+/* ۲. ساختارهای مشترک سراسری */
+@import url('header.css');
+@import url('footer.css');
+
+/* ۳. صفحات اختصاصی */
+@import url('home.css');
+@import url('portfolio.css');
+@import url('order.css');
+@import url('user.css');
+@import url('about.css');
+@import url('contact.css');
