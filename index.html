@@ -5,26 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>صفحه اصلی | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <!-- فقط استایل پایه -->
-  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- فایل استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-  <!-- هدر -->
+  <!-- هدر ماژولار سایت -->
   <div id="header-slot"></div>
 
-  <!-- محتوای صفحه اصلی -->
+  <!-- محتوای بخش‌های صفحه اصلی -->
   <main>
     <div data-include="sections/home/hero.html"></div>
     <div data-include="sections/home/services.html"></div>
     <div data-include="sections/home/faq.html"></div>
   </main>
 
-  <!-- فوتر -->
+  <!-- فوتر ماژولار سایت -->
   <div id="footer-slot"></div>
 
-  <!-- فقط اسکریپت هسته قالب -->
+  <!-- اسکریپت‌های ماژولار قالب و رفتارهای تعاملی -->
   <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
