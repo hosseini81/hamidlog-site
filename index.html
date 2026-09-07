@@ -10,16 +10,29 @@
   <link rel="stylesheet" href="css/style.css">
 
   <style>
-    /* استایل‌های اختصاصی اجزای صفحه اصلی */
-    .hero-box {
-      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-surface) 100%);
+    /* هیرو سکشن تمام‌عرض با پشتیبانی از تصویر پس‌زمینه */
+    .hero-fullwidth {
+      width: 100%;
+      position: relative;
+      /* برای گذاشتن تصویر آدرس url را داخل پرانتز بگذارید؛ در حالت پیش‌فرض none است */
+      --hero-bg-img: none; 
+      background-image: 
+        linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.92) 100%),
+        var(--hero-bg-img);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-bottom: 1px solid #334155;
+      padding: 70px 20px;
       color: #f8fafc;
-      padding: 50px 24px;
-      border-radius: 18px;
       text-align: center;
-      border: 1px solid #334155;
-      margin-bottom: 30px;
     }
+
+    .hero-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
     .hero-badge {
       display: inline-flex;
       align-items: center;
@@ -27,12 +40,13 @@
       background: rgba(16, 185, 129, 0.15);
       border: 1px solid rgba(16, 185, 129, 0.35);
       color: #34d399;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
+
     .pulse-dot {
       width: 8px;
       height: 8px;
@@ -40,52 +54,91 @@
       border-radius: 50%;
       box-shadow: 0 0 8px var(--primary);
     }
+
     .hero-title {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 900;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      line-height: 1.6;
+      margin-bottom: 14px;
     }
-    .hero-title span { color: var(--accent); }
+
+    /* جلوگیری از لرزش عرض و پرش کادر هنگام تایپ متن */
+    .type-container {
+      display: inline-block;
+      min-width: 290px; /* فضای رزرو شده ثابت برای طولانی‌ترین عبارت */
+      text-align: right;
+      color: var(--accent);
+      white-space: nowrap;
+      position: relative;
+      vertical-align: bottom;
+    }
+
+    /* نشانگر عمودی چشمک‌زن */
+    .type-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background-color: var(--accent);
+      vertical-align: -2px;
+      margin-right: 2px;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     .hero-desc {
       font-size: 13px;
       color: #94a3b8;
-      max-width: 600px;
-      margin: 0 auto 24px;
+      max-width: 620px;
+      margin: 0 auto 28px;
       line-height: 1.8;
     }
+
     .hero-buttons {
       display: flex;
       justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .btn-main {
       background: var(--primary);
       color: #fff;
-      padding: 10px 22px;
+      padding: 11px 24px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 800;
       font-size: 12px;
       transition: background 0.2s, transform 0.2s;
     }
-    .btn-main:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+    .btn-main:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
     .btn-outline {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       color: #f8fafc;
       border: 1px solid #475569;
-      padding: 10px 20px;
+      padding: 11px 22px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 700;
       font-size: 12px;
       transition: all 0.2s;
     }
-    .btn-outline:hover { background: rgba(255, 255, 255, 0.12); border-color: #94a3b8; }
 
-    /* بخش خدمات */
-    .section-head { text-align: center; margin-bottom: 24px; }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: #94a3b8;
+    }
+
+    /* بخش خدمات و کارت‌ها */
+    .section-head { text-align: center; margin: 30px 0 24px; }
     .section-head h2 { font-size: 20px; font-weight: 900; color: var(--bg-dark); margin-bottom: 4px; }
     .section-head p { font-size: 12px; color: var(--text-muted); }
     
@@ -93,8 +146,9 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 16px;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
+
     .service-card {
       background: #ffffff;
       border: 1px solid var(--border-color);
@@ -102,11 +156,13 @@
       padding: 20px;
       transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
+
     .service-card:hover {
       transform: translateY(-3px);
       border-color: var(--primary);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
     }
+
     .service-card .icon { font-size: 24px; margin-bottom: 10px; display: inline-block; }
     .service-card h3 { font-size: 14px; font-weight: 800; color: var(--bg-dark); margin-bottom: 6px; }
     .service-card p { font-size: 11px; color: var(--text-muted); line-height: 1.7; }
@@ -117,8 +173,9 @@
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 24px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
+
     .faq-item {
       border: 1px solid var(--border-color);
       border-radius: 8px;
@@ -126,7 +183,9 @@
       background: #f8fafc;
       overflow: hidden;
     }
+
     .faq-item.active { border-color: var(--primary); background: #ffffff; }
+
     .faq-q {
       width: 100%;
       padding: 14px 16px;
@@ -141,7 +200,9 @@
       font-weight: 800;
       color: var(--text-main);
     }
+
     .faq-item.active .faq-q { color: var(--primary); }
+
     .faq-a {
       max-height: 0;
       overflow: hidden;
@@ -151,9 +212,16 @@
       color: var(--text-muted);
       line-height: 1.8;
     }
+
     .faq-item.active .faq-a {
       padding: 0 16px 14px;
       border-top: 1px solid #f1f5f9;
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 22px; }
+      .type-container { min-width: 230px; }
+      .hero-fullwidth { padding: 50px 16px; }
     }
   </style>
 </head>
@@ -162,18 +230,18 @@
   <!-- محل تزریق هدر ماژولار -->
   <div id="header-slot"></div>
 
-  <!-- محتوای اصلی صفحه -->
-  <main>
-
-    <!-- هیرو سکشن -->
-    <section class="hero-box">
+  <!-- هیرو سکشن تمام‌عرض (بیرون از main برای پر کردن کل عرض مرورگر) -->
+  <section class="hero-fullwidth">
+    <div class="hero-inner">
       <div class="hero-badge">
         <span class="pulse-dot"></span>
         پذیرش سفارش‌های جدید طراحی و توسعه
       </div>
       <h1 class="hero-title">
         توسعه استاندارد و ارتقای <br>
-        <span id="typeTarget">وب‌سایت‌های فروشگاهی و شرکتی</span>
+        <span class="type-container">
+          <span id="typeTarget">وب‌سایت‌های فروشگاهی و شرکتی</span><span class="type-cursor"></span>
+        </span>
       </h1>
       <p class="hero-desc">
         پیاده‌سازی ساختارهای مدرن وب، افزایش سرعت، راست‌چین‌سازی اصولی و اتصال به سامانه‌های ابری و درگاه‌های بانکی شاپرک.
@@ -182,7 +250,11 @@
         <a href="order.html" class="btn-main">🚀 استعلام آنلاین و صدور پیش‌فاکتور</a>
         <a href="portfolio.html" class="btn-outline">مشاهده نمونه‌کارها</a>
       </div>
-    </section>
+    </div>
+  </section>
+
+  <!-- محتوای داخل کانتینر وسط‌چین -->
+  <main>
 
     <!-- معرفی خدمات -->
     <section>
@@ -217,7 +289,7 @@
 
     <!-- بخش سوالات متداول -->
     <section class="faq-container">
-      <div class="section-head" style="margin-bottom: 16px;">
+      <div class="section-head" style="margin-top: 0; margin-bottom: 16px;">
         <h2>سوالات متداول</h2>
         <p>پاسخ‌های شفاف به سوالات پرتکرار کارفرمایان</p>
       </div>
@@ -262,29 +334,41 @@
   <script src="js/layout.js"></script>
 
   <script>
-    // انیمیشن تایپ عنوان
-    const phrases = ["فروشگاه‌های آنلاین ووکامرس", "وب‌سایت‌های شرکتی ریسپانسیو", "سامانه‌های متصل به دیتابیس"];
+    // انیمیشن تایپ یکنواخت بدون لرزش کادر
+    const phrases = ["فروشگاه‌های آنلاین ووکامرس", "وب‌سایت‌های شرکتی مدرن", "سامانه‌های متصل به دیتابیس"];
     let pIdx = 0, chIdx = 0, isDeleting = false;
+
     function typeLoop() {
       const target = document.getElementById("typeTarget");
       if (!target) return;
       const current = phrases[pIdx];
+
       if (isDeleting) {
         target.textContent = current.substring(0, chIdx--);
-        if (chIdx < 0) { isDeleting = false; pIdx = (pIdx + 1) % phrases.length; setTimeout(typeLoop, 300); return; }
+        if (chIdx < 0) {
+          isDeleting = false;
+          pIdx = (pIdx + 1) % phrases.length;
+          setTimeout(typeLoop, 350);
+          return;
+        }
       } else {
         target.textContent = current.substring(0, chIdx++);
-        if (chIdx > current.length) { isDeleting = true; setTimeout(typeLoop, 1600); return; }
+        if (chIdx > current.length) {
+          isDeleting = true;
+          setTimeout(typeLoop, 1800);
+          return;
+        }
       }
-      setTimeout(typeLoop, isDeleting ? 35 : 70);
+      setTimeout(typeLoop, isDeleting ? 30 : 65);
     }
     typeLoop();
 
-    // آکاردئون FAQ
+    // آکاردئون سوالات متداول
     document.addEventListener("DOMContentLoaded", () => {
       const activeItem = document.querySelector(".faq-item.active .faq-a");
       if (activeItem) activeItem.style.maxHeight = activeItem.scrollHeight + "px";
     });
+
     function toggleFaq(btn) {
       const item = btn.parentElement;
       const ans = item.querySelector(".faq-a");
