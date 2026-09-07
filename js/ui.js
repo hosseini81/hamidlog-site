@@ -123,3 +123,110 @@ window.filterProjects = function(cat, btn) {
     }
   });
 };
+
+
+
+
+// ==================== موتور شبیه‌ساز انفجار بمب و افکت آتشین ====================
+document.addEventListener("DOMContentLoaded", () => {
+  initBoomTransitions();
+});
+
+function initBoomTransitions() {
+  const canvas = document.getElementById("boomCanvas");
+  const shockwave = document.getElementById("fireShockwave");
+  if (!canvas || !shockwave) return;
+
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  let animId = null;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  document.querySelectorAll(".boom-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      const target = link.getAttribute("target");
+
+      // لینک‌های تلگرام یا تماس خارج از صفحه را به حالت عادی باز می‌کند
+      if (!href || href.startsWith("tel:") || target === "_blank") return;
+
+      e.preventDefault();
+
+      const rect = link.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+
+      triggerBlast(originX, originY, href);
+    });
+  });
+
+  function triggerBlast(x, y, destinationUrl) {
+    canvas.style.display = "block";
+    particles = [];
+
+    // تولید ۷۵ ذره آتش، اخگر و دود نورانی
+    const colors = ["#ffedd5", "#fed7aa", "#fb923c", "#f97316", "#dc2626", "#991b1b"];
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 14 + 4;
+      particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        size: Math.random() * 8 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        decay: Math.random() * 0.03 + 0.015
+      });
+    }
+
+    // پخش موج نورانی و آتش
+    shockwave.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(254, 215, 170, 1) 0%, rgba(249, 115, 22, 0.95) 30%, rgba(220, 38, 38, 0.95) 60%, #0f172a 90%)`;
+    shockwave.classList.add("detonate");
+
+    function renderExplosion() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.2; // گرانش آتش
+        p.size *= 0.96;
+        p.alpha -= p.decay;
+
+        if (p.alpha > 0) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      });
+
+      particles = particles.filter(p => p.alpha > 0);
+
+      if (particles.length > 0) {
+        animId = requestAnimationFrame(renderExplosion);
+      }
+    }
+
+    renderExplosion();
+
+    // انتقال روان به مقصد پس از فروکش کردن انفجار
+    setTimeout(() => {
+      cancelAnimationFrame(animId);
+      window.location.href = destinationUrl;
+    }, 280);
+  }
+}
