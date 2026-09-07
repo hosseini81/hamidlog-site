@@ -1,4 +1,4 @@
-/* ==================== فوتر مدرن مهندسی شده ==================== */
+/* ==================== فوتر استاندارد، ایزوله و ریسپانسیو ==================== */
 .site-footer {
   background: var(--bg-dark);
   color: var(--text-muted);
@@ -6,17 +6,20 @@
   margin-top: auto;
   overflow: hidden;
   border-top: 1px solid rgba(51, 65, 85, 0.6);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* ۱. استایل ترمینال شبیه‌ساز کدنویسی نامحدود */
+/* ۱. استایل ترمینال شبیه‌ساز کدنویسی زنده */
 .code-stream-terminal {
   width: 100%;
   background: #020617;
   border-bottom: 1px solid #1e293b;
   font-family: 'Consolas', 'Fira Code', monospace;
-  box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 6px 18px rgba(0, 0, 0, 0.7);
   position: relative;
-  z-index: 1;
+  z-index: 10;
+  box-sizing: border-box;
 }
 
 .terminal-bar {
@@ -45,9 +48,12 @@
 .terminal-title {
   font-size: 11px;
   color: #64748b;
-  letter-spacing: 0.5px;
   font-family: monospace;
   direction: ltr;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
 }
 
 .terminal-status {
@@ -58,6 +64,7 @@
   align-items: center;
   gap: 5px;
   font-family: monospace;
+  white-space: nowrap;
 }
 
 .pulse-live {
@@ -71,11 +78,12 @@
 @keyframes liveBlink { from { opacity: 0.3; } to { opacity: 1; } }
 
 .terminal-screen {
-  height: 95px;
-  max-height: 95px;
+  height: 85px;
+  max-height: 85px;
   overflow: hidden;
   padding: 8px 16px;
   position: relative;
+  box-sizing: border-box;
   mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
@@ -93,7 +101,6 @@
   user-select: none;
 }
 
-/* هایلایت‌های نحوی در کد استریم */
 .token-tag { color: #f43f5e; font-weight: 700; }
 .token-attr { color: #fbbf24; }
 .token-val { color: #34d399; }
@@ -101,25 +108,18 @@
 .token-kw { color: #c084fc; font-weight: 700; }
 .token-comment { color: #475569; font-style: italic; }
 
-/* ==================== استیج تعقیب و گریز شطرنجی ==================== */
+/* ۲. استیج تعقیب و گریز */
 .chase-stage {
   position: absolute;
-  top: 100px;
+  top: 120px;
   left: 0;
   right: 0;
-  bottom: 40px;
+  bottom: 50px;
   pointer-events: none;
-  z-index: 20;
+  z-index: 5;
   overflow: hidden;
 }
 
-/* ستون‌های فوتر نباید زیر کاراکترها پنهان شوند */
-.footer-nav-zone {
-  position: relative;
-  z-index: 25;
-}
-
-/* کاراکترهای شطرنجی */
 .grid-actor {
   position: absolute;
   width: 28px;
@@ -131,9 +131,10 @@
   transform: translate(-100px, -100px);
   transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2);
   pointer-events: none;
+  z-index: 6;
 }
 
-/* ۱. طراحی کاراکتر ویروس شبیه آیکون Claude */
+/* ویروس سبک کلود */
 .claude-body {
   width: 26px;
   height: 26px;
@@ -145,8 +146,8 @@
 }
 
 @keyframes claudeWobble {
-  0% { transform: scale(0.96) rotate(-4deg); border-radius: 40% 60% 65% 35%; }
-  100% { transform: scale(1.04) rotate(4deg); border-radius: 55% 45% 40% 60%; }
+  0% { transform: scale(0.96) rotate(-4deg); }
+  100% { transform: scale(1.04) rotate(4deg); }
 }
 
 .claude-face {
@@ -188,7 +189,6 @@
   transition: all 0.2s;
 }
 
-/* حالت قهقهه ویروس */
 .virus-claude.laughing .claude-mouth {
   height: 7px;
   border-radius: 50%;
@@ -196,15 +196,12 @@
   border: 1px solid #fff;
 }
 
-/* حالت وحشت ویروس */
 .virus-claude.panic .claude-body {
   background: radial-gradient(circle, #dc2626, #991b1b);
   box-shadow: 0 0 16px #ef4444;
 }
-.virus-claude.panic .claude-eye { height: 7px; width: 6px; }
-.virus-claude.panic .claude-mouth { width: 10px; height: 8px; border-radius: 50%; }
 
-/* ۲. طراحی کاراکتر آنتی‌ویروس سایبر */
+/* ربات آنتی‌ویروس */
 .defender-body {
   width: 26px;
   height: 26px;
@@ -235,7 +232,6 @@
   height: 4px;
   background: #38bdf8;
   border-radius: 2px;
-  box-shadow: 0 0 4px #38bdf8;
 }
 
 .defender-antenna {
@@ -256,28 +252,13 @@
   height: 6px;
   background: #38bdf8;
   border-radius: 50%;
-  box-shadow: 0 0 6px #38bdf8;
 }
 
-/* حالت تعجب و سوالی آنتی‌ویروس */
-.defender-bot.confused .scanner-visor {
-  border-color: #facc15;
-}
-.defender-bot.confused .visor-eye {
-  background: #facc15;
-}
+.defender-bot.confused .scanner-visor { border-color: #facc15; }
+.defender-bot.confused .visor-eye { background: #facc15; }
+.defender-bot.hunter .scanner-visor { background: #7f1d1d; border-color: #ef4444; }
+.defender-bot.hunter .visor-eye { background: #ef4444; }
 
-/* حالت شکار و خشم آنتی‌ویروس */
-.defender-bot.hunter .scanner-visor {
-  background: #7f1d1d;
-  border-color: #ef4444;
-}
-.defender-bot.hunter .visor-eye {
-  background: #ef4444;
-  box-shadow: 0 0 8px #ef4444;
-}
-
-/* حباب دیالوگ */
 .actor-bubble {
   position: absolute;
   top: -18px;
@@ -294,25 +275,20 @@
   transform: scale(0.6);
   transition: all 0.2s ease;
 }
-.actor-bubble.show {
-  opacity: 1;
-  transform: scale(1);
-}
+.actor-bubble.show { opacity: 1; transform: scale(1); }
 
-/* ۳. ویروس‌های کوچک تعاملی و قابل کلیک */
+/* مینی‌ویروس‌های کلیک‌پذیر */
 .mini-bug {
   position: absolute;
   width: 22px;
   height: 22px;
   pointer-events: auto;
   cursor: pointer;
-  z-index: 30;
+  z-index: 25;
   user-select: none;
   transition: transform 0.2s ease;
 }
-.mini-bug:hover {
-  transform: scale(1.35);
-}
+.mini-bug:hover { transform: scale(1.35); }
 
 .mini-bug-body {
   width: 100%;
@@ -325,7 +301,7 @@
 }
 @keyframes bugFloat {
   from { transform: translateY(0); }
-  to { transform: translateY(-6px); }
+  to { transform: translateY(-5px); }
 }
 
 .mini-bug-eye {
@@ -339,14 +315,157 @@
 .mini-bug-eye.l { left: 4px; }
 .mini-bug-eye.r { right: 4px; }
 
-/* انیمیشن ترکیدن جذاب ویروس کوچک */
 .mini-bug.popping {
   pointer-events: none;
   animation: bugExplode 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
 }
-
 @keyframes bugExplode {
   0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(2.2); opacity: 0.8; filter: brightness(2); }
-  100% { transform: scale(3.5); opacity: 0; filter: blur(4px); }
+  50% { transform: scale(2); opacity: 0.8; filter: brightness(2); }
+  100% { transform: scale(3); opacity: 0; filter: blur(4px); }
+}
+
+/* ۳. ساختار گرید ستون‌های محتوایی فوتر */
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px 30px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.2fr 1.3fr;
+  gap: 32px;
+  position: relative;
+  z-index: 20;
+  box-sizing: border-box;
+}
+
+.footer-nav-zone {
+  position: relative;
+  z-index: 21;
+}
+
+.footer-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.brand-cube { font-size: 20px; }
+.footer-brand h3 { color: #f8fafc; font-size: 15px; font-weight: 900; margin: 0; }
+.footer-bio { font-size: 11px; line-height: 1.9; color: #94a3b8; margin-bottom: 16px; text-align: justify; }
+
+.footer-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #34d399;
+  position: relative;
+}
+
+.pulse-core { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; z-index: 2; }
+.pulse-ring {
+  position: absolute;
+  right: 11px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.6);
+  animation: continuousPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  z-index: 1;
+}
+@keyframes continuousPulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.footer-col h4 {
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  position: relative;
+  padding-bottom: 8px;
+}
+.footer-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.footer-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 11px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+.footer-links a:hover {
+  color: var(--accent);
+  transform: translateX(-4px);
+}
+
+.contact-items li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+.icon-bubble { font-size: 13px; }
+
+.footer-bottom {
+  border-top: 1px solid rgba(51, 65, 85, 0.6);
+  background: rgba(15, 23, 42, 0.95);
+  padding: 16px 20px;
+  position: relative;
+  z-index: 20;
+}
+
+.footer-bottom-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #64748b;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-tagline { color: #475569; }
+
+/* واکنش‌گرایی در نمایشگرهای مختلف */
+@media (max-width: 850px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+@media (max-width: 550px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    padding: 30px 16px 20px;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
 }
