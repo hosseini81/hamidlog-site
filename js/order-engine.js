@@ -48,8 +48,8 @@ window.closeCustomAlert = function() {
   if (alertEl) alertEl.style.display = 'none';
 };
 
-// راه‌اندازی اولیه در صفحه سفارش
-document.addEventListener("DOMContentLoaded", () => {
+// راه‌اندازی پس از اطمینان از تزریق کامل فایل‌های HTML به صفحه
+window.addEventListener("allModulesLoaded", () => {
   if (document.getElementById("dataLoader") || document.getElementById("packagesGrid")) {
     fetchInitialData();
   }
