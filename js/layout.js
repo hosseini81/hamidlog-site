@@ -102,3 +102,106 @@ window.filterProjects = function(cat, btn) {
     }
   });
 };
+
+
+
+// متغیر ذخیره URL دریافتی از گوگل شیت
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
+
+// تولید کد تصادفی سفارش
+let currentOrderId = "ORD-" + Math.floor(1000 + Math.random() * 9000);
+
+// محاسبه آنلاین مجموع فاکتور
+window.calcTotal = function() {
+  const codeEl = document.getElementById("orderIdText");
+  if (codeEl) codeEl.textContent = "#" + currentOrderId;
+
+  const planEl = document.querySelector('input[name="plan"]:checked');
+  if (!planEl) return;
+
+  const planPrice = parseInt(planEl.getAttribute("data-price"), 10);
+  const planName = planEl.getAttribute("data-name");
+
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('active'));
+  planEl.closest('.plan-card').classList.add('active');
+
+  let featuresPrice = 0;
+  const featuresListWrap = document.getElementById("selectedFeaturesList");
+  if (featuresListWrap) featuresListWrap.innerHTML = "";
+
+  document.querySelectorAll('.feature-opt:checked').forEach(f => {
+    const fPrice = parseInt(f.getAttribute("data-price"), 10);
+    featuresPrice += fPrice;
+
+    if (featuresListWrap) {
+      const row = document.createElement("div");
+      row.className = "feature-item-row";
+      row.innerHTML = `<span>+ ${f.value}</span><span>${fPrice.toLocaleString('fa-IR')}</span>`;
+      featuresListWrap.appendChild(row);
+    }
+  });
+
+  const grandTotal = planPrice + featuresPrice;
+
+  const sumPlanName = document.getElementById("sumPlanName");
+  const sumPlanPrice = document.getElementById("sumPlanPrice");
+  const sumTotalPrice = document.getElementById("sumTotalPrice");
+
+  if (sumPlanName) sumPlanName.textContent = planName;
+  if (sumPlanPrice) sumPlanPrice.textContent = planPrice.toLocaleString('fa-IR') + " تومان";
+  if (sumTotalPrice) sumTotalPrice.textContent = grandTotal.toLocaleString('fa-IR') + " تومان";
+
+  return { planName, grandTotal };
+};
+
+// ارسال سفارش به گوگل‌شیت
+window.submitOrder = async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById("submitBtn");
+  const msg = document.getElementById("statusMessage");
+
+  const name = document.getElementById("custName").value.trim();
+  const phone = document.getElementById("custPhone").value.trim();
+  const activePlan = document.querySelector('input[name="plan"]:checked');
+
+  const selectedFeatures = [];
+  document.querySelectorAll('.feature-opt:checked').forEach(f => selectedFeatures.push(f.value));
+
+  const total = window.calcTotal();
+
+  btn.disabled = true;
+  btn.textContent = "در حال ثبت اطلاعات...";
+  msg.style.display = "block";
+  msg.style.background = "#eff6ff";
+  msg.style.color = "#1d4ed8";
+  msg.textContent = "ارتباط با سرور...";
+
+  try {
+    await fetch(WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId: currentOrderId,
+        fullName: name,
+        phone: phone,
+        planName: total.planName,
+        features: selectedFeatures,
+        totalPrice: total.grandTotal
+      })
+    });
+
+    msg.style.background = "#dcfce7";
+    msg.style.color = "#166534";
+    msg.textContent = "✅ فاکتور با موفقیت ثبت شد. به زودی جهت هماهنگی با شما تماس می‌گیریم.";
+    document.getElementById("leadForm").reset();
+
+  } catch (err) {
+    msg.style.background = "#fee2e2";
+    msg.style.color = "#991b1b";
+    msg.textContent = "خطا در برقراری ارتباط. لطفاً از طریق تلگرام با ما تماس بگیرید.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "ثبت نهایی و دریافت مشاوره ➔";
+  }
+};
