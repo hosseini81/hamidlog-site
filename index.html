@@ -88,6 +88,267 @@
   </style>
 </head>
 <body>
+  <!-- شروع بخش هدر -->
+<header class="main-header">
+  <div class="nav-container">
+    
+    <!-- لوگو و برند (سمت راست) -->
+    <a href="index.html" class="nav-brand">
+      <div class="brand-avatar">H</div>
+      <div class="brand-info">
+        <span class="brand-name">حمیدرضا</span>
+        <span class="brand-tagline">طراحی و توسعه وب</span>
+      </div>
+    </a>
+
+    <!-- منوی دسکتاپ (وسط) -->
+    <nav class="desktop-menu">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link active">صفحه اصلی</a></li>
+        <li><a href="portfolio.html" class="nav-link">نمونه‌کارها</a></li>
+        <li><a href="about.html" class="nav-link">درباره ما</a></li>
+        <li><a href="contact.html" class="nav-link">تماس با ما</a></li>
+      </ul>
+    </nav>
+
+    <!-- اکشن دسکتاپ + دکمه همبرگری موبایل (سمت چپ) -->
+    <div class="nav-actions">
+      <a href="order.html" class="header-cta-btn">🚀 استعلام آنلاین</a>
+      
+      <!-- دکمه منوی موبایل -->
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="منو">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- منوی کشویی موبایل -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <ul class="mobile-nav-list">
+      <li><a href="index.html" class="mobile-link active">صفحه اصلی</a></li>
+      <li><a href="portfolio.html" class="mobile-link">نمونه‌کارها</a></li>
+      <li><a href="about.html" class="mobile-link">درباره ما</a></li>
+      <li><a href="contact.html" class="mobile-link">تماس با ما</a></li>
+      <li><a href="order.html" class="mobile-cta-btn">🚀 استعلام هزینه و فاکتور</a></li>
+    </ul>
+  </div>
+</header>
+<!-- پایان بخش هدر -->
+
+<style>
+  /* استایل‌های هدر */
+  .main-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  }
+
+  .nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* لوگو */
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .brand-avatar {
+    width: 38px;
+    height: 38px;
+    background: #0f172a;
+    color: #10b981;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    border: 1px solid #1e293b;
+  }
+
+  .brand-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-name {
+    font-size: 14px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .brand-tagline {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  /* لینک‌های دسکتاپ */
+  .desktop-menu .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    padding: 6px 4px;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #10b981;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: #10b981;
+    border-radius: 2px;
+  }
+
+  /* دکمه اکشن و همبرگر */
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-cta-btn {
+    background: #10b981;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .header-cta-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+  }
+
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .hamburger-btn span {
+    display: block;
+    height: 2.5px;
+    width: 100%;
+    background: #0f172a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* انیمیشن باز شدن دکمه ضربدری */
+  .hamburger-btn.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .hamburger-btn.open span:nth-child(2) { opacity: 0; }
+  .hamburger-btn.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  /* منوی کشویی موبایل */
+  .mobile-drawer {
+    display: none;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    padding: 16px 20px;
+  }
+
+  .mobile-drawer.show {
+    display: block;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobile-link {
+    display: block;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    padding: 8px 0;
+    border-bottom: 1px solid #f8fafc;
+  }
+
+  .mobile-link.active {
+    color: #10b981;
+  }
+
+  .mobile-cta-btn {
+    display: block;
+    text-align: center;
+    background: #10b981;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+
+  /* ریسپانسیو */
+  @media (max-width: 768px) {
+    .desktop-menu, .header-cta-btn {
+      display: none;
+    }
+    .hamburger-btn {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  // کنترل باز و بسته شدن منوی موبایل
+  const burger = document.getElementById('hamburgerBtn');
+  const drawer = document.getElementById('mobileDrawer');
+
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    drawer.classList.toggle('show');
+  });
+</script>
   <section class="hero-container">
     <div class="hero-badge">
       <span class="pulse-dot"></span>
