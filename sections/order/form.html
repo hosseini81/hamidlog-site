@@ -1,103 +1,162 @@
-<section class="order-layout">
-  <!-- فرم انتخاب پکیج و امکانات -->
-  <div class="order-controls">
+<section class="order-system-wrap">
+  
+  <!-- تب‌های بالای سامانه -->
+  <div class="system-tabs">
+    <button class="sys-tab-btn active" onclick="switchMainTab('order-tab', this)">🛒 استعلام هزینه و ثبت سفارش</button>
+    <button class="sys-tab-btn" onclick="switchMainTab('dashboard-tab', this)">👤 پنل مشتریان و پیگیری اقساط</button>
+  </div>
+
+  <!-- ================= تب ۱: استعلام و سفارش ================= -->
+  <div id="order-tab" class="tab-content active">
+    <div class="order-layout">
+      
+      <!-- ستون انتخاب خدمات -->
+      <div class="order-controls">
+        
+        <!-- لودینگ اطلاعات پایه از گوگل شیت -->
+        <div id="dataLoader" class="loading-box">
+          <span class="spinner"></span>
+          در حال دریافت لیست خدمات، پکیج‌ها و تعرفه‌های به‌روز از سرور ابری...
+        </div>
+
+        <!-- انتخاب پکیج -->
+        <div class="order-box" id="pkgSection" style="display:none;">
+          <h3 class="box-title">۱. انتخاب پکیج پایه</h3>
+          <div class="plans-grid" id="packagesContainer"></div>
+        </div>
+
+        <!-- خدمات تکمیلی -->
+        <div class="order-box" id="servicesSection" style="display:none;">
+          <h3 class="box-title">۲. افزودن خدمات تخصصی و امکانات جانبی</h3>
+          <div class="services-list" id="servicesContainer"></div>
+        </div>
+
+        <!-- نحوه پرداخت -->
+        <div class="order-box" id="paymentTypeSection" style="display:none;">
+          <h3 class="box-title">۳. نوع تسویه حساب</h3>
+          <div class="payment-types-grid">
+            <label class="pay-type-card active">
+              <input type="radio" name="paymentType" value="full" checked onchange="calculateOrderTotal()">
+              <div>
+                <strong>پرداخت نقدی (با ۵٪ تخفیف ویژه)</strong>
+                <p>تسویه یک‌مرحله‌ای با اعمال ۵٪ کسر از مبلغ کل فاکتور</p>
+              </div>
+            </label>
+            <label class="pay-type-card">
+              <input type="radio" name="paymentType" value="installments" onchange="calculateOrderTotal()">
+              <div>
+                <strong>پرداخت اقساطی (۴۰٪ پیش‌پرداخت)</strong>
+                <p>شروع پروژه با ۴۰٪ پیش‌پرداخت، مابقی در طول مراحل اجرا</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ستون پیش‌فاکتور آنلاین و زرین‌پال -->
+      <div class="order-invoice-col">
+        <div class="invoice-sticky-card">
+          <div class="invoice-header">
+            <h4>پیش‌فاکتور رسمی</h4>
+            <span class="status-pill">محاسبه آنلاین</span>
+          </div>
+
+          <div class="invoice-items">
+            <div class="inv-row base-pkg-row">
+              <span id="invPkgTitle">هیچ پکیجی انتخاب نشده</span>
+              <strong id="invPkgPrice">۰ تومان</strong>
+            </div>
+
+            <div id="invAddedServices" class="inv-added-list"></div>
+
+            <!-- کد تخفیف -->
+            <div class="coupon-box">
+              <input type="text" id="couponInput" placeholder="کد تخفیف دارید؟">
+              <button type="button" onclick="applyCoupon()">اعمال</button>
+            </div>
+            <div id="couponMsg" class="coupon-msg"></div>
+
+            <div class="inv-divider"></div>
+
+            <div class="inv-row">
+              <span>تخفیف / تفاوت تسویه:</span>
+              <span id="invDiscountPrice" style="color:#16a34a;">۰ تومان</span>
+            </div>
+
+            <div class="inv-row total-row">
+              <span>مبلغ کل فاکتور:</span>
+              <strong id="invFinalPrice">۰ تومان</strong>
+            </div>
+
+            <div class="inv-row payable-now-row">
+              <span>پیش‌پرداخت آنلاین شاپرک:</span>
+              <strong id="invPayableNow">۰ تومان</strong>
+            </div>
+          </div>
+
+          <!-- فرم ورود مشخصات مشتری -->
+          <form id="orderForm" onsubmit="handleFinalSubmit(event)" class="customer-info-form">
+            <div class="form-group">
+              <input type="text" id="orderCustName" placeholder="نام و نام خانوادگی کارفرما *" required>
+            </div>
+            <div class="form-group">
+              <input type="tel" id="orderCustPhone" placeholder="شماره موبایل (جهت صدور فاکتور) *" dir="ltr" pattern="09[0-9]{9}" required>
+            </div>
+            <button type="submit" id="submitOrderBtn" class="btn-pay-zarinpal">
+              💳 ثبت سفارش و ورود به درگاه شاپرک
+            </button>
+          </form>
+
+          <div id="orderStatusMsg" class="order-status-msg"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= تب ۲: پنل کاربری و اقساط ================= -->
+  <div id="dashboard-tab" class="tab-content">
     
-    <div class="order-box">
-      <h3>۱. نوع پروژه و قالب پایه</h3>
-      <div class="plan-selector">
-        <label class="plan-card active">
-          <input type="radio" name="plan" value="shop" data-price="9500000" data-name="فروشگاه اینترنتی ووکامرس" checked onchange="calcTotal()">
-          <div class="plan-details">
-            <span class="plan-title">🛍️ فروشگاه اینترنتی (ووکامرس)</span>
-            <span class="plan-desc">مناسب فروش کالا، درگاه شاپرک، انبارداری و پنل مشتریان</span>
-            <span class="plan-cost">۹,۵۰۰,۰۰۰ تومان</span>
-          </div>
-        </label>
+    <!-- بخش لاگین/ثبت نام -->
+    <div id="authBox" class="auth-card">
+      <h3 id="authTitle">ورود به پنل کاربری</h3>
+      <p>جهت پیگیری سفارشات، دانلود فاکتور و تسویه اقساط وارد شوید</p>
 
-        <label class="plan-card">
-          <input type="radio" name="plan" value="corp" data-price="6500000" data-name="سایت شرکتی و خدماتی" onchange="calcTotal()">
-          <div class="plan-details">
-            <span class="plan-title">🏢 وب‌سایت شرکتی / کاتالوگ</span>
-            <span class="plan-desc">معرفی خدمات، لندینگ‌های اختصاصی و فرم استعلام سریع</span>
-            <span class="plan-cost">۶,۵۰۰,۰۰۰ تومان</span>
-          </div>
-        </label>
+      <div class="auth-inputs">
+        <input type="text" id="authName" placeholder="نام شما (مخصوص ثبت‌نام)" style="display:none;">
+        <input type="tel" id="authPhone" placeholder="شماره موبایل (۰۹xxxxxxxxx)" dir="ltr">
+        <input type="password" id="authPass" placeholder="رمز عبور">
+        <button type="button" id="authSubmitBtn" class="btn-main" onclick="processAuth()">ورود به پنل</button>
       </div>
+
+      <div class="auth-toggle">
+        <span id="authToggleText">حساب کاربری ندارید؟</span>
+        <a href="javascript:void(0)" onclick="toggleAuthMode()">ثبت نام در سامانه</a>
+      </div>
+      <div id="authMsg" class="auth-msg"></div>
     </div>
 
-    <div class="order-box">
-      <h3>۲. سرویس‌ها و ماژول‌های تکمیلی</h3>
-      <div class="addons-list">
-        <label class="addon-item">
-          <input type="checkbox" class="feature-opt" value="درگاه پرداخت زرین‌پال / شاپرک" data-price="750000" onchange="calcTotal()">
-          <div class="addon-info">
-            <span>درگاه مستقیم بانکی شاپرک و زرین‌پال (پیکربندی + تست شبیه‌ساز)</span>
-            <strong>۷۵۰,۰۰۰ ت</strong>
+    <!-- داشبورد کاربر پس از ورود -->
+    <div id="userDashboard" class="user-dashboard" style="display:none;">
+      <div class="user-dash-header">
+        <div class="user-profile-info">
+          <div class="user-avatar-placeholder" id="userAvatar">U</div>
+          <div>
+            <h3 id="dashUserName">کاربر عزیز</h3>
+            <span id="dashUserPhone" style="font-size:11px; color:#64748b;">-</span>
           </div>
-        </label>
-
-        <label class="addon-item">
-          <input type="checkbox" class="feature-opt" value="پنل پیامکی ورود با کد یکبارمصرف (OTP)" data-price="900000" onchange="calcTotal()">
-          <div class="addon-info">
-            <span>سیستم پیامک اطلاع‌رسانی و ورود با کد یکبارمصرف OTP</span>
-            <strong>۹۰۰,۰۰۰ ت</strong>
-          </div>
-        </label>
-
-        <label class="addon-item">
-          <input type="checkbox" class="feature-opt" value="اتصال اتوماتیک به دیتابیس شیت‌های ابری" data-price="1200000" onchange="calcTotal()">
-          <div class="addon-info">
-            <span>همگام‌سازی سفارش‌ها و موجودی با Google Sheets</span>
-            <strong>۱,۲۰۰,۰۰۰ ت</strong>
-          </div>
-        </label>
-
-        <label class="addon-item">
-          <input type="checkbox" class="feature-opt" value="بهینه‌سازی سرعت و کش عمیق سرور" data-price="850000" onchange="calcTotal()">
-          <div class="addon-info">
-            <span>ارتقای رتبه سرعت لود زیر ۲ ثانیه و تنظیم کش حرفه‌ای</span>
-            <strong>۸۵۰,۰۰۰ ت</strong>
-          </div>
-        </label>
+        </div>
+        <button class="btn-logout" onclick="logoutUser()">خروج از حساب</button>
       </div>
+
+      <h4 style="margin:20px 0 10px; font-size:14px; font-weight:800;">پروژه‌ها و سفارشات شما</h4>
+      <div id="ordersContainer" class="dash-orders-grid"></div>
+
+      <h4 style="margin:24px 0 10px; font-size:14px; font-weight:800;">محصولات دانلودی و لایسنس‌ها</h4>
+      <div id="downloadsContainer" class="dash-downloads-grid"></div>
     </div>
 
   </div>
 
-  <!-- ستون کناری: فاکتور زنده و ثبت نهایی -->
-  <div class="order-invoice-col">
-    <div class="invoice-card">
-      <div class="invoice-head">
-        <h4>پیش‌فاکتور آنلاین و برآورد</h4>
-        <span class="order-code" id="orderIdText">#ORD----</span>
-      </div>
-
-      <div class="invoice-summary">
-        <div class="summary-row">
-          <span id="sumPlanName">فروشگاه اینترنتی</span>
-          <span id="sumPlanPrice">۹,۵۰۰,۰۰۰</span>
-        </div>
-        <div id="selectedFeaturesList" class="features-summary-wrap"></div>
-        <div class="summary-divider"></div>
-        <div class="summary-total">
-          <span>مبلغ قابل پرداخت:</span>
-          <strong id="sumTotalPrice">۹,۵۰۰,۰۰۰ تومان</strong>
-        </div>
-      </div>
-
-      <form id="leadForm" onsubmit="submitOrder(event)">
-        <div class="form-group">
-          <input type="text" id="custName" placeholder="نام و نام خانوادگی" required>
-        </div>
-        <div class="form-group">
-          <input type="tel" id="custPhone" placeholder="شماره موبایل (جهت هماهنگی)" dir="ltr" pattern="09[0-9]{9}" required>
-        </div>
-        <button type="submit" id="submitBtn" class="btn-submit-order">
-          ثبت نهایی و دریافت مشاوره ➔
-        </button>
-      </form>
-
-      <div id="statusMessage" class="status-msg"></div>
-    </div>
-  </div>
 </section>
