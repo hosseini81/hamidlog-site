@@ -304,3 +304,59 @@
   .floating-island-bar { display: flex !important; }
   body { padding-bottom: 90px !important; }
 }
+
+
+
+/* دکمه سبد خرید در هدر دسکتاپ */
+.header-cart-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.header-cart-btn:hover {
+  border-color: var(--primary);
+  background: var(--success-bg);
+  color: var(--primary);
+}
+.cart-count-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+}
+
+/* نشانگر سبد خرید در نوار پایین موبایل */
+.island-cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 18px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
