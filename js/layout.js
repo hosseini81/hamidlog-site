@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // ب) بارگذاری تمام بخش‌های data-include به صورت تودرتو و لایه‌ای
+  // همگام‌سازی فوری وضعیت کاربر در هدر و نوار پایین در تمام صفحات
+  syncGlobalUserState();
+
+  // ب) بارگذاری تمام بخش‌های data-include به صورت تودرتو
   await loadAllNestedIncludes();
 
   // ج) راه‌اندازی منوی کشویی موبایل (Drawer) و بک‌دراپ
@@ -28,37 +31,82 @@ document.addEventListener("DOMContentLoaded", async () => {
   const openDrawer = () => {
     if (drawer) drawer.classList.add("show");
     if (backdrop) backdrop.classList.add("show");
-    document.body.style.overflow = "hidden"; // جلوگیری از اسکرول صفحه هنگام باز بودن منو
+    document.body.style.overflow = "hidden";
   };
 
   const closeDrawer = () => {
     if (drawer) drawer.classList.remove("show");
     if (backdrop) backdrop.classList.remove("show");
-    document.body.style.overflow = ""; // بازگرداندن اسکرول صفحه
+    document.body.style.overflow = "";
   };
 
   if (burger) burger.addEventListener("click", openDrawer);
   if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
   if (backdrop) backdrop.addEventListener("click", closeDrawer);
 
-  // بستن منوی کشویی با کلیک روی هر لینک داخلی آن
   document.querySelectorAll(".mobile-drawer .mobile-link, .mobile-drawer .mobile-cta-btn").forEach(link => {
     link.addEventListener("click", closeDrawer);
   });
 
-  // د) علامت زدن لینک فعال صفحه در هدر دسکتاپ، منوی کشویی و نوار پایین موبایل
+  // د) علامت زدن لینک فعال صفحه در منوها
   const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
   document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
   document.querySelectorAll(`[data-bottom-page="${page}"]`).forEach(el => el.classList.add("active"));
 
-  // هـ) اجرای رفتارهای متحرک صفحه اصلی (تایپ و آکاردئون FAQ)
+  // هـ) اجرای رفتارهای متحرک صفحه اصلی
   initDynamicFeatures();
 
-  // و) اعلام پایان لود کامل تمام بخش‌ها جهت استارت موتور سفارش و پنل
+  // و) اعلام پایان لود کامل تمام بخش‌ها
   window.dispatchEvent(new Event("allModulesLoaded"));
 });
 
-// ==================== ۲. سوئیچر تب‌های منوی کشویی موبایل ====================
+// ==================== ۲. حفظ نشست کاربر و به‌روزرسانی هدر در کل سایت ====================
+function syncGlobalUserState() {
+  let user = null;
+  try {
+    const saved = localStorage.getItem('site_user_auth');
+    if (saved) {
+      user = JSON.parse(saved);
+    }
+  } catch (e) {
+    console.warn("خطا در بازیابی نشست کاربری:", e);
+  }
+
+  const nameEl = document.getElementById('headerUserName');
+  const statusEl = document.getElementById('headerUserStatus');
+  const avatarImg = document.getElementById('headerUserAvatar');
+  const avatarPlaceholder = document.getElementById('headerUserPlaceholder');
+  const headerBtn = document.getElementById('headerUserBtn');
+  const bottomLabel = document.getElementById('bottomNavUserLabel');
+
+  if (user && user.phone) {
+    if (nameEl) nameEl.textContent = user.name || "کاربر گرامی";
+    if (statusEl) statusEl.textContent = "پنل کاربری فعال";
+    if (headerBtn) headerBtn.classList.add("logged-in");
+    if (bottomLabel) bottomLabel.textContent = (user.name ? user.name.split(" ")[0] : "حساب من");
+
+    if (user.avatar && avatarImg) {
+      avatarImg.src = user.avatar;
+      avatarImg.style.display = "block";
+      if (avatarPlaceholder) avatarPlaceholder.style.display = "none";
+    } else {
+      if (avatarImg) avatarImg.style.display = "none";
+      if (avatarPlaceholder) avatarPlaceholder.style.display = "flex";
+    }
+  } else {
+    if (nameEl) nameEl.textContent = "حساب کاربری";
+    if (statusEl) statusEl.textContent = "ورود / ثبت‌نام";
+    if (headerBtn) headerBtn.classList.remove("logged-in");
+    if (bottomLabel) bottomLabel.textContent = "حساب من";
+    if (avatarImg) avatarImg.style.display = "none";
+    if (avatarPlaceholder) avatarPlaceholder.style.display = "flex";
+  }
+}
+
+// در دسترس قرار دادن تابع برای صدا زدن پس از لاگین/خروج
+window.syncGlobalUserState = syncGlobalUserState;
+
+// ==================== ۳. سوئیچر تب‌های منوی کشویی موبایل ====================
 window.switchDrawerTab = function(tabName) {
   const tabPages = document.getElementById("drawerTabPages");
   const tabSocials = document.getElementById("drawerTabSocials");
@@ -78,8 +126,7 @@ window.switchDrawerTab = function(tabName) {
   }
 };
 
-// ==================== ۳. توابع کمکی و ماژولار ====================
-// تابع هوشمند برای بارگذاری فایل‌های include تودرتو
+// ==================== ۴. توابع کمکی قالب ====================
 async function loadAllNestedIncludes() {
   let pending = document.querySelectorAll("[data-include]");
   while (pending.length > 0) {
@@ -93,12 +140,10 @@ async function loadAllNestedIncludes() {
         el.removeAttribute("data-include");
       }
     }
-    // بررسی مجدد برای فایل‌های لود شده جدید که خودشان data-include دارند
     pending = document.querySelectorAll("[data-include]");
   }
 }
 
-// رفتارهای متحرک صفحه اصلی (تایپ خودکار و FAQ)
 function initDynamicFeatures() {
   const target = document.getElementById("typeTarget");
   if (target) {
@@ -122,7 +167,6 @@ function initDynamicFeatures() {
   if (activeFaq) activeFaq.style.maxHeight = activeFaq.scrollHeight + "px";
 }
 
-// باز و بسته شدن سوالات متداول
 window.toggleFaq = function(btn) {
   const item = btn.parentElement;
   const ans = item.querySelector(".faq-a");
@@ -139,7 +183,6 @@ window.toggleFaq = function(btn) {
   }
 };
 
-// فیلتر دسته‌بندی پروژه‌ها در صفحه نمونه‌کار
 window.filterProjects = function(cat, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
