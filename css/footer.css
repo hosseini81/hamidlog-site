@@ -101,244 +101,252 @@
 .token-kw { color: #c084fc; font-weight: 700; }
 .token-comment { color: #475569; font-style: italic; }
 
-/* ==================== استیج شناور تعقیب و گریز ==================== */
+/* ==================== استیج تعقیب و گریز شطرنجی ==================== */
 .chase-stage {
   position: absolute;
-  top: 110px;
+  top: 100px;
   left: 0;
-  width: 100%;
-  height: 180px;
+  right: 0;
+  bottom: 40px;
   pointer-events: none;
-  z-index: 999;
-  overflow: visible;
+  z-index: 20;
+  overflow: hidden;
 }
 
-.chase-actor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  will-change: transform;
-  transform: translate(-300px, 40px);
-  pointer-events: none;
-  transition: none !important;
-}
-
-.actor-label {
-  font-size: 10px;
-  font-family: monospace;
-  padding: 1px 6px;
-  border-radius: 4px;
-  margin-top: 4px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-/* ۱. استایل و حرکات بدنه ویروس */
-.actor-virus .actor-label {
-  background: rgba(239, 68, 68, 0.25);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-}
-
-.virus-body {
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 65%, #7f1d1d 100%);
-  border-radius: 45% 55% 50% 50% / 50% 45% 55% 50%;
+/* ستون‌های فوتر نباید زیر کاراکترها پنهان شوند */
+.footer-nav-zone {
   position: relative;
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.9), inset 0 0 6px #fca5a5;
-  animation: virusWobble 0.25s infinite alternate;
+  z-index: 25;
 }
 
-@keyframes virusWobble {
-  0% { transform: scale(1) rotate(-8deg); border-radius: 45% 55% 50% 50%; }
-  100% { transform: scale(1.1) rotate(8deg); border-radius: 55% 45% 55% 45%; }
-}
-
-.virus-eye {
+/* کاراکترهای شطرنجی */
+.grid-actor {
   position: absolute;
-  top: 10px;
-  width: 7px;
-  height: 9px;
-  background: #fff;
-  border-radius: 50%;
-}
-.virus-eye::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 4px;
-  height: 5px;
-  background: #000;
-  border-radius: 50%;
-}
-.virus-eye.left { left: 8px; }
-.virus-eye.right { right: 8px; }
-
-.virus-mouth {
-  position: absolute;
-  bottom: 7px;
-  left: 11px;
-  width: 14px;
-  height: 5px;
-  background: #450a0a;
-  border-radius: 0 0 10px 10px;
-}
-
-/* ۲. استایل و شیلد لیزری آنتی‌ویروس */
-.actor-antivirus .actor-label {
-  background: rgba(14, 165, 233, 0.25);
-  color: #38bdf8;
-  border: 1px solid rgba(14, 165, 233, 0.5);
-  box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
-}
-
-.shield-body {
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 65%, #0369a1 100%);
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.9);
-  border: 2px solid #bae6fd;
+  will-change: transform;
+  transform: translate(-100px, -100px);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  pointer-events: none;
+}
+
+/* ۱. طراحی کاراکتر ویروس شبیه آیکون Claude */
+.claude-body {
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 35%, #ea580c 0%, #c2410c 60%, #9a3412 100%);
+  border-radius: 40% 60% 65% 35% / 50% 45% 55% 50%;
+  box-shadow: 0 0 12px rgba(234, 88, 12, 0.7), inset 0 0 4px #fed7aa;
   position: relative;
-  animation: shieldSpin 1.5s linear infinite;
+  animation: claudeWobble 0.3s infinite alternate;
 }
 
-@keyframes shieldSpin {
-  0% { transform: scale(0.98); }
-  50% { transform: scale(1.08); }
-  100% { transform: scale(0.98); }
+@keyframes claudeWobble {
+  0% { transform: scale(0.96) rotate(-4deg); border-radius: 40% 60% 65% 35%; }
+  100% { transform: scale(1.04) rotate(4deg); border-radius: 55% 45% 40% 60%; }
 }
 
-.shield-core { font-size: 18px; }
-
-.laser-scanner {
+.claude-face {
   position: absolute;
-  right: 95%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 45px;
-  height: 3px;
-  background: linear-gradient(to left, #38bdf8, rgba(56, 189, 248, 0));
-  box-shadow: 0 0 10px #38bdf8;
-}
-
-/* استایل عمومی ستون‌های فوتر */
-.footer-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 38px 20px 24px;
-  display: grid;
-  grid-template-columns: 1.6fr 1fr 1.2fr 1.3fr;
-  gap: 32px;
-  position: relative;
-  z-index: 5;
-}
-
-.footer-brand-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.brand-cube { font-size: 20px; }
-.footer-brand h3 { color: #f8fafc; font-size: 16px; font-weight: 900; margin: 0; }
-.footer-bio { font-size: 11px; line-height: 1.9; color: #94a3b8; margin-bottom: 16px; text-align: justify; }
-
-.footer-live-badge {
-  display: inline-flex;
+  inset: 0;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #34d399;
-  position: relative;
+  justify-content: center;
 }
 
-.pulse-core { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; z-index: 2; }
-.pulse-ring {
+.claude-eye {
   position: absolute;
-  right: 11px;
-  width: 9px;
-  height: 9px;
+  top: 7px;
+  width: 4px;
+  height: 6px;
+  background: #fff;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.6);
-  animation: continuousPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-  z-index: 1;
 }
-@keyframes continuousPulse {
-  0% { transform: scale(0.9); opacity: 0.9; }
-  70% { transform: scale(2.6); opacity: 0; }
-  100% { transform: scale(2.6); opacity: 0; }
-}
-
-.footer-col h4 {
-  color: #f8fafc;
-  font-size: 13px;
-  font-weight: 800;
-  margin-bottom: 14px;
-  position: relative;
-  padding-bottom: 8px;
-}
-.footer-col h4::after {
+.claude-eye.eye-l { left: 6px; }
+.claude-eye.eye-r { right: 6px; }
+.claude-eye::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 24px;
-  height: 2px;
-  background: var(--primary);
-  border-radius: 2px;
+  top: 2px;
+  left: 1px;
+  width: 2px;
+  height: 3px;
+  background: #000;
+  border-radius: 50%;
 }
 
-.footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-.footer-links a {
-  color: #94a3b8;
-  text-decoration: none;
-  font-size: 11px;
-  display: inline-block;
-  transition: all 0.2s ease;
+.claude-mouth {
+  position: absolute;
+  bottom: 6px;
+  width: 8px;
+  height: 3px;
+  background: #431407;
+  border-radius: 0 0 6px 6px;
+  transition: all 0.2s;
+}
+
+/* حالت قهقهه ویروس */
+.virus-claude.laughing .claude-mouth {
+  height: 7px;
+  border-radius: 50%;
+  background: #7c2d12;
+  border: 1px solid #fff;
+}
+
+/* حالت وحشت ویروس */
+.virus-claude.panic .claude-body {
+  background: radial-gradient(circle, #dc2626, #991b1b);
+  box-shadow: 0 0 16px #ef4444;
+}
+.virus-claude.panic .claude-eye { height: 7px; width: 6px; }
+.virus-claude.panic .claude-mouth { width: 10px; height: 8px; border-radius: 50%; }
+
+/* ۲. طراحی کاراکتر آنتی‌ویروس سایبر */
+.defender-body {
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 35%, #0284c7 0%, #0369a1 70%, #075985 100%);
+  border-radius: 8px;
+  border: 1.5px solid #7dd3fc;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.8);
   position: relative;
-}
-.footer-links a:hover {
-  color: var(--accent);
-  transform: translateX(-4px);
-}
-
-.contact-items li { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; }
-.icon-bubble { font-size: 13px; }
-
-.footer-bottom {
-  border-top: 1px solid rgba(51, 65, 85, 0.6);
-  background: rgba(15, 23, 42, 0.95);
-  padding: 16px 20px;
-}
-
-.footer-bottom-inner {
-  max-width: 1100px;
-  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 10px;
-  color: #64748b;
-  flex-wrap: wrap;
-  gap: 8px;
+  justify-content: center;
 }
-.footer-tagline { color: #475569; }
 
-@media (max-width: 850px) {
-  .footer-container { grid-template-columns: 1fr 1fr; gap: 24px; }
+.scanner-visor {
+  width: 18px;
+  height: 10px;
+  background: #0f172a;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 2px;
+  border: 1px solid #38bdf8;
 }
-@media (max-width: 550px) {
-  .footer-container { grid-template-columns: 1fr; padding: 28px 16px 20px; }
-  .footer-bottom-inner { flex-direction: column; text-align: center; gap: 6px; }
+
+.visor-eye {
+  width: 3px;
+  height: 4px;
+  background: #38bdf8;
+  border-radius: 2px;
+  box-shadow: 0 0 4px #38bdf8;
+}
+
+.defender-antenna {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 5px;
+  background: #7dd3fc;
+}
+.defender-antenna::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  background: #38bdf8;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+/* حالت تعجب و سوالی آنتی‌ویروس */
+.defender-bot.confused .scanner-visor {
+  border-color: #facc15;
+}
+.defender-bot.confused .visor-eye {
+  background: #facc15;
+}
+
+/* حالت شکار و خشم آنتی‌ویروس */
+.defender-bot.hunter .scanner-visor {
+  background: #7f1d1d;
+  border-color: #ef4444;
+}
+.defender-bot.hunter .visor-eye {
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+/* حباب دیالوگ */
+.actor-bubble {
+  position: absolute;
+  top: -18px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
+  font-family: monospace;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.2s ease;
+}
+.actor-bubble.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ۳. ویروس‌های کوچک تعاملی و قابل کلیک */
+.mini-bug {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 30;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+.mini-bug:hover {
+  transform: scale(1.35);
+}
+
+.mini-bug-body {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #a855f7 0%, #7e22ce 70%, #581c87 100%);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
+  animation: bugFloat 1.8s ease-in-out infinite alternate;
+}
+@keyframes bugFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+.mini-bug-eye {
+  position: absolute;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  background: #fef08a;
+  border-radius: 50%;
+}
+.mini-bug-eye.l { left: 4px; }
+.mini-bug-eye.r { right: 4px; }
+
+/* انیمیشن ترکیدن جذاب ویروس کوچک */
+.mini-bug.popping {
+  pointer-events: none;
+  animation: bugExplode 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes bugExplode {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(2.2); opacity: 0.8; filter: brightness(2); }
+  100% { transform: scale(3.5); opacity: 0; filter: blur(4px); }
 }
