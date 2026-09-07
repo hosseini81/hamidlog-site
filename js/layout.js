@@ -56,11 +56,56 @@ document.addEventListener("DOMContentLoaded", async () => {
   // هـ) اجرای رفتارهای متحرک صفحه اصلی
   initDynamicFeatures();
 
-  // و) اعلام پایان لود کامل تمام بخش‌ها
+  // و) راه‌اندازی ترنزیشن نرم جابه‌جایی بین صفحات
+  initPageTransitions();
+
+  // ز) اعلام پایان لود کامل تمام بخش‌ها
   window.dispatchEvent(new Event("allModulesLoaded"));
 });
 
-// ==================== ۲. حفظ نشست کاربر و به‌روزرسانی هدر در کل سایت ====================
+// رفع مشکل گیر کردن کلاس خروج هنگام زدن دکمه Back مرورگر (bfcache)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    document.body.classList.remove("page-leaving");
+  }
+});
+
+// ==================== ۲. ترنزیشن نرم جابه‌جایی بین صفحات ====================
+function initPageTransitions() {
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (!link) return;
+
+    const href = link.getAttribute("href");
+    const target = link.getAttribute("target");
+
+    // نادیده گرفتن لینک‌های نامربوط، پاپ‌آپ‌ها، تماس و تب‌های جدید
+    if (
+      !href ||
+      href.startsWith("#") ||
+      href.startsWith("tel:") ||
+      href.startsWith("mailto:") ||
+      href.startsWith("javascript:") ||
+      target === "_blank" ||
+      e.ctrlKey ||
+      e.metaKey ||
+      e.shiftKey
+    ) {
+      return;
+    }
+
+    // هدایت نرم فقط برای لینک‌های صفحات داخلی پروژه
+    if (href.endsWith(".html") || href === "/" || href.startsWith("./") || href.startsWith("/")) {
+      e.preventDefault();
+      document.body.classList.add("page-leaving");
+      setTimeout(() => {
+        window.location.href = href;
+      }, 190);
+    }
+  });
+}
+
+// ==================== ۳. حفظ نشست کاربر و به‌روزرسانی هدر در کل سایت ====================
 function syncGlobalUserState() {
   let user = null;
   try {
@@ -103,10 +148,9 @@ function syncGlobalUserState() {
   }
 }
 
-// در دسترس قرار دادن تابع برای صدا زدن پس از لاگین/خروج
 window.syncGlobalUserState = syncGlobalUserState;
 
-// ==================== ۳. سوئیچر تب‌های منوی کشویی موبایل ====================
+// ==================== ۴. سوئیچر تب‌های منوی کشویی موبایل ====================
 window.switchDrawerTab = function(tabName) {
   const tabPages = document.getElementById("drawerTabPages");
   const tabSocials = document.getElementById("drawerTabSocials");
@@ -126,7 +170,7 @@ window.switchDrawerTab = function(tabName) {
   }
 };
 
-// ==================== ۴. توابع کمکی قالب ====================
+// ==================== ۵. توابع کمکی قالب ====================
 async function loadAllNestedIncludes() {
   let pending = document.querySelectorAll("[data-include]");
   while (pending.length > 0) {
