@@ -1,6 +1,6 @@
 // ==================== مدیریت محصولات دانلودی و تحویل امن فایل ====================
 
-// رندر فروشگاه محصولات دانلودی
+// رندر فروشگاه محصولات دانلودی در تب دوم
 function renderShopProducts(products) {
   const container = document.getElementById('shopProductsGrid');
   if (!container) return;
@@ -8,7 +8,7 @@ function renderShopProducts(products) {
 
   const prods = products || [];
   if (prods.length === 0) {
-    container.innerHTML = '<div style="color:#64748b; padding:15px; grid-column: 1/-1;">محصول دانلودی در شیت ثبت نشده است.</div>';
+    container.innerHTML = '<div style="color:#64748b; padding:15px; grid-column: 1/-1; text-align:center;">محصول دانلودی فعالی یافت نشد.</div>';
     return;
   }
 
@@ -21,7 +21,7 @@ function renderShopProducts(products) {
             <span>${p.title}</span>
             <span class="badge badge-pkg">نسخه ${p.version}</span>
           </div>
-          <div class="package-card-desc">فایل دانلودی با دسترسی مادام‌العمر در پنل کاربری</div>
+          <div class="package-card-desc">فایل دانلودی با دسترسی مادام‌العمر و پایدار در پنل کاربری</div>
           <div style="font-size:14px; font-weight:800; color:#059669; margin:8px 0;">
             ${Number(p.price).toLocaleString('fa-IR')} تومان
           </div>
@@ -34,47 +34,28 @@ function renderShopProducts(products) {
   });
 }
 
-// خرید مستقیم محصول دانلودی و بردن به فاکتور
+// خرید مستقیم محصول دانلودی و انتقال مستقیم به صفحه تسویه حساب (checkout.html)
 window.buyProductNow = function(prodId) {
   const prods = (typeof appData !== 'undefined' && appData.downloadProducts) ? appData.downloadProducts : [];
   const prod = prods.find(p => String(p.id).trim() === String(prodId).trim());
   if (!prod) return showCustomAlert('خطا', 'محصول مورد نظر یافت نشد.');
 
-  if (typeof resetFormForNewOrder === "function") resetFormForNewOrder();
-
-  selectedPackage = {
-    id: prod.id,
-    title: prod.title + ' [نسخه ' + prod.version + ']',
-    desc: 'محصول دانلودی با تحویل آنی در پنل کاربری',
-    services: [],
-    discount: 0,
-    days: 0
+  const downloadOrder = {
+    packageName: `${prod.title} [نسخه ${prod.version}]`,
+    pkgBaseSum: Number(prod.price) || 0,
+    discountPercent: 0,
+    deductedSum: 0,
+    finalPriceNumeric: Number(prod.price) || 0,
+    totalDaysNumeric: 0,
+    addedServicesSummary: ['محصول دانلودی - تحویل آنی فایل'],
+    deductedServicesSummary: []
   };
-  pkgBaseSum = prod.price;
-  calculatedFinalPrice = prod.price;
-  calculatedFinalDays = 0;
-  calculatedDeductedSum = 0;
 
-  switchNavTab('tabOrder');
-  goStep(3);
-
-  const kpiTot = document.getElementById('kpiTotal');
-  if (kpiTot) kpiTot.textContent = prod.price.toLocaleString('fa-IR') + ' تومان';
-  const kpiDays = document.getElementById('kpiDays');
-  if (kpiDays) kpiDays.textContent = 'آنی';
-
-  const listEl = document.getElementById('orderItemsSummaryList');
-  if (listEl) {
-    listEl.innerHTML = `
-      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px; font-size:11px;">
-        📦 <strong>سفارش دانلودی:</strong> ${prod.title} (نسخه ${prod.version}) <br>
-        💳 <strong>مبلغ:</strong> ${Number(prod.price).toLocaleString('fa-IR')} تومان
-      </div>
-    `;
-  }
+  sessionStorage.setItem("pending_order_data", JSON.stringify(downloadOrder));
+  window.location.href = "checkout.html";
 };
 
-// رندر محصولات دانلودی خریداری‌شده در داشبورد
+// رندر محصولات دانلودی خریداری‌شده در داشبورد کاربری
 function renderUserDownloads(downloads) {
   const dlContainer = document.getElementById('userPurchasedDownloadsList');
   if (!dlContainer) return;
@@ -100,7 +81,7 @@ function renderUserDownloads(downloads) {
   });
 }
 
-// دانلود امن
+// درخواست لینک دانلود امن فایل
 window.downloadProductSecurely = async function(productId) {
   if (!currentUser || !currentUser.phone) {
     return showCustomAlert('نیاز به ورود', 'لطفاً ابتدا وارد حساب کاربری شوید.');
