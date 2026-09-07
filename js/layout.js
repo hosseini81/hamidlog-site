@@ -1,33 +1,79 @@
-document.addEventListener("DOMContentLoaded", () => {
-  Promise.all([
-    fetch("components/header.html").then(res => res.text()),
-    fetch("components/footer.html").then(res => res.text())
-  ])
-  .then(([headerHtml, footerHtml]) => {
-    const headerSlot = document.getElementById("header-slot");
-    const footerSlot = document.getElementById("footer-slot");
-
-    if (headerSlot) headerSlot.innerHTML = headerHtml;
-    if (footerSlot) footerSlot.innerHTML = footerHtml;
-
-    // رویداد منوی همبرگری موبایل
-    const burger = document.getElementById("hamburgerBtn");
-    const drawer = document.getElementById("mobileDrawer");
-    if (burger && drawer) {
-      burger.addEventListener("click", () => {
-        burger.classList.toggle("open");
-        drawer.classList.toggle("show");
-      });
+document.addEventListener("DOMContentLoaded", async () => {
+  // ۱. بارگذاری هدر و فوتر
+  const loadSlot = async (id, file) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const res = await fetch(file);
+      el.innerHTML = await res.text();
     }
+  };
+  await loadSlot("header-slot", "components/header.html");
+  await loadSlot("footer-slot", "components/footer.html");
 
-    // شناسایی صفحه فعلی و اکتیو کردن تب مربوطه در منو
-    const path = window.location.pathname;
-    let page = path.split("/").pop().replace(".html", "");
-    if (!page || page === "") page = "index";
+  // ۲. بارگذاری قطعات اختصاصی صفحه (مانند بخش‌های صفحه اصلی)
+  const includes = document.querySelectorAll("[data-include]");
+  for (const el of includes) {
+    const file = el.getAttribute("data-include");
+    const res = await fetch(file);
+    el.innerHTML = await res.text();
+  }
 
-    document.querySelectorAll(`[data-page="${page}"]`).forEach(el => {
-      el.classList.add("active");
+  // ۳. فعال‌سازی منوی همبرگری موبایل
+  const burger = document.getElementById("hamburgerBtn");
+  const drawer = document.getElementById("mobileDrawer");
+  if (burger && drawer) {
+    burger.addEventListener("click", () => {
+      burger.classList.toggle("open");
+      drawer.classList.toggle("show");
     });
-  })
-  .catch(err => console.error("Error loading components:", err));
+  }
+
+  // ۴. اکتیو کردن تب صفحه در منو
+  const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
+  document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
+
+  // ۵. راه‌اندازی اسکریپت‌های پویا پس از لود کامل HTMLها
+  initDynamicFeatures();
 });
+
+function initDynamicFeatures() {
+  // افکت تایپ
+  const target = document.getElementById("typeTarget");
+  if (target) {
+    const phrases = ["فروشگاه‌های آنلاین ووکامرس", "وب‌سایت‌های شرکتی مدرن", "سامانه‌های متصل به دیتابیس"];
+    let pIdx = 0, chIdx = 0, isDel = false;
+    function runType() {
+      const cur = phrases[pIdx];
+      if (isDel) {
+        target.textContent = cur.substring(0, chIdx--);
+        if (chIdx < 0) { isDel = false; pIdx = (pIdx + 1) % phrases.length; setTimeout(runType, 350); return; }
+      } else {
+        target.textContent = cur.substring(0, chIdx++);
+        if (chIdx > cur.length) { isDel = true; setTimeout(runType, 1800); return; }
+      }
+      setTimeout(runType, isDel ? 30 : 65);
+    }
+    runType();
+  }
+
+  // تنظیم ارتفاع اولیه FAQ باز
+  const activeFaq = document.querySelector(".faq-item.active .faq-a");
+  if (activeFaq) activeFaq.style.maxHeight = activeFaq.scrollHeight + "px";
+}
+
+// تابع سراسری باز و بسته شدن سوالات متداول
+window.toggleFaq = function(btn) {
+  const item = btn.parentElement;
+  const ans = item.querySelector(".faq-a");
+  const isOpen = item.classList.contains("active");
+
+  document.querySelectorAll(".faq-item").forEach(i => {
+    i.classList.remove("active");
+    i.querySelector(".faq-a").style.maxHeight = null;
+  });
+
+  if (!isOpen) {
+    item.classList.add("active");
+    ans.style.maxHeight = ans.scrollHeight + "px";
+  }
+};
