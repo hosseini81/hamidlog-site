@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسویه حساب و صدور فاکتور رسمی | استودیو حمیدرضا</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .checkout-wrap {
+      max-width: 880px;
+      margin: 10px auto;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+    }
+    .checkout-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+    }
+    .checkout-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--bg-dark);
+      margin-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+    @media (max-width: 768px) {
+      .checkout-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- هدر سایت -->
+  <div id="header-slot"></div>
+
+  <!-- بدنه اختصاصی تسویه حساب -->
+  <main>
+    <!-- پاپ‌آپ سیستم -->
+    <div id="customAlert" class="custom-alert-overlay">
+      <div class="custom-alert-card">
+        <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
+        <div id="customAlertTitle" class="custom-alert-title">پیام سیستم</div>
+        <div id="customAlertText" class="custom-alert-text"></div>
+        <button type="button" class="btn-main" onclick="closeCustomAlert()" style="width: 100%;">متوجه شدم</button>
+      </div>
+    </div>
+
+    <div class="checkout-wrap">
+      
+      <!-- ستون راست: فرم کارفرما، کوپن و نحوه تسویه -->
+      <div class="checkout-card" id="checkoutFormBox">
+        <div class="checkout-title">📝 مشخصات کارفرما و صدور صورت‌حساب</div>
+
+        <div class="customer-inputs-box">
+          <div class="inputs-head">
+            <span>اطلاعات تماس مستقیم:</span>
+            <span id="autoFilledBadge" style="display:none;" class="badge-status-green">✔ تکمیل از حساب</span>
+          </div>
+          <input type="text" id="custName" placeholder="نام و نام خانوادگی کارفرما *" required />
+          <input type="tel" id="custPhone" dir="ltr" placeholder="شماره همراه مستقیم (09xxxxxxxxx) *" pattern="09[0-9]{9}" required />
+        </div>
+
+        <div class="coupon-action-row" style="margin-top:14px;">
+          <input type="text" id="couponInput" placeholder="کد تخفیف (مثال: NOROOZ)" />
+          <button type="button" class="btn-coupon-apply" onclick="applyCouponInCheckout()">اعمال کد</button>
+        </div>
+        <div id="couponMessage" class="coupon-feedback-msg"></div>
+
+        <!-- انتخاب پلن تسویه -->
+        <div class="payment-method-wrap" style="margin-top:18px;">
+          <div class="pay-title">روش تسویه حساب:</div>
+          
+          <label class="pay-choice-card" onclick="onCheckoutPlanChanged('full')">
+            <input type="radio" name="payType" value="full" checked />
+            <div>
+              <strong>پرداخت نقدی (با ۵٪ تخفیف تسویه کامل)</strong>
+              <div id="fullPaySummary" class="pay-subtext-green">در حال محاسبه...</div>
+            </div>
+          </label>
+
+          <label class="pay-choice-card" onclick="onCheckoutPlanChanged('installments')">
+            <input type="radio" name="payType" value="installments" />
+            <div>
+              <strong>پرداخت اقساطی ۳ مرحله‌ای (۵٪ کارمزد)</strong>
+              <div id="installmentPaySummary" class="pay-subtext-gray">قسط اول (۴۰٪ پیش‌پرداخت) + ۲ قسط ماهانه</div>
+            </div>
+          </label>
+        </div>
+
+        <button type="button" class="btn-main" id="submitBtn" onclick="submitFinalCheckoutOrder()" style="width:100%; padding:14px; font-size:13px; margin-top:10px;">
+          💳 صدور پیش‌فاکتور و اتصال به درگاه شاپرک
+        </button>
+      </div>
+
+      <!-- ستون چپ: پیش‌نمایش پیش‌فاکتور نهایی -->
+      <div class="checkout-card">
+        <div class="checkout-title">🧾 اقلام و فاکتور انتخابی</div>
+
+        <div class="total-highlight-box">
+          <div class="tot-label">مبلغ قابل پرداخت فاکتور</div>
+          <div class="tot-value" id="chkFinalPrice">۰ تومان</div>
+        </div>
+
+        <div class="order-items-scrollbox" style="max-height:260px;">
+          <div id="chkItemsList">در حال فراخوانی سبد انتخاب‌ها...</div>
+        </div>
+
+        <div style="margin-top:14px; text-align:center;">
+          <a href="order.html" style="font-size:11px; color:#2563eb; text-decoration:none; font-weight:700;">
+            ✏ ویرایش یا تغییر اقلام انتخابی ➔
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- کادر موفقیت پس از ثبت فاکتور -->
+    <div id="orderSuccessWrap" style="display:none; max-width:540px; margin:20px auto;" class="checkout-card">
+      <h3 style="color:#16a34a; font-size:16px; margin-bottom:8px; text-align:center;">✅ فاکتور شما صادر شد</h3>
+      <div style="font-size:12px; color:#475569; margin-bottom:14px; text-align:center;">
+        کد پیگیری: <strong id="successTrackCodeText">---</strong>
+      </div>
+      <a href="#" id="successGatewayLink" target="_blank" class="btn-main" style="display:block; text-align:center; padding:14px; font-size:13px;">
+        💳 اتصال به درگاه شاپرک
+      </a>
+      <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+        <a href="#" id="successInvoiceLink" target="_blank" class="btn-step-prev" style="text-align:center; text-decoration:none;">
+          📄 دریافت نسخه PDF پیش‌فاکتور
+        </a>
+        <a href="order.html" class="btn-step-prev" style="text-align:center; text-decoration:none;">
+          ➕ ثبت سفارش جدید
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- فوتر سایت -->
+  <div id="footer-slot"></div>
+
+  <!-- اسکریپت‌ها -->
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>
