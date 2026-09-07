@@ -2,69 +2,59 @@
 let currentUser = null;
 let isRegisterMode = false;
 
+// آدرس وب‌اپلیکیشن شیت (در صورت عدم تعریف قبلی)
+const SCRIPT_URL = typeof SCRIPT_API_URL !== 'undefined' 
+  ? SCRIPT_API_URL 
+  : "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
+
+async function sendUserPanelRequest(payloadData) {
+  const response = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payloadData)
+  });
+  return await response.json();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  initUserAuthUI();
+  initUserSession();
 });
 
-// شنیدن رویداد اتمام بارگذاری هدر و لایوت
 window.addEventListener("allModulesLoaded", () => {
-  initUserAuthUI();
+  initUserSession();
 });
 
-function initUserAuthUI() {
+function initUserSession() {
   try {
-    const savedUser = localStorage.getItem('site_user_auth');
-    if (savedUser) {
-      currentUser = JSON.parse(savedUser);
+    const saved = localStorage.getItem('site_user_auth');
+    if (saved) {
+      currentUser = JSON.parse(saved);
     }
   } catch (e) {
     console.warn(e);
   }
 
-  updateGlobalHeaderUserUI();
+  if (typeof syncGlobalUserState === "function") {
+    syncGlobalUserState();
+  }
 
-  // اگر در صفحه user.html بودیم
-  if (document.getElementById("authBox") && document.getElementById("userDashboard")) {
-    if (currentUser) {
+  // اگر در صفحه user.html هستیم
+  const authBox = document.getElementById("authBox");
+  const userDash = document.getElementById("userDashboard");
+
+  if (authBox && userDash) {
+    if (currentUser && currentUser.phone) {
+      authBox.style.display = "none";
+      userDash.style.display = "block";
       loadDashboard();
     } else {
-      document.getElementById("authBox").style.display = "block";
-      document.getElementById("userDashboard").style.display = "none";
+      authBox.style.display = "block";
+      userDash.style.display = "none";
     }
   }
 }
 
-// به‌روزرسانی همزمان هدر دسکتاپ و نوار پایین موبایل
-function updateGlobalHeaderUserUI() {
-  const nameEl = document.getElementById('headerUserName');
-  const statusEl = document.getElementById('headerUserStatus');
-  const avatarImg = document.getElementById('headerUserAvatar');
-  const avatarPlaceholder = document.getElementById('headerUserPlaceholder');
-  const headerBtn = document.getElementById('headerUserBtn');
-  const bottomLabel = document.getElementById('bottomNavUserLabel');
-
-  if (currentUser) {
-    if (nameEl) nameEl.textContent = currentUser.name;
-    if (statusEl) statusEl.textContent = "پنل کاربری فعال";
-    if (headerBtn) headerBtn.classList.add("logged-in");
-    if (bottomLabel) bottomLabel.textContent = currentUser.name.split(" ")[0];
-
-    if (currentUser.avatar && avatarImg) {
-      avatarImg.src = currentUser.avatar;
-      avatarImg.style.display = "block";
-      if (avatarPlaceholder) avatarPlaceholder.style.display = "none";
-    }
-  } else {
-    if (nameEl) nameEl.textContent = "حساب کاربری";
-    if (statusEl) statusEl.textContent = "ورود / ثبت‌نام";
-    if (headerBtn) headerBtn.classList.remove("logged-in");
-    if (bottomLabel) bottomLabel.textContent = "حساب من";
-    if (avatarImg) avatarImg.style.display = "none";
-    if (avatarPlaceholder) avatarPlaceholder.style.display = "flex";
-  }
-}
-
-// سوئیچ بین حالت ورود و ثبت‌نام
+// سوئیچ ورود / ثبت‌نام
 window.toggleAuthMode = function() {
   isRegisterMode = !isRegisterMode;
   const titleEl = document.getElementById('authTitle');
@@ -89,10 +79,13 @@ window.toggleAuthMode = function() {
 };
 
 window.submitAuth = async function() {
-  const phone = document.getElementById('authPhone').value.trim();
-  const pass = document.getElementById('authPass').value.trim();
-  const nameEl = document.getElementById('authName');
-  const name = nameEl ? nameEl.value.trim() : '';
+  const phoneInput = document.getElementById('authPhone');
+  const passInput = document.getElementById('authPass');
+  const nameInput = document.getElementById('authName');
+
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+  const pass = passInput ? passInput.value.trim() : '';
+  const name = nameInput ? nameInput.value.trim() : '';
 
   if (!phone || !pass || (isRegisterMode && !name)) {
     return showCustomAlert('ورودی ناقص', 'تمامی فیلدها الزامی است.');
@@ -100,10 +93,10 @@ window.submitAuth = async function() {
 
   const btn = document.getElementById('authSubmitBtn');
   btn.disabled = true;
-  btn.textContent = 'در حال پردازش...';
+  btn.textContent = 'در حال ارتباط با سرور...';
 
   try {
-    const res = await sendToAppScript({
+    const res = await sendUserPanelRequest({
       action: 'auth',
       authType: isRegisterMode ? 'register' : 'login',
       phone: phone,
@@ -111,58 +104,71 @@ window.submitAuth = async function() {
       name: name
     });
 
-    if (res.success) {
+    if (res && res.success) {
       currentUser = res.user;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-      updateGlobalHeaderUserUI();
+      
+      if (typeof syncGlobalUserState === "function") {
+        syncGlobalUserState();
+      }
+
+      const authBox = document.getElementById('authBox');
+      const userDash = document.getElementById('userDashboard');
+      if (authBox) authBox.style.display = 'none';
+      if (userDash) userDash.style.display = 'block';
+
       loadDashboard();
     } else {
       btn.disabled = false;
       btn.textContent = isRegisterMode ? 'ثبت‌نام و ایجاد حساب' : 'ورود به حساب کاربری';
-      showCustomAlert('خطا در احراز هویت', res.message);
+      showCustomAlert('خطا', res ? res.message : 'اطلاعات وارد شده صحیح نیست.');
     }
   } catch (err) {
     btn.disabled = false;
     btn.textContent = isRegisterMode ? 'ثبت‌نام و ایجاد حساب' : 'ورود به حساب کاربری';
-    showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور.');
+    showCustomAlert('خطا در ارتباط', 'خطا در ارتباط با سرور ابری گوگل.');
   }
 };
 
-// بارگذاری داشبورد
+// دریافت اطلاعات سفارش‌ها، دانلودها و وضعیت اقساط
 async function loadDashboard() {
-  document.getElementById('authBox').style.display = 'none';
-  document.getElementById('userDashboard').style.display = 'block';
-  document.getElementById('dashUserName').textContent = currentUser.name;
-  document.getElementById('dashUserPhone').textContent = currentUser.phone;
+  if (!currentUser || !currentUser.phone) return;
 
-  // مقداردهی فیلدهای ویرایش هویت
+  const dashName = document.getElementById('dashUserName');
+  const dashPhone = document.getElementById('dashUserPhone');
   const editName = document.getElementById('editProfileName');
   const editPhone = document.getElementById('editProfilePhone');
-  if (editName) editName.value = currentUser.name;
-  if (editPhone) editPhone.value = currentUser.phone;
+  const avatarImg = document.getElementById('dashAvatarImg');
 
-  if (currentUser.avatar) {
-    document.getElementById('dashAvatarImg').src = currentUser.avatar;
-  }
+  if (dashName) dashName.textContent = currentUser.name || "کاربر گرامی";
+  if (dashPhone) dashPhone.textContent = currentUser.phone || "";
+  if (editName) editName.value = currentUser.name || "";
+  if (editPhone) editPhone.value = currentUser.phone || "";
+  if (currentUser.avatar && avatarImg) avatarImg.src = currentUser.avatar;
+
+  const dlContainer = document.getElementById('userPurchasedDownloadsList');
+  const ordersContainer = document.getElementById('userProjectsList');
 
   try {
-    const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
-    const data = res.data;
+    const res = await sendUserPanelRequest({ action: 'getDashboard', phone: currentUser.phone });
+    
+    // استخراج ایمن داده‌ها از ساختار پاسخ
+    const data = (res && res.data) ? res.data : (res || {});
 
-    if (data && data.avatar) {
+    // به‌روزرسانی آواتار کاربر در صورت وجود
+    if (data.avatar) {
       currentUser.avatar = data.avatar;
-      document.getElementById('dashAvatarImg').src = data.avatar;
+      if (avatarImg) avatarImg.src = data.avatar;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-      updateGlobalHeaderUserUI();
+      if (typeof syncGlobalUserState === "function") syncGlobalUserState();
     }
 
-    // رندر محصولات دانلودی
-    const dlContainer = document.getElementById('userPurchasedDownloadsList');
+    // ۱. رندر تب محصولات دانلودی
     if (dlContainer) {
       dlContainer.innerHTML = '';
-      const downloads = (data && data.purchasedDownloads) ? data.purchasedDownloads : [];
+      const downloads = data.purchasedDownloads || [];
       if (downloads.length === 0) {
-        dlContainer.innerHTML = '<div style="font-size:11px; color:#64748b; padding:16px; background:#f8fafc; border-radius:10px; text-align:center;">هنوز فایل دانلودی خریداری نکرده‌اید.</div>';
+        dlContainer.innerHTML = '<div style="font-size:11px; color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; text-align:center;">هنوز فایل دانلودی خریداری نکرده‌اید.</div>';
       } else {
         downloads.forEach(d => {
           dlContainer.innerHTML += `
@@ -180,63 +186,64 @@ async function loadDashboard() {
       }
     }
 
-    // رندر پروژه‌ها و اقساط
-    const list = document.getElementById('userProjectsList');
-    if (list) {
-      list.innerHTML = '';
-      const orders = (data && data.orders) ? data.orders : [];
+    // ۲. رندر تب پروژه‌ها و اقساط
+    if (ordersContainer) {
+      ordersContainer.innerHTML = '';
+      const orders = data.orders || [];
       if (orders.length === 0) {
-        list.innerHTML = '<div style="color:#64748b; padding:20px; background:#fff; border:1px solid var(--border-color); border-radius:12px; text-align:center;">سفارش فعالی برای شما ثبت نشده است.</div>';
-        return;
-      }
+        ordersContainer.innerHTML = '<div style="color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش ثبت‌شده‌ای با این شماره یافت نشد.</div>';
+      } else {
+        orders.forEach(o => {
+          let stepsHtml = '';
+          const allServices = (o.addedServices && o.addedServices.length > 0) ? o.addedServices : ['بررسی و آماده‌سازی اولیه'];
+          
+          allServices.forEach((item, idx) => {
+            const stepClass = idx === 0 ? 'done' : (idx === 1 ? 'in-progress' : '');
+            const icon = idx === 0 ? '✔' : (idx === 1 ? '⚡' : '⏳');
+            const stateText = idx === 0 ? 'انجام شد' : (idx === 1 ? 'در حال انجام' : 'در نوبت');
+            stepsHtml += `<li class="timeline-item ${stepClass}"><span>${icon} ${item}</span><span>${stateText}</span></li>`;
+          });
 
-      orders.forEach(o => {
-        let stepsHtml = '';
-        const allServices = [...o.addedServices];
-        allServices.forEach((item, idx) => {
-          const stepClass = idx === 0 ? 'done' : (idx === 1 ? 'in-progress' : '');
-          const icon = idx === 0 ? '✔' : (idx === 1 ? '⚡' : '⏳');
-          const stateText = idx === 0 ? 'انجام شد' : (idx === 1 ? 'در حال انجام' : 'در نوبت');
-          stepsHtml += `<li class="timeline-item ${stepClass}"><span>${icon} ${item}</span><span>${stateText}</span></li>`;
+          const hasInstallment = Number(o.remainingAmount) > 0;
+          const installmentSection = hasInstallment ? `
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px; margin-top:10px; font-size:11px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <strong>اقساط باقی‌مانده فاکتور:</strong>
+                <span style="color:#dc2626; font-weight:900;">${Number(o.remainingAmount).toLocaleString('fa-IR')} تومان</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <input type="number" id="pay_amt_${o.trackingCode}" value="${o.remainingAmount}" style="padding:6px; font-size:11px; border:1px solid #cbd5e1; border-radius:6px; width:130px;" />
+                <button type="button" class="btn-main" onclick="payCustomRemaining('${o.trackingCode}')" style="white-space:nowrap; font-size:11px; padding:6px 12px;">پرداخت قسط</button>
+              </div>
+            </div>
+          ` : `<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px; margin-top:8px; font-size:11px; color:#166534; text-align:center;">✔ تمامی اقساط این فاکتور تسویه شده است.</div>`;
+
+          ordersContainer.innerHTML += `
+            <div style="border:1px solid var(--border-color); border-radius:12px; padding:16px; background:#fff; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <strong style="font-size:13px;">${o.packageName}</strong>
+                <span class="badge badge-pkg">${o.trackingCode}</span>
+              </div>
+              <div style="font-size:11px; color:#64748b; margin-bottom:8px;">وضعیت: <strong>${o.projectStatus}</strong></div>
+              <div style="font-size:11px; font-weight:800; color:#334155;">📋 مراحل انجام پروژه:</div>
+              <ul class="timeline-steps-list">${stepsHtml}</ul>
+              ${installmentSection}
+              <div style="margin-top:12px; text-align:left;">
+                <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:10px; text-decoration:none;">📄 دانلود پیش‌فاکتور رسمی</a>
+              </div>
+            </div>
+          `;
         });
-
-        const hasInstallment = o.remainingAmount > 0;
-        const installmentSection = hasInstallment ? `
-          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px; margin-top:10px; font-size:11px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-              <strong>اقساط باقی‌مانده فاکتور:</strong>
-              <span style="color:#dc2626; font-weight:900;">${Number(o.remainingAmount).toLocaleString('fa-IR')} تومان</span>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <input type="number" id="pay_amt_${o.trackingCode}" value="${o.remainingAmount}" style="padding:6px; font-size:11px; border:1px solid #cbd5e1; border-radius:6px;" />
-              <button type="button" class="btn-main" onclick="payCustomRemaining('${o.trackingCode}')" style="white-space:nowrap; font-size:11px; padding:6px 12px;">پرداخت قسط</button>
-            </div>
-          </div>
-        ` : `<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px; margin-top:8px; font-size:11px; color:#166534; text-align:center;">✔ تمامی اقساط این فاکتور تسویه شده است.</div>`;
-
-        list.innerHTML += `
-          <div style="border:1px solid var(--border-color); border-radius:12px; padding:16px; background:#fff; margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <strong style="font-size:13px;">${o.packageName}</strong>
-              <span class="badge badge-pkg">${o.trackingCode}</span>
-            </div>
-            <div style="font-size:11px; color:#64748b; margin-bottom:8px;">وضعیت: <strong>${o.projectStatus}</strong></div>
-            <div style="font-size:11px; font-weight:800; color:#334155;">📋 مراحل انجام پروژه:</div>
-            <ul class="timeline-steps-list">${stepsHtml}</ul>
-            ${installmentSection}
-            <div style="margin-top:12px; text-align:left;">
-              <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:10px; text-decoration:none;">📄 دانلود پیش‌فاکتور رسمی</a>
-            </div>
-          </div>
-        `;
-      });
+      }
     }
+
   } catch (err) {
-    showCustomAlert('خطا', 'خطا در واکشی سوابق.');
+    if (dlContainer) dlContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در واکشی محصولات دانلودی.</div>';
+    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در دریافت لیست سفارش‌ها.</div>';
   }
 }
 
-// سوئیچر تب‌های سه‌گانه داشبورد
+// سوئیچ تب‌های سه‌گانه
 window.switchUserPanelTab = function(tabName) {
   document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.dash-panel-tab').forEach(t => t.classList.remove('active'));
@@ -253,7 +260,7 @@ window.switchUserPanelTab = function(tabName) {
   }
 };
 
-// تغییر نام کاربر
+// ذخیره نام کارفرما
 window.saveUserProfileName = async function() {
   const nameInput = document.getElementById('editProfileName');
   const newName = nameInput ? nameInput.value.trim() : '';
@@ -263,7 +270,7 @@ window.saveUserProfileName = async function() {
   }
 
   try {
-    const res = await sendToAppScript({
+    const res = await sendUserPanelRequest({
       action: 'updateName',
       phone: currentUser.phone,
       name: newName
@@ -273,17 +280,17 @@ window.saveUserProfileName = async function() {
       currentUser.name = newName;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
       document.getElementById('dashUserName').textContent = newName;
-      updateGlobalHeaderUserUI();
-      showCustomAlert('موفقیت‌آمیز', 'نام شما با موفقیت به‌روزرسانی شد.', '✔');
+      if (typeof syncGlobalUserState === "function") syncGlobalUserState();
+      showCustomAlert('موفقیت‌آمیز', 'نام شما با موفقیت ذخیره شد.', '✔');
     } else {
-      showCustomAlert('خطا', res.error || 'خطا در ثبت تغییرات.');
+      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت تغییرات.');
     }
   } catch (err) {
     showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور.');
   }
 };
 
-// تغییر تصویر پروفایل
+// تغییر آواتار
 window.uploadAvatarFile = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -292,12 +299,13 @@ window.uploadAvatarFile = function(event) {
   reader.onload = async function(e) {
     const base64Data = e.target.result;
     try {
-      const res = await sendToAppScript({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
+      const res = await sendUserPanelRequest({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
       if (res && res.success) {
         currentUser.avatar = base64Data;
-        document.getElementById('dashAvatarImg').src = base64Data;
+        const img = document.getElementById('dashAvatarImg');
+        if (img) img.src = base64Data;
         localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-        updateGlobalHeaderUserUI();
+        if (typeof syncGlobalUserState === "function") syncGlobalUserState();
       }
     } catch (err) {
       showCustomAlert('خطا', 'خطا در ذخیره‌سازی نمایه.');
@@ -306,25 +314,25 @@ window.uploadAvatarFile = function(event) {
   reader.readAsDataURL(file);
 };
 
-// دانلود امن
+// دانلود امن فایل
 window.downloadProductSecurely = async function(productId) {
   if (!currentUser || !currentUser.phone) {
-    return showCustomAlert('نیاز به ورود', 'لطفاً وارد حساب کاربری خود شوید.');
+    return showCustomAlert('نیاز به ورود', 'لطفاً وارد حساب کاربری شوید.');
   }
 
   try {
-    const res = await sendToAppScript({ action: 'requestDownload', phone: currentUser.phone, productId: productId });
+    const res = await sendUserPanelRequest({ action: 'requestDownload', phone: currentUser.phone, productId: productId });
     if (res && res.success && res.downloadUrl) {
       window.open(res.downloadUrl, '_blank');
     } else {
-      showCustomAlert('عدم دسترسی', res.error || 'دسترسی برای دانلود این فایل تایید نشد.');
+      showCustomAlert('عدم دسترسی', res ? (res.error || 'دسترسی برای دانلود این فایل تایید نشد.') : 'خطا در دانلود.');
     }
   } catch (err) {
-    showCustomAlert('خطا', 'خطا در دریافت لینک امن.');
+    showCustomAlert('خطا', 'خطا در دریافت لینک امن دانلود.');
   }
 };
 
-// پرداخت اقساط
+// پرداخت قسط
 window.payCustomRemaining = async function(orderCode) {
   const input = document.getElementById('pay_amt_' + orderCode);
   const amount = input ? input.value : 0;
@@ -333,22 +341,25 @@ window.payCustomRemaining = async function(orderCode) {
   }
 
   try {
-    const res = await sendToAppScript({ action: 'payInstallment', orderCode: orderCode, amount: amount, phone: currentUser.phone });
-    if (res.success && res.paymentUrl) {
+    const res = await sendUserPanelRequest({ action: 'payInstallment', orderCode: orderCode, amount: amount, phone: currentUser.phone });
+    if (res && res.success && res.paymentUrl) {
       window.open(res.paymentUrl, '_blank');
     } else {
-      showCustomAlert('خطا در درگاه', res.error);
+      showCustomAlert('خطا در درگاه', res ? res.error : 'خطا در اتصال به بانک.');
     }
   } catch (err) {
     showCustomAlert('خطا', 'عدم امکان اتصال به درگاه.');
   }
 };
 
-// خروج
+// خروج از حساب
 window.logoutUser = function() {
   currentUser = null;
   localStorage.removeItem('site_user_auth');
-  updateGlobalHeaderUserUI();
-  document.getElementById('userDashboard').style.display = 'none';
-  document.getElementById('authBox').style.display = 'block';
+  if (typeof syncGlobalUserState === "function") syncGlobalUserState();
+  
+  const userDash = document.getElementById('userDashboard');
+  const authBox = document.getElementById('authBox');
+  if (userDash) userDash.style.display = 'none';
+  if (authBox) authBox.style.display = 'block';
 };
