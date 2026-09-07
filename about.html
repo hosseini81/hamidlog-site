@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+    }
+
+    body {
+      background: transparent;
+      direction: rtl;
+      padding: 10px 0;
+    }
+
+    .about-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ۱. سربرگ هیرو */
+    .about-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 44px 24px;
+      text-align: center;
+      color: #f8fafc;
+    }
+
+    .about-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .about-hero h1 {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .about-hero h1 span {
+      color: #38bdf8;
+    }
+
+    .about-hero p {
+      font-size: 12px;
+      color: #94a3b8;
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ۲. داستان و رویکرد کاری */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .story-content {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .story-content h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+      position: relative;
+      padding-bottom: 6px;
+    }
+
+    .story-content h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 3px;
+      background: #10b981;
+      border-radius: 2px;
+    }
+
+    .story-content p {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.9;
+      text-align: justify;
+      margin-bottom: 12px;
+    }
+
+    .story-highlights {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .highlight-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .highlight-card:hover {
+      transform: translateX(-4px);
+      border-color: #10b981;
+    }
+
+    .highlight-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .icon-green { background: #ecfdf5; color: #10b981; }
+    .icon-blue { background: #f0f9ff; color: #0284c7; }
+    .icon-amber { background: #fffbeb; color: #f59e0b; }
+
+    .highlight-text h4 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+
+    .highlight-text p {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* ۳. ارزش‌های کاری */
+    .values-wrap {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .values-title {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .values-title h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .values-title p {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .value-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .value-emoji {
+      font-size: 24px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .value-box h4 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .value-box p {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    /* ۴. ابزارها و مهارت‌ها */
+    .skills-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .skills-section h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 14px;
+    }
+
+    .skills-list {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .skill-pill {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    /* ۵. دعوت به اقدام پایانی */
+    .about-cta {
+      background: #f0fdf4;
+      border: 1px dashed #86efac;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .about-cta-text h3 {
+      font-size: 15px;
+      font-weight: 900;
+      color: #166534;
+      margin-bottom: 4px;
+    }
+
+    .about-cta-text p {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .btn-cta-link {
+      background: #10b981;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn-cta-link:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .story-grid {
+        grid-template-columns: 1fr;
+      }
+      .about-hero {
+        padding: 30px 16px;
+      }
+      .about-cta {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="about-wrapper">
+
+    <!-- ۱. سربرگ هیرو -->
+    <div class="about-hero">
+      <span class="about-badge">داستان و نگرش ما</span>
+      <h1>تلفیق تفکر مهندسی با <span>توسعه کاربردی وب</span></h1>
+      <p>ما وب‌سایت‌ها را فقط به عنوان یک صفحه نمایشی نمی‌بینیم؛ بلکه آن‌ها را سامانه‌ای زنده، دقیق و درآمدزا برای کسب‌وکار شما می‌سازیم.</p>
+    </div>
+
+    <!-- ۲. داستان و رویکرد ما -->
+    <div class="story-grid">
+      
+      <div class="story-content">
+        <h2>نگاه ما به طراحی وب چگونه است؟</h2>
+        <p>
+          در دنیای پرهیاهوی اینترنت، داشتن یک وب‌سایت کافی نیست؛ داشتن سایتی کارآمد، بدون کدهای سنگین اضافه و سازگار با نیازهای واقعی مشتری اهمیت دارد. ما در این مجموعه تمرکز خود را روی از میان برداشتن فاصله‌های سنتی و اداری میان برنامه‌نویس و کارفرما گذاشته‌ایم.
+        </p>
+        <p>
+          هدف ما این است که هر شخص یا کسب‌وکاری، چه برای شروع یک فروشگاه تازه، چه برای بهینه‌سازی سرعت و چه برای افزودن امکانات اختصاصی (مانند اتصال خودکار دیتابیس‌ها و درگاه‌های بانکی)، با شفافیت کامل مالی و زمان‌بندی دقیق به نتیجه دلخواه خود برسد.
+        </p>
+      </div>
+
+      <div class="story-highlights">
+        <div class="highlight-card">
+          <div class="highlight-icon icon-green">📐</div>
+          <div class="highlight-text">
+            <h4>نظم ریاضیاتی و معماری تمیز</h4>
+            <p>حل منطقی چالش‌های وب، تفکیک اصولی داده‌ها و پرهیز از افزونه‌های مخرب و سنگین.</p>
+          </div>
+        </div>
+
+        <div class="highlight-card">
+          <div class="highlight-icon icon-blue">⚡</div>
+          <div class="highlight-text">
+            <h4>اتوماسیون و ابزارهای هوشمند</h4>
+            <p>ارتباط زنده بین شیت‌های ابری، صدور خودکار پیش‌فاکتور و وب‌اپلیکیشن‌های سریع.</p>
+          </div>
+        </div>
+
+        <div class="highlight-card">
+          <div class="highlight-icon icon-amber">🤝</div>
+          <div class="highlight-text">
+            <h4>همراهی گام‌به‌گام و صمیمی</h4>
+            <p>پشتیبانی مستقیم بدون اتلاف وقت و پاسخگویی سریع در تلگرام و تلفن.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ۳. ارزش‌های محوری -->
+    <div class="values-wrap">
+      <div class="values-title">
+        <h3>اصول و ارزش‌هایی که به آن متعهدیم</h3>
+        <p>استانداردهایی که در هر خط کد و جزئیات گرافیکی رعایت می‌کنیم</p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-box">
+          <div class="value-emoji">🔍</div>
+          <h4>شفافیت کامل فاکتور</h4>
+          <p>محاسبه زنده هزینه‌ها در سامانه آنلاین؛ هیچ هزینه پنهان یا اعلام نشده‌ای در طول مسیر پروژه وجود ندارد.</p>
+        </div>
+
+        <div class="value-box">
+          <div class="value-emoji">📱</div>
+          <h4>اولویت تجربه کاربری موبایل</h4>
+          <p>بیش از ۸۰ درصد کاربران با موبایل وارد می‌شوند؛ از این رو تایپوگرافی فارسی و ریسپانسیو بودن اولویت اول ماست.</p>
+        </div>
+
+        <div class="value-box">
+          <div class="value-emoji">⏱️</div>
+          <h4>احترام به زمان و تعهد روزشمار</h4>
+          <p>تعیین بازه دقیق اجرا برای هر پکیج و سرویس جانبی و تحویل آن‌تایم پروژه مطابق قرارداد.</p>
+        </div>
+
+        <div class="value-box">
+          <div class="value-emoji">🛡️</div>
+          <h4>امنیت و ساختار پایدار</h4>
+          <p>پیکربندی امن درگاه‌های متصل به شاپرک و حفاظت از داده‌ها و دسترسی‌های کاربران.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ۴. ابزارها و فناوری‌ها -->
+    <div class="skills-section">
+      <h3>ابزارها و تکنولوژی‌هایی که با آن‌ها ارزش خلق می‌کنیم</h3>
+      <div class="skills-list">
+        <span class="skill-pill">WordPress & WooCommerce</span>
+        <span class="skill-pill">قالب وودمارت (Woodmart)</span>
+        <span class="skill-pill">Google Apps Script & Sheets Automation</span>
+        <span class="skill-pill">HTML5 & CSS3 (RTL اختصاصی)</span>
+        <span class="skill-pill">درگاه‌های پرداخت بانکی شاپرک</span>
+        <span class="skill-pill">بهینه‌سازی سرعت و کش سرور</span>
+        <span class="skill-pill">طراحی دیتابیس و پایگاه داده</span>
+      </div>
+    </div>
+
+    <!-- ۵. دعوت به اقدام نهایی -->
+    <div class="about-cta">
+      <div class="about-cta-text">
+        <h3>مشتاق شنیدن ایده و همکاری در پروژه شما هستیم</h3>
+        <p>همین حالا می‌توانید امکانات مد نظرتان را آنلاین انتخاب کرده و فاکتور برآورد هزینه را دریافت کنید.</p>
+      </div>
+      <a href="/سفارش" target="_top" class="btn-cta-link">🚀 استعلام آنلاین و ثبت سفارش</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
