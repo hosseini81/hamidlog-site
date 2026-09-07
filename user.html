@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حساب کاربری و پیگیری سفارش‌ها | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/order.css">
-  <link rel="stylesheet" href="css/user.css">
+  
+  <!-- فایل استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
@@ -108,7 +109,7 @@
         <!-- تب سوم: ویرایش مشخصات هویتی و عکس -->
         <div id="panelTabProfile" class="dash-panel-tab">
           <div class="profile-edit-box">
-            <div class="box-title" style="margin-bottom:14px;">ویرایش اطلاعات هویتی</div>
+            <div class="box-title" style="margin-bottom:14px; font-size:13px; font-weight:800;">ویرایش اطلاعات هویتی</div>
             
             <div class="auth-input-group">
               <label for="editProfileName">نام و نام خانوادگی:</label>
@@ -135,8 +136,11 @@
   <!-- فوتر سایت -->
   <div id="footer-slot"></div>
 
-  <!-- اسکریپت‌ها -->
+  <!-- اسکریپت‌های ماژولار به ترتیب وابستگی -->
+  <script src="js/api.js"></script>
   <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/shop.js"></script>
   <script src="js/user-panel.js"></script>
 </body>
 </html>
