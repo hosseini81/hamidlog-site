@@ -60,12 +60,12 @@
   color: var(--text-main);
 }
 
-/* کنترل نمایش دقیق تب فعال */
+/* کنترل دقیق نمایش تب‌ها */
 .hub-tab-panel {
-  display: none !important;
+  display: none;
 }
 .hub-tab-panel.active {
-  display: block !important;
+  display: block;
   animation: tabFadeIn 0.25s ease;
 }
 @keyframes tabFadeIn {
