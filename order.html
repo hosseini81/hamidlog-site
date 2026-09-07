@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>خدمات و استعلام آنلاین | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <!-- ۱. استایل عمومی سایت -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- ۲. استایل اختصاصی فاکتور، تب‌ها و پنل کاربری -->
-  <link rel="stylesheet" href="css/order.css">
+  
+  <!-- فایل استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
@@ -24,12 +24,11 @@
   <!-- فوتر ماژولار -->
   <div id="footer-slot"></div>
 
-  <!-- ۳ اسکریپت تفکیک‌شده به ترتیب اجرا: -->
-  <!-- الف) هسته قالب و هدر/فوتر -->
+  <!-- اسکریپت‌های ماژولار به ترتیب وابستگی -->
+  <script src="js/api.js"></script>
   <script src="js/layout.js"></script>
-  <!-- ب) موتور محاسبات، تعرفه‌ها و درگاه پرداخت -->
+  <script src="js/ui.js"></script>
+  <script src="js/shop.js"></script>
   <script src="js/order-engine.js"></script>
-  <!-- ج) ورود، داشبورد و فایل‌های دانلودی کاربر -->
-  <script src="js/user-panel.js"></script>
 </body>
 </html>
