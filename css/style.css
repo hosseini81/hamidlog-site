@@ -789,3 +789,88 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+
+
+/* ترنزیشن و انیمیشن ارتقایافته آیتم‌های منو */
+.nav-link {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  transition: color 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.25s ease;
+}
+
+/* خط زیرین مدرن که از وسط باز می‌شود */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  right: 12px;
+  left: 12px;
+  height: 2.5px;
+  background: var(--primary);
+  border-radius: 4px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-link:hover {
+  color: var(--primary);
+  background-color: rgba(16, 185, 129, 0.06);
+  transform: translateY(-2px);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.nav-link.active {
+  color: var(--primary);
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+/* افکت دکمه استعلام با شاین نوری و حس کلیک */
+.header-cta-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--primary);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.header-cta-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
+
+.header-cta-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+/* ترنزیشن نرم لینک‌های منوی موبایل */
+.mobile-link {
+  transition: padding-right 0.25s ease, color 0.2s ease, background-color 0.2s ease;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.mobile-link:hover, .mobile-link.active {
+  padding-right: 16px;
+  color: var(--primary);
+  background-color: rgba(16, 185, 129, 0.06);
+}
