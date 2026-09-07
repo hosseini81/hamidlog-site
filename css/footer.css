@@ -101,16 +101,16 @@
 .token-kw { color: #c084fc; font-weight: 700; }
 .token-comment { color: #475569; font-style: italic; }
 
-/* ۲. استیج تعقیب و گریز ویروس و آنتی‌ویروس */
+/* ==================== استیج شناور تعقیب و گریز ==================== */
 .chase-stage {
   position: absolute;
   top: 110px;
   left: 0;
   width: 100%;
-  height: 200px;
+  height: 180px;
   pointer-events: none;
-  z-index: 10;
-  overflow: hidden;
+  z-index: 999;
+  overflow: visible;
 }
 
 .chase-actor {
@@ -121,46 +121,50 @@
   flex-direction: column;
   align-items: center;
   will-change: transform;
-  transform: translate(-200px, 0);
+  transform: translate(-300px, 40px);
+  pointer-events: none;
+  transition: none !important;
 }
 
 .actor-label {
-  font-size: 9px;
+  font-size: 10px;
   font-family: monospace;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 4px;
-  margin-top: 3px;
-  font-weight: 800;
+  margin-top: 4px;
+  font-weight: 900;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-/* کاراکتر ویروس */
+/* ۱. استایل و حرکات بدنه ویروس */
 .actor-virus .actor-label {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.25);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
 }
 
 .virus-body {
-  width: 32px;
-  height: 32px;
-  background: radial-gradient(circle, #dc2626 20%, #991b1b 90%);
-  border-radius: 40% 60% 60% 40% / 50% 40% 60% 50%;
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 65%, #7f1d1d 100%);
+  border-radius: 45% 55% 50% 50% / 50% 45% 55% 50%;
   position: relative;
-  box-shadow: 0 0 14px rgba(220, 38, 38, 0.8), inset 0 0 6px #fca5a5;
-  animation: virusMorph 0.35s infinite alternate;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.9), inset 0 0 6px #fca5a5;
+  animation: virusWobble 0.25s infinite alternate;
 }
 
-@keyframes virusMorph {
-  0% { border-radius: 40% 60% 60% 40% / 50% 40% 60% 50%; transform: scale(1) rotate(-3deg); }
-  100% { border-radius: 60% 40% 50% 50% / 40% 60% 40% 60%; transform: scale(1.1) rotate(5deg); }
+@keyframes virusWobble {
+  0% { transform: scale(1) rotate(-8deg); border-radius: 45% 55% 50% 50%; }
+  100% { transform: scale(1.1) rotate(8deg); border-radius: 55% 45% 55% 45%; }
 }
 
 .virus-eye {
   position: absolute;
-  top: 9px;
-  width: 6px;
-  height: 8px;
+  top: 10px;
+  width: 7px;
+  height: 9px;
   background: #fff;
   border-radius: 50%;
 }
@@ -168,62 +172,64 @@
   content: '';
   position: absolute;
   top: 2px;
-  right: 1px;
-  width: 3px;
-  height: 4px;
+  left: 2px;
+  width: 4px;
+  height: 5px;
   background: #000;
   border-radius: 50%;
 }
-.virus-eye.left { left: 7px; }
-.virus-eye.right { right: 7px; }
+.virus-eye.left { left: 8px; }
+.virus-eye.right { right: 8px; }
 
 .virus-mouth {
   position: absolute;
   bottom: 7px;
-  left: 10px;
-  width: 12px;
-  height: 4px;
+  left: 11px;
+  width: 14px;
+  height: 5px;
   background: #450a0a;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 10px 10px;
 }
 
-/* کاراکتر آنتی‌ویروس */
+/* ۲. استایل و شیلد لیزری آنتی‌ویروس */
 .actor-antivirus .actor-label {
-  background: rgba(14, 165, 233, 0.2);
+  background: rgba(14, 165, 233, 0.25);
   color: #38bdf8;
-  border: 1px solid rgba(14, 165, 233, 0.4);
+  border: 1px solid rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
 }
 
 .shield-body {
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle, #0284c7 10%, #0369a1 90%);
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0284c7 65%, #0369a1 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 16px rgba(14, 165, 233, 0.8);
-  border: 2px solid #7dd3fc;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.9);
+  border: 2px solid #bae6fd;
   position: relative;
-  animation: defenderPulse 0.4s infinite alternate;
+  animation: shieldSpin 1.5s linear infinite;
 }
 
-@keyframes defenderPulse {
-  0% { transform: scale(0.96); box-shadow: 0 0 10px #0284c7; }
-  100% { transform: scale(1.06); box-shadow: 0 0 20px #38bdf8; }
+@keyframes shieldSpin {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(0.98); }
 }
 
-.shield-core { font-size: 16px; }
+.shield-core { font-size: 18px; }
 
 .laser-scanner {
   position: absolute;
-  right: 100%;
+  right: 95%;
   top: 50%;
   transform: translateY(-50%);
-  width: 30px;
-  height: 2px;
-  background: linear-gradient(to left, #38bdf8, transparent);
-  box-shadow: 0 0 8px #38bdf8;
+  width: 45px;
+  height: 3px;
+  background: linear-gradient(to left, #38bdf8, rgba(56, 189, 248, 0));
+  box-shadow: 0 0 10px #38bdf8;
 }
 
 /* استایل عمومی ستون‌های فوتر */
