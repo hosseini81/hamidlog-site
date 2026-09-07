@@ -1,44 +1,17 @@
-// ==================== مدیریت پنل کاربری، احراز هویت و دانلودها ====================
+// ==================== احراز هویت و مدیریت داشبورد کارفرما ====================
 let currentUser = null;
 let isRegisterMode = false;
-
-// آدرس وب‌اپلیکیشن شیت (در صورت عدم تعریف قبلی)
-const SCRIPT_URL = typeof SCRIPT_API_URL !== 'undefined' 
-  ? SCRIPT_API_URL 
-  : "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
-
-async function sendUserPanelRequest(payloadData) {
-  const response = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payloadData)
-  });
-  return await response.json();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  initUserSession();
-});
-
-window.addEventListener("allModulesLoaded", () => {
-  initUserSession();
-});
 
 function initUserSession() {
   try {
     const saved = localStorage.getItem('site_user_auth');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-    }
+    if (saved) currentUser = JSON.parse(saved);
   } catch (e) {
     console.warn(e);
   }
 
-  if (typeof syncGlobalUserState === "function") {
-    syncGlobalUserState();
-  }
+  if (typeof syncGlobalUserState === "function") syncGlobalUserState();
 
-  // اگر در صفحه user.html هستیم
   const authBox = document.getElementById("authBox");
   const userDash = document.getElementById("userDashboard");
 
@@ -46,15 +19,15 @@ function initUserSession() {
     if (currentUser && currentUser.phone) {
       authBox.style.display = "none";
       userDash.style.display = "block";
-      loadDashboard();
+      loadUserDashboard();
     } else {
       authBox.style.display = "block";
       userDash.style.display = "none";
     }
   }
 }
+window.addEventListener("allModulesLoaded", initUserSession);
 
-// سوئیچ ورود / ثبت‌نام
 window.toggleAuthMode = function() {
   isRegisterMode = !isRegisterMode;
   const titleEl = document.getElementById('authTitle');
@@ -79,13 +52,9 @@ window.toggleAuthMode = function() {
 };
 
 window.submitAuth = async function() {
-  const phoneInput = document.getElementById('authPhone');
-  const passInput = document.getElementById('authPass');
-  const nameInput = document.getElementById('authName');
-
-  const phone = phoneInput ? phoneInput.value.trim() : '';
-  const pass = passInput ? passInput.value.trim() : '';
-  const name = nameInput ? nameInput.value.trim() : '';
+  const phone = (document.getElementById('authPhone')?.value || '').trim();
+  const pass = (document.getElementById('authPass')?.value || '').trim();
+  const name = (document.getElementById('authName')?.value || '').trim();
 
   if (!phone || !pass || (isRegisterMode && !name)) {
     return showCustomAlert('ورودی ناقص', 'تمامی فیلدها الزامی است.');
@@ -96,7 +65,7 @@ window.submitAuth = async function() {
   btn.textContent = 'در حال ارتباط با سرور...';
 
   try {
-    const res = await sendUserPanelRequest({
+    const res = await sendToAppScript({
       action: 'auth',
       authType: isRegisterMode ? 'register' : 'login',
       phone: phone,
@@ -107,31 +76,24 @@ window.submitAuth = async function() {
     if (res && res.success) {
       currentUser = res.user;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-      
-      if (typeof syncGlobalUserState === "function") {
-        syncGlobalUserState();
-      }
+      if (typeof syncGlobalUserState === "function") syncGlobalUserState();
 
-      const authBox = document.getElementById('authBox');
-      const userDash = document.getElementById('userDashboard');
-      if (authBox) authBox.style.display = 'none';
-      if (userDash) userDash.style.display = 'block';
-
-      loadDashboard();
+      document.getElementById('authBox').style.display = 'none';
+      document.getElementById('userDashboard').style.display = 'block';
+      loadUserDashboard();
     } else {
       btn.disabled = false;
       btn.textContent = isRegisterMode ? 'ثبت‌نام و ایجاد حساب' : 'ورود به حساب کاربری';
-      showCustomAlert('خطا', res ? res.message : 'اطلاعات وارد شده صحیح نیست.');
+      showCustomAlert('خطا در ورود', res ? res.message : 'اطلاعات وارد شده نامعتبر است.');
     }
   } catch (err) {
     btn.disabled = false;
     btn.textContent = isRegisterMode ? 'ثبت‌نام و ایجاد حساب' : 'ورود به حساب کاربری';
-    showCustomAlert('خطا در ارتباط', 'خطا در ارتباط با سرور ابری گوگل.');
+    showCustomAlert('خطای ارتباطی', 'خطا در ارتباط با سرور.');
   }
 };
 
-// دریافت اطلاعات سفارش‌ها، دانلودها و وضعیت اقساط
-async function loadDashboard() {
+async function loadUserDashboard() {
   if (!currentUser || !currentUser.phone) return;
 
   const dashName = document.getElementById('dashUserName');
@@ -146,16 +108,12 @@ async function loadDashboard() {
   if (editPhone) editPhone.value = currentUser.phone || "";
   if (currentUser.avatar && avatarImg) avatarImg.src = currentUser.avatar;
 
-  const dlContainer = document.getElementById('userPurchasedDownloadsList');
   const ordersContainer = document.getElementById('userProjectsList');
 
   try {
-    const res = await sendUserPanelRequest({ action: 'getDashboard', phone: currentUser.phone });
-    
-    // استخراج ایمن داده‌ها از ساختار پاسخ
+    const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
-    // به‌روزرسانی آواتار کاربر در صورت وجود
     if (data.avatar) {
       currentUser.avatar = data.avatar;
       if (avatarImg) avatarImg.src = data.avatar;
@@ -163,39 +121,21 @@ async function loadDashboard() {
       if (typeof syncGlobalUserState === "function") syncGlobalUserState();
     }
 
-    // ۱. رندر تب محصولات دانلودی
-    if (dlContainer) {
-      dlContainer.innerHTML = '';
-      const downloads = data.purchasedDownloads || [];
-      if (downloads.length === 0) {
-        dlContainer.innerHTML = '<div style="font-size:11px; color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; text-align:center;">هنوز فایل دانلودی خریداری نکرده‌اید.</div>';
-      } else {
-        downloads.forEach(d => {
-          dlContainer.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px; margin-bottom:8px;">
-              <div>
-                <strong style="font-size:12px; color:#166534;">${d.title}</strong>
-                <div style="font-size:10px; color:#475569; margin-top:2px;">نسخه: ${d.version} | تاریخ خرید: ${d.purchaseDate}</div>
-              </div>
-              <button type="button" class="btn-main" onclick="downloadProductSecurely('${d.id}')" style="padding:6px 14px; font-size:11px;">
-                ⬇ دانلود فایل
-              </button>
-            </div>
-          `;
-        });
-      }
+    // رندر دانلودها در ماژول shop.js انجام می‌شود
+    if (typeof renderUserDownloads === "function") {
+      renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // ۲. رندر تب پروژه‌ها و اقساط
+    // رندر پروژه‌ها و اقساط
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
       if (orders.length === 0) {
-        ordersContainer.innerHTML = '<div style="color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش ثبت‌شده‌ای با این شماره یافت نشد.</div>';
+        ordersContainer.innerHTML = '<div style="color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش فعالی برای شما ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
           let stepsHtml = '';
-          const allServices = (o.addedServices && o.addedServices.length > 0) ? o.addedServices : ['بررسی و آماده‌سازی اولیه'];
+          const allServices = (o.addedServices && o.addedServices.length > 0) ? o.addedServices : ['بررسی و تحلیل اولیه'];
           
           allServices.forEach((item, idx) => {
             const stepClass = idx === 0 ? 'done' : (idx === 1 ? 'in-progress' : '');
@@ -236,14 +176,12 @@ async function loadDashboard() {
         });
       }
     }
-
   } catch (err) {
-    if (dlContainer) dlContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در واکشی محصولات دانلودی.</div>';
-    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در دریافت لیست سفارش‌ها.</div>';
+    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در دریافت اطلاعات.</div>';
   }
 }
 
-// سوئیچ تب‌های سه‌گانه
+// سوئیچر تب‌های سه‌گانه پنل
 window.switchUserPanelTab = function(tabName) {
   document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.dash-panel-tab').forEach(t => t.classList.remove('active'));
@@ -260,22 +198,14 @@ window.switchUserPanelTab = function(tabName) {
   }
 };
 
-// ذخیره نام کارفرما
 window.saveUserProfileName = async function() {
   const nameInput = document.getElementById('editProfileName');
   const newName = nameInput ? nameInput.value.trim() : '';
 
-  if (!newName) {
-    return showCustomAlert('خطا', 'نام نمی‌تواند خالی باشد.');
-  }
+  if (!newName) return showCustomAlert('خطا', 'نام نمی‌تواند خالی باشد.');
 
   try {
-    const res = await sendUserPanelRequest({
-      action: 'updateName',
-      phone: currentUser.phone,
-      name: newName
-    });
-
+    const res = await sendToAppScript({ action: 'updateName', phone: currentUser.phone, name: newName });
     if (res && res.success) {
       currentUser.name = newName;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
@@ -283,14 +213,13 @@ window.saveUserProfileName = async function() {
       if (typeof syncGlobalUserState === "function") syncGlobalUserState();
       showCustomAlert('موفقیت‌آمیز', 'نام شما با موفقیت ذخیره شد.', '✔');
     } else {
-      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت تغییرات.');
+      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت نام.');
     }
   } catch (err) {
     showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور.');
   }
 };
 
-// تغییر آواتار
 window.uploadAvatarFile = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -299,7 +228,7 @@ window.uploadAvatarFile = function(event) {
   reader.onload = async function(e) {
     const base64Data = e.target.result;
     try {
-      const res = await sendUserPanelRequest({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
+      const res = await sendToAppScript({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
       if (res && res.success) {
         currentUser.avatar = base64Data;
         const img = document.getElementById('dashAvatarImg');
@@ -314,34 +243,13 @@ window.uploadAvatarFile = function(event) {
   reader.readAsDataURL(file);
 };
 
-// دانلود امن فایل
-window.downloadProductSecurely = async function(productId) {
-  if (!currentUser || !currentUser.phone) {
-    return showCustomAlert('نیاز به ورود', 'لطفاً وارد حساب کاربری شوید.');
-  }
-
-  try {
-    const res = await sendUserPanelRequest({ action: 'requestDownload', phone: currentUser.phone, productId: productId });
-    if (res && res.success && res.downloadUrl) {
-      window.open(res.downloadUrl, '_blank');
-    } else {
-      showCustomAlert('عدم دسترسی', res ? (res.error || 'دسترسی برای دانلود این فایل تایید نشد.') : 'خطا در دانلود.');
-    }
-  } catch (err) {
-    showCustomAlert('خطا', 'خطا در دریافت لینک امن دانلود.');
-  }
-};
-
-// پرداخت قسط
 window.payCustomRemaining = async function(orderCode) {
   const input = document.getElementById('pay_amt_' + orderCode);
   const amount = input ? input.value : 0;
-  if (!amount || amount < 1000) {
-    return showCustomAlert('مبلغ نامعتبر', 'حداقل مبلغ پرداخت ۱,۰۰۰ تومان است.');
-  }
+  if (!amount || amount < 1000) return showCustomAlert('مبلغ نامعتبر', 'حداقل مبلغ ۱,۰۰۰ تومان است.');
 
   try {
-    const res = await sendUserPanelRequest({ action: 'payInstallment', orderCode: orderCode, amount: amount, phone: currentUser.phone });
+    const res = await sendToAppScript({ action: 'payInstallment', orderCode: orderCode, amount: amount, phone: currentUser.phone });
     if (res && res.success && res.paymentUrl) {
       window.open(res.paymentUrl, '_blank');
     } else {
@@ -352,7 +260,6 @@ window.payCustomRemaining = async function(orderCode) {
   }
 };
 
-// خروج از حساب
 window.logoutUser = function() {
   currentUser = null;
   localStorage.removeItem('site_user_auth');
