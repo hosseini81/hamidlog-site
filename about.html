@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
 <head>
-  <!-- استایل‌های ساختاریافته و سبک -->
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/header.css">
-  <link rel="stylesheet" href="css/footer.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>درباره ما | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <!-- ۱. استایل عمومی سایت -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- ۲. استایل اختصاصی صفحه درباره ما -->
-  <link rel="stylesheet" href="css/about.css">
+  
+  <!-- فایل اصلی استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-  <!-- هدر سایت -->
+  <!-- هدر ماژولار سایت -->
   <div id="header-slot"></div>
 
   <!-- محتوای اصلی درباره ما -->
@@ -26,10 +22,11 @@
     <div data-include="sections/about/cta.html"></div>
   </main>
 
-  <!-- فوتر سایت -->
+  <!-- فوتر ماژولار سایت -->
   <div id="footer-slot"></div>
 
-  <!-- اسکریپت هسته قالب -->
+  <!-- اسکریپت‌های ماژولار به ترتیب وابستگی -->
   <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
