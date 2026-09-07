@@ -16,24 +16,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // ب) بارگذاری تمام بخش‌های data-include حتی به صورت تودرتو و لایه‌ای
+  // ب) بارگذاری تمام بخش‌های data-include به صورت تودرتو و لایه‌ای
   await loadAllNestedIncludes();
 
-  // ج) منوی همبرگری موبایل
+  // ج) راه‌اندازی منوی کشویی موبایل (Drawer) و بک‌دراپ
   const burger = document.getElementById("hamburgerBtn");
   const drawer = document.getElementById("mobileDrawer");
-  if (burger && drawer) {
-    burger.addEventListener("click", () => {
-      burger.classList.toggle("open");
-      drawer.classList.toggle("show");
-    });
-  }
+  const backdrop = document.getElementById("drawerBackdrop");
+  const closeBtn = document.getElementById("drawerCloseBtn");
 
-  // د) علامت زدن لینک فعال صفحه در منو
+  const openDrawer = () => {
+    if (drawer) drawer.classList.add("show");
+    if (backdrop) backdrop.classList.add("show");
+    document.body.style.overflow = "hidden"; // جلوگیری از اسکرول صفحه هنگام باز بودن منو
+  };
+
+  const closeDrawer = () => {
+    if (drawer) drawer.classList.remove("show");
+    if (backdrop) backdrop.classList.remove("show");
+    document.body.style.overflow = ""; // بازگرداندن اسکرول صفحه
+  };
+
+  if (burger) burger.addEventListener("click", openDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+  if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+  // بستن منوی کشویی با کلیک روی هر لینک داخلی آن
+  document.querySelectorAll(".mobile-drawer .mobile-link, .mobile-drawer .mobile-cta-btn").forEach(link => {
+    link.addEventListener("click", closeDrawer);
+  });
+
+  // د) علامت زدن لینک فعال صفحه در هدر دسکتاپ، منوی کشویی و نوار پایین موبایل
   const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
   document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
+  document.querySelectorAll(`[data-bottom-page="${page}"]`).forEach(el => el.classList.add("active"));
 
-  // هـ) اجرای رفتارهای متحرک صفحه اصلی
+  // هـ) اجرای رفتارهای متحرک صفحه اصلی (تایپ و آکاردئون FAQ)
   initDynamicFeatures();
 
   // و) اعلام پایان لود کامل تمام بخش‌ها جهت استارت موتور سفارش و پنل
