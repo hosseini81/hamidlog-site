@@ -1,6 +1,4 @@
-// ==================== موتور استعلام، پیش‌فاکتور و پرداخت ====================
-const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
-
+// ==================== موتور استعلام، پیش‌فاکتور زنده و پرداخت شاپرک ====================
 let currentStep = 1;
 let appData = { packages: [], services: [], downloadProducts: [] };
 let selectedPackage = null;
@@ -20,50 +18,45 @@ let calculatedFinalDays = 0;
 let pkgBaseSum = 0;
 let calculatedDeductedSum = 0;
 
-// تابع عمومی ارسال به گوگل اسکریپت
-async function sendToAppScript(payloadData) {
-  const response = await fetch(SCRIPT_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payloadData)
-  });
-  return await response.json();
-}
-
-// پاپ‌آپ اختصاصی
-window.showCustomAlert = function(title, text, icon = '⚠️') {
-  const iconEl = document.getElementById('customAlertIcon');
-  const titleEl = document.getElementById('customAlertTitle');
-  const textEl = document.getElementById('customAlertText');
-  const alertEl = document.getElementById('customAlert');
-
-  if (iconEl) iconEl.textContent = icon;
-  if (titleEl) titleEl.textContent = title;
-  if (textEl) textEl.textContent = text;
-  if (alertEl) alertEl.style.display = 'flex';
-};
-
-window.closeCustomAlert = function() {
-  const alertEl = document.getElementById('customAlert');
-  if (alertEl) alertEl.style.display = 'none';
-};
-
-// راه‌اندازی مستقل و مستقیم
 function initOrderEngine() {
   if (document.getElementById("dataLoader") || document.getElementById("packagesGrid")) {
-    fetchInitialData();
+    loadOrderEngineData();
   }
-}
-
-// گوش دادن به هر دو حالت لود
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initOrderEngine);
-} else {
-  initOrderEngine();
 }
 window.addEventListener("allModulesLoaded", initOrderEngine);
 
-// سوئیچ تب‌های سامانه
+async function loadOrderEngineData() {
+  const loader = document.getElementById("dataLoader");
+  try {
+    const result = await fetchInitialDataFromSheet();
+    if (result && result.success && result.data) {
+      appData = result.data;
+      if (loader) loader.style.display = "none";
+      const grid = document.getElementById("orderMainGrid");
+      if (grid) grid.style.display = "grid";
+
+      renderPackages();
+      if (typeof renderShopProducts === "function") renderShopProducts(appData.downloadProducts);
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    // روش جبرانی JSONP
+    window.onSheetFallbackLoaded = function(res) {
+      if (res && res.success && res.data) {
+        appData = res.data;
+        if (loader) loader.style.display = "none";
+        const grid = document.getElementById("orderMainGrid");
+        if (grid) grid.style.display = "grid";
+        renderPackages();
+        if (typeof renderShopProducts === "function") renderShopProducts(appData.downloadProducts);
+      }
+    };
+    loadSheetDataViaJsonp("onSheetFallbackLoaded");
+  }
+}
+
+// سوئیچ تب‌های سامانه سفارش
 window.switchNavTab = function(tabId) {
   document.querySelectorAll('.hub-tab-panel').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.hub-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -72,56 +65,8 @@ window.switchNavTab = function(tabId) {
   const btn = document.getElementById('btn-' + tabId);
   if (target) target.classList.add('active');
   if (btn) btn.classList.add('active');
-
-  if (tabId === 'tabProduct') renderShopProducts();
 };
 
-// دریافت اطلاعات اولیه شیت
-async function fetchInitialData() {
-  const loader = document.getElementById("dataLoader");
-  try {
-    const res = await fetch(`${SCRIPT_API_URL}?action=getInitialData`);
-    const result = await res.json();
-
-    if (result && result.success && result.data) {
-      appData = result.data;
-      if (loader) loader.style.display = "none";
-      const grid = document.getElementById("orderMainGrid");
-      if (grid) grid.style.display = "grid";
-
-      renderPackages();
-      renderShopProducts();
-    } else {
-      throw new Error(result.error || "خروجی نامعتبر");
-    }
-  } catch (err) {
-    loadViaJsonp();
-  }
-}
-
-function loadViaJsonp() {
-  const loader = document.getElementById("dataLoader");
-  const script = document.createElement("script");
-
-  window.onGoogleSheetDataLoaded = function(result) {
-    if (result && result.success && result.data) {
-      appData = result.data;
-      if (loader) loader.style.display = "none";
-      const grid = document.getElementById("orderMainGrid");
-      if (grid) grid.style.display = "grid";
-
-      renderPackages();
-      renderShopProducts();
-    } else {
-      if (loader) loader.innerHTML = "⚠️ خطا در دریافت اطلاعات. ستون‌های شیت را بررسی فرمایید.";
-    }
-  };
-
-  script.src = `${SCRIPT_API_URL}?action=getInitialData&callback=onGoogleSheetDataLoaded`;
-  document.body.appendChild(script);
-}
-
-// رندر پکیج‌ها
 function renderPackages() {
   const grid = document.getElementById('packagesGrid');
   if (!grid || !appData.packages) return;
@@ -154,7 +99,6 @@ function renderPackages() {
       </div>
     `;
   });
-
   onPackageSelected();
 }
 
@@ -172,7 +116,6 @@ function onPackageSelected() {
 
   const msgEl = document.getElementById('couponMessage');
   if (msgEl) msgEl.textContent = '';
-
   if (!selectedPackage) return;
 
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
@@ -181,10 +124,10 @@ function onPackageSelected() {
     if (s.billingCycle === 'ماهانه') selectedCycles[s.id] = 1;
   });
 
-  refreshViews();
+  refreshOrderViews();
 }
 
-function refreshViews() {
+function refreshOrderViews() {
   renderExtraItems();
   renderDeductItems();
   calculateSummary();
@@ -204,7 +147,6 @@ function getEffectiveService(service) {
   }
 
   const cycleMultiplier = (service.billingCycle === 'ماهانه') ? (selectedCycles[service.id] || 1) : 1;
-
   return {
     unitPrice: basePrice,
     price: basePrice * cycleMultiplier,
@@ -239,13 +181,6 @@ function checkPrerequisites(service) {
   return true;
 }
 
-function renderThumbnailHtml(s) {
-  if (s.imageUrl) {
-    return `<img src="${s.imageUrl}" class="service-thumb" alt="${s.title}" onerror="this.outerHTML='<div class=\\'service-thumb-placeholder\\'>⚡</div>'">`;
-  }
-  return `<div class="service-thumb-placeholder">⚡</div>`;
-}
-
 function renderOptionsControl(s) {
   let html = '';
   const hasVariants = s.variants && s.variants.length > 0;
@@ -277,12 +212,12 @@ function renderOptionsControl(s) {
 
 window.onVariantChanged = function(serviceId, variantId) {
   selectedVariants[serviceId] = variantId;
-  refreshViews();
+  refreshOrderViews();
 };
 
 window.onCycleChanged = function(serviceId, cycleCount) {
   selectedCycles[serviceId] = Number(cycleCount);
-  refreshViews();
+  refreshOrderViews();
 };
 
 window.toggleLayout = function(type, mode) {
@@ -333,16 +268,13 @@ function renderExtraItems() {
     const eff = getEffectiveService(s);
     const isChecked = extraSelectedIds.has(s.id);
     const hasReq = s.prerequisites && s.prerequisites.length > 0;
-    
-    const videoBtnHtml = (s.videoUrl && s.videoUrl.trim() !== '')
-      ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 ویدیوی معرفی</a>`
-      : '';
+    const videoBtn = (s.videoUrl && s.videoUrl.trim()) ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 ویدیوی معرفی</a>` : '';
 
     container.innerHTML += `
       <div class="service-card ${isChecked ? 'selected' : ''}" onclick="toggleExtraFromCard('${s.id}')">
         <div class="card-top">
           <input type="checkbox" ${isChecked ? 'checked' : ''} style="margin-left: 6px;" onclick="event.stopPropagation(); toggleExtra('${s.id}', this.checked)">
-          ${renderThumbnailHtml(s)}
+          <div class="service-thumb-placeholder">⚡</div>
           <div class="service-info">
             <div class="service-title">
               ${s.title}
@@ -351,7 +283,7 @@ function renderExtraItems() {
               ${hasReq ? `<span class="badge badge-req">پیش‌نیاز</span>` : ''}
             </div>
             <div class="service-desc">${s.desc}</div>
-            ${videoBtnHtml}
+            ${videoBtn}
           </div>
           <div class="service-meta">
             <div class="service-price">+${eff.price.toLocaleString('fa-IR')} ت</div>
@@ -365,13 +297,12 @@ function renderExtraItems() {
 }
 
 window.toggleExtraFromCard = function(id) { toggleExtra(id, !extraSelectedIds.has(id)); };
-
 window.toggleExtra = function(id, checked) {
   const s = appData.services.find(x => String(x.id) === String(id));
   if (!s) return;
 
   if (checked) {
-    if (!checkPrerequisites(s)) { refreshViews(); return; }
+    if (!checkPrerequisites(s)) { refreshOrderViews(); return; }
     extraSelectedIds.add(id);
     if (s.variants && s.variants.length > 0 && !selectedVariants[id]) selectedVariants[id] = s.variants[0].id;
     if (s.billingCycle === 'ماهانه' && !selectedCycles[id]) selectedCycles[id] = 1;
@@ -379,7 +310,7 @@ window.toggleExtra = function(id, checked) {
     extraSelectedIds.delete(id);
     deductedIds.delete(id);
   }
-  refreshViews();
+  refreshOrderViews();
 };
 
 function renderDeductCategoryFilters(categories) {
@@ -404,10 +335,7 @@ function renderDeductItems() {
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
   const pkgServices = appData.services.filter(s => pkgServiceIds.includes(String(s.id).trim().toLowerCase()));
   const extraServices = appData.services.filter(s => extraSelectedIds.has(s.id));
-  const allItems = [
-    ...pkgServices.map(s => ({ ...s, source: 'پکیج پایه' })),
-    ...extraServices.map(s => ({ ...s, source: 'خدمت جانبی' }))
-  ];
+  const allItems = [...pkgServices.map(s => ({ ...s, source: 'پکیج پایه' })), ...extraServices.map(s => ({ ...s, source: 'خدمت جانبی' }))];
 
   const categories = [...new Set(allItems.map(s => s.category || 'عمومی'))];
   renderDeductCategoryFilters(categories);
@@ -423,7 +351,7 @@ function renderDeductItems() {
       <div class="service-card ${isChecked ? 'selected' : ''}" onclick="toggleDeductFromCard('${s.id}')">
         <div class="card-top">
           <input type="checkbox" ${isChecked ? 'checked' : ''} style="margin-left: 8px;" onclick="event.stopPropagation(); toggleDeduct('${s.id}', this.checked)">
-          ${renderThumbnailHtml(s)}
+          <div class="service-thumb-placeholder">⚡</div>
           <div class="service-info">
             <div class="service-title">
               ${s.title} 
@@ -442,7 +370,6 @@ function renderDeductItems() {
 }
 
 window.toggleDeductFromCard = function(id) { toggleDeduct(id, !deductedIds.has(id)); };
-
 window.toggleDeduct = function(id, checked) {
   if (checked) deductedIds.add(id);
   else deductedIds.delete(id);
@@ -478,7 +405,6 @@ function renderOrderItemsSummary() {
     });
     html += `</ul>`;
   }
-
   listEl.innerHTML = html;
 }
 
@@ -489,8 +415,7 @@ function calculateSummary() {
   const pkgServices = appData.services.filter(s => pkgServiceIds.includes(String(s.id).trim().toLowerCase()));
   pkgBaseSum = pkgServices.reduce((sum, s) => sum + getEffectiveService(s).price, 0);
 
-  let extraSum = 0;
-  let extraDays = 0;
+  let extraSum = 0, extraDays = 0;
   appData.services.filter(s => extraSelectedIds.has(s.id)).forEach(s => {
     const eff = getEffectiveService(s);
     extraSum += eff.price;
@@ -514,7 +439,6 @@ function calculateSummary() {
   const netExtra = Math.max(0, extraSum - extraDeductedSum);
 
   let subTotal = Math.round((netPackage - discountAmount) + netExtra);
-
   if (appliedCoupon && appliedCoupon.valid) {
     subTotal = Math.max(0, subTotal - appliedCoupon.discountAmount);
   }
@@ -600,7 +524,7 @@ window.finishOrder = async function() {
   const phone = phoneEl ? phoneEl.value.trim() : '';
 
   if (!name || !phone) {
-    return showCustomAlert('اطلاعات ناقص', 'لطفاً نام و شماره همراه مستقیم را وارد فرمایید.');
+    return showCustomAlert('اطلاعات ناقص', 'لطفاً نام و شماره همراه را وارد فرمایید.');
   }
 
   const payTypeEl = document.querySelector('input[name="payType"]:checked');
@@ -626,24 +550,12 @@ window.finishOrder = async function() {
     totalDaysNumeric: calculatedFinalDays,
     paymentType: payType,
     appliedCouponCode: appliedCoupon ? appliedCoupon.code : 'ندارد',
-    addedServicesSummary: addedList.map(s => {
-      const eff = getEffectiveService(s);
-      return `${s.title} ${eff.variantTitle ? '(' + eff.variantTitle + ')' : ''}`;
-    }),
-    deductedServicesSummary: deductedList.map(s => s.title),
-    addedDetails: addedList.map(s => {
-      const eff = getEffectiveService(s);
-      return { title: s.title, variantInfo: eff.variantTitle, price: eff.price, days: eff.days };
-    }),
-    deductedDetails: deductedList.map(s => {
-      const eff = getEffectiveService(s);
-      return { title: s.title, price: eff.price };
-    })
+    addedServicesSummary: addedList.map(s => `${s.title} ${getEffectiveService(s).variantTitle ? '(' + getEffectiveService(s).variantTitle + ')' : ''}`),
+    deductedServicesSummary: deductedList.map(s => s.title)
   };
 
   try {
     const res = await sendToAppScript({ action: 'submitOrder', payload: payload });
-
     if (res && res.success) {
       document.getElementById('step4FormWrap').style.display = 'none';
       document.getElementById('orderSuccessWrap').style.display = 'block';
@@ -651,8 +563,7 @@ window.finishOrder = async function() {
       document.getElementById('successInvoiceLink').href = res.pdfUrl;
 
       if (res.paymentUrl) {
-        const link = document.getElementById('successGatewayLink');
-        link.href = res.paymentUrl;
+        document.getElementById('successGatewayLink').href = res.paymentUrl;
         window.location.href = res.paymentUrl;
       }
     } else {
@@ -660,7 +571,7 @@ window.finishOrder = async function() {
         submitBtn.disabled = false;
         submitBtn.textContent = '💳 ثبت نهایی و اتصال به شاپرک';
       }
-      showCustomAlert('خطا در ثبت سفارش', res ? res.error : 'خطا در اتصال به زرین‌پال.');
+      showCustomAlert('خطا در ثبت سفارش', res ? res.error : 'خطا در اتصال به درگاه.');
     }
   } catch (err) {
     if (submitBtn) {
@@ -679,7 +590,6 @@ window.resetFormForNewOrder = function() {
     submitBtn.disabled = false;
     submitBtn.textContent = '💳 ثبت نهایی و اتصال به شاپرک';
   }
-
   extraSelectedIds.clear();
   deductedIds.clear();
   selectedVariants = {};
@@ -694,81 +604,6 @@ window.resetFormForNewOrder = function() {
   if (appData.packages && appData.packages.length > 0) {
     selectedPackage = appData.packages[0];
   }
-
   goStep(1);
   renderPackages();
-};
-
-// نمایش و خرید مستقیم محصولات دانلودی
-function renderShopProducts() {
-  const container = document.getElementById('shopProductsGrid');
-  if (!container) return;
-  container.innerHTML = '';
-
-  const prods = appData.downloadProducts || [];
-  if (prods.length === 0) {
-    container.innerHTML = '<div style="color:#64748b; padding:15px; grid-column: 1/-1;">محصول دانلودی در شیت ثبت نشده است.</div>';
-    return;
-  }
-
-  prods.forEach(p => {
-    container.innerHTML += `
-      <div class="package-card" style="cursor:default;">
-        <div class="package-card-placeholder">📦</div>
-        <div class="package-card-body">
-          <div class="package-card-title">
-            <span>${p.title}</span>
-            <span class="badge badge-pkg">نسخه ${p.version}</span>
-          </div>
-          <div class="package-card-desc">فایل دانلودی با دسترسی مادام‌العمر در پنل کاربری</div>
-          <div style="font-size:14px; font-weight:800; color:#059669; margin:8px 0;">
-            ${Number(p.price).toLocaleString('fa-IR')} تومان
-          </div>
-          <button type="button" class="btn-main" onclick="buyProductNow('${p.id}')" style="width:100%; font-size:11px;">
-            ⚡ خرید آنلاین و تحویل آنی
-          </button>
-        </div>
-      </div>
-    `;
-  });
-}
-
-window.buyProductNow = function(prodId) {
-  const prod = (appData.downloadProducts || []).find(p => String(p.id).trim() === String(prodId).trim());
-  if (!prod) return showCustomAlert('خطا', 'محصول مورد نظر یافت نشد.');
-
-  resetFormForNewOrder();
-
-  selectedPackage = {
-    id: prod.id,
-    title: prod.title + ' [نسخه ' + prod.version + ']',
-    desc: 'محصول دانلودی با تحویل آنی در پنل کاربری',
-    services: [],
-    discount: 0,
-    days: 0
-  };
-  pkgBaseSum = prod.price;
-  calculatedFinalPrice = prod.price;
-  calculatedFinalDays = 0;
-  calculatedDeductedSum = 0;
-
-  switchNavTab('tabOrder');
-  goStep(3);
-
-  const kpiTot = document.getElementById('kpiTotal');
-  if (kpiTot) kpiTot.textContent = prod.price.toLocaleString('fa-IR') + ' تومان';
-  const kpiDays = document.getElementById('kpiDays');
-  if (kpiDays) kpiDays.textContent = 'آنی';
-
-  updatePaymentOptionLabels();
-
-  const listEl = document.getElementById('orderItemsSummaryList');
-  if (listEl) {
-    listEl.innerHTML = `
-      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px; font-size:11px;">
-        📦 <strong>سفارش دانلودی:</strong> ${prod.title} (نسخه ${prod.version}) <br>
-        💳 <strong>مبلغ:</strong> ${Number(prod.price).toLocaleString('fa-IR')} تومان
-      </div>
-    `;
-  }
 };
