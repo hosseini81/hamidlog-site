@@ -10,20 +10,39 @@
       </div>
     </a>
 
-    <!-- منوی نمایش دسکتاپ -->
+    <!-- منوی دسکتاپ -->
     <nav class="desktop-menu">
       <ul class="nav-list">
         <li><a href="index.html" class="nav-link" data-page="index">صفحه اصلی</a></li>
         <li><a href="portfolio.html" class="nav-link" data-page="portfolio">نمونه‌کارها</a></li>
-        <li><a href="order.html" class="nav-link" data-page="order">خدمات و استعلام</a></li>
+        <li><a href="order.html" class="nav-link" data-page="order">استعلام و خدمات</a></li>
         <li><a href="about.html" class="nav-link" data-page="about">درباره ما</a></li>
         <li><a href="contact.html" class="nav-link" data-page="contact">تماس با ما</a></li>
       </ul>
     </nav>
 
-    <!-- دکمه CTA دسکتاپ و دکمه همبرگری موبایل -->
+    <!-- اکشن‌ها: پروفایل سراسری کاربری و دکمه همبرگری -->
     <div class="nav-actions">
-      <a href="order.html" class="header-cta-btn">🚀 استعلام آنلاین هزینه</a>
+      <!-- دکمه پروفایل کاربری در دسکتاپ -->
+      <a href="user.html" class="header-user-btn" id="headerUserBtn" title="حساب کاربری">
+        <div class="user-avatar-wrap">
+          <img id="headerUserAvatar" src="" alt="آواتار" style="display:none;" />
+          <span id="headerUserPlaceholder" class="user-avatar-placeholder">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="user-text-info">
+          <span id="headerUserName" class="user-display-name">حساب کاربری</span>
+          <span id="headerUserStatus" class="user-status-text">ورود / ثبت‌نام</span>
+        </div>
+      </a>
+
+      <!-- دکمه استعلام سریع -->
+      <a href="order.html" class="header-cta-btn">🚀 استعلام هزینه</a>
+
+      <!-- دکمه همبرگری موبایل -->
       <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="منوی موبایل">
         <span></span>
         <span></span>
@@ -32,12 +51,11 @@
     </div>
   </div>
 
-  <!-- پس‌زمینه تیره منوی کشویی -->
+  <!-- پس‌زمینه تیره منوی کشویی موبایل -->
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
   <!-- منوی کشویی دو تب موبایل (Drawer) -->
   <div class="mobile-drawer" id="mobileDrawer">
-    <!-- سربرگ منوی جانبی -->
     <div class="drawer-header">
       <div class="drawer-brand">
         <span class="brand-avatar" style="width:32px; height:32px; font-size:14px;">H</span>
@@ -70,25 +88,31 @@
         </li>
         <li>
           <a href="portfolio.html" class="mobile-link" data-page="portfolio">
-            <span class="m-link-title"><span class="m-link-icon">💼</span> نمونه‌کارها و پروژه‌ها</span>
+            <span class="m-link-title"><span class="m-link-icon">💼</span> نمونه‌کارها</span>
             <span class="link-arrow">‹</span>
           </a>
         </li>
         <li>
           <a href="order.html" class="mobile-link" data-page="order">
-            <span class="m-link-title"><span class="m-link-icon">⚡</span> استعلام آنلاین و فاکتور</span>
-            <span class="link-badge-hot">آنلاین</span>
+            <span class="m-link-title"><span class="m-link-icon">⚡</span> استعلام آنلاین و خدمات</span>
+            <span class="link-badge-hot">محاسبه زنده</span>
+          </a>
+        </li>
+        <li>
+          <a href="user.html" class="mobile-link" data-page="user">
+            <span class="m-link-title"><span class="m-link-icon">👤</span> حساب کاربری و اقساط</span>
+            <span class="link-arrow">‹</span>
           </a>
         </li>
         <li>
           <a href="about.html" class="mobile-link" data-page="about">
-            <span class="m-link-title"><span class="m-link-icon">👥</span> درباره ما و اصول کاری</span>
+            <span class="m-link-title"><span class="m-link-icon">👥</span> درباره ما</span>
             <span class="link-arrow">‹</span>
           </a>
         </li>
         <li>
           <a href="contact.html" class="mobile-link" data-page="contact">
-            <span class="m-link-title"><span class="m-link-icon">📞</span> تماس مستقیم و مشاوره</span>
+            <span class="m-link-title"><span class="m-link-icon">📞</span> تماس با ما</span>
             <span class="link-arrow">‹</span>
           </a>
         </li>
@@ -99,11 +123,10 @@
       </a>
     </div>
 
-    <!-- تب ۲: شبکه‌های اجتماعی با کارت‌های تعاملی شیک -->
+    <!-- تب ۲: شبکه‌های اجتماعی -->
     <div id="drawerTabSocials" class="drawer-tab-content">
       <div class="social-cards-stack">
-        
-        <!-- کارت تلگرام -->
+        <!-- تلگرام -->
         <a href="https://t.me/seeep7" target="_blank" class="social-card-rich tg-rich">
           <div class="sc-icon-wrap tg-gradient">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
@@ -121,7 +144,7 @@
           <span class="sc-arrow">‹</span>
         </a>
 
-        <!-- کارت اینستاگرام -->
+        <!-- اینستاگرام -->
         <a href="https://instagram.com/seep.7" target="_blank" class="social-card-rich ig-rich">
           <div class="sc-icon-wrap ig-gradient">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
@@ -139,7 +162,7 @@
           <span class="sc-arrow">‹</span>
         </a>
 
-        <!-- کارت آپارات -->
+        <!-- آپارات -->
         <a href="https://www.aparat.com/hamidlog" target="_blank" class="social-card-rich aparat-rich">
           <div class="sc-icon-wrap aparat-gradient">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
@@ -156,20 +179,19 @@
           </div>
           <span class="sc-arrow">‹</span>
         </a>
-
       </div>
     </div>
   </div>
 </header>
 
-<!-- ==================== نوار ناوبری شناور جزیره‌ای در پایین موبایل (Floating Island) ==================== -->
-<nav class="floating-island-bar" aria-label="ناوبری سریع">
+<!-- ==================== نوار شناور جزیره‌ای ۴ گانه در پایین موبایل ==================== -->
+<nav class="floating-island-bar" aria-label="ناوبری سریع موبایل">
   <div class="island-container">
     
-    <!-- گزینه ۱: خانه -->
+    <!-- ۱. خانه -->
     <a href="index.html" class="island-item" data-bottom-page="index">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
@@ -178,10 +200,10 @@
       <span class="island-dot"></span>
     </a>
 
-    <!-- گزینه ۲: خدمات و استعلام (دکمه کانون با ظاهر برجسته) -->
+    <!-- ۲. استعلام و خدمات -->
     <a href="order.html" class="island-item" data-bottom-page="order">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
         </svg>
       </div>
@@ -189,14 +211,26 @@
       <span class="island-dot"></span>
     </a>
 
-    <!-- گزینه ۳: تماس -->
+    <!-- ۳. تماس -->
     <a href="contact.html" class="island-item" data-bottom-page="contact">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
         </svg>
       </div>
       <span class="island-text">تماس</span>
+      <span class="island-dot"></span>
+    </a>
+
+    <!-- ۴. حساب کاربری سراسری -->
+    <a href="user.html" class="island-item" data-bottom-page="user">
+      <div class="island-icon-halo">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <span class="island-text" id="bottomNavUserLabel">حساب من</span>
       <span class="island-dot"></span>
     </a>
 
