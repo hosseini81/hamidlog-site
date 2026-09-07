@@ -32,116 +32,173 @@
     </div>
   </div>
 
-  <!-- لایه پس‌زمینه تیره برای بستن منوی کشویی موبایل -->
+  <!-- پس‌زمینه تیره منوی کشویی -->
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  <!-- منوی کشویی مدرن از سمت راست در موبایل -->
+  <!-- منوی کشویی دو تب موبایل (Drawer) -->
   <div class="mobile-drawer" id="mobileDrawer">
+    <!-- سربرگ منوی جانبی -->
     <div class="drawer-header">
       <div class="drawer-brand">
-        <span class="brand-avatar" style="width:30px; height:30px; font-size:13px;">H</span>
-        <span style="font-weight:900; font-size:13px; color:#fff;">منوی دسترسی سریع</span>
+        <span class="brand-avatar" style="width:32px; height:32px; font-size:14px;">H</span>
+        <div>
+          <div style="font-weight:900; font-size:13px; color:#fff;">استودیو حمیدرضا</div>
+          <div style="font-size:10px; color:#94a3b8;">منوی دسترسی و ارتباط</div>
+        </div>
       </div>
-      <button type="button" class="drawer-close-btn" id="drawerCloseBtn">✕</button>
+      <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="بستن">✕</button>
     </div>
 
-    <!-- لیست صفحات در منوی موبایل -->
-    <ul class="mobile-nav-list">
-      <li>
-        <a href="index.html" class="mobile-link" data-page="index">
-          <span>🏠 صفحه اصلی</span>
-          <span class="link-arrow">‹</span>
-        </a>
-      </li>
-      <li>
-        <a href="portfolio.html" class="mobile-link" data-page="portfolio">
-          <span>💼 نمونه‌کارها</span>
-          <span class="link-arrow">‹</span>
-        </a>
-      </li>
-      <li>
-        <a href="order.html" class="mobile-link" data-page="order">
-          <span>⚡ استعلام آنلاین و فاکتور</span>
-          <span class="link-arrow">‹</span>
-        </a>
-      </li>
-      <li>
-        <a href="about.html" class="mobile-link" data-page="about">
-          <span>👥 درباره ما</span>
-          <span class="link-arrow">‹</span>
-        </a>
-      </li>
-      <li>
-        <a href="contact.html" class="mobile-link" data-page="contact">
-          <span>📞 تماس با ما</span>
-          <span class="link-arrow">‹</span>
-        </a>
-      </li>
-    </ul>
+    <!-- سوئیچر دو تب منوی جانبی: صفحات / شبکه‌ها -->
+    <div class="drawer-tabs-nav">
+      <button type="button" class="drawer-tab-btn active" id="btnDrawerPages" onclick="switchDrawerTab('pages')">
+        📑 صفحات سایت
+      </button>
+      <button type="button" class="drawer-tab-btn" id="btnDrawerSocials" onclick="switchDrawerTab('socials')">
+        🌐 شبکه‌ها و ارتباط
+      </button>
+    </div>
 
-    <a href="order.html" class="mobile-cta-btn">🚀 استعلام فوری و محاسبه هزینه</a>
+    <!-- تب ۱: لیست صفحات سایت -->
+    <div id="drawerTabPages" class="drawer-tab-content active">
+      <ul class="mobile-nav-list">
+        <li>
+          <a href="index.html" class="mobile-link" data-page="index">
+            <span class="m-link-title"><span class="m-link-icon">🏠</span> صفحه اصلی</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+        <li>
+          <a href="portfolio.html" class="mobile-link" data-page="portfolio">
+            <span class="m-link-title"><span class="m-link-icon">💼</span> نمونه‌کارها و پروژه‌ها</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+        <li>
+          <a href="order.html" class="mobile-link" data-page="order">
+            <span class="m-link-title"><span class="m-link-icon">⚡</span> استعلام آنلاین و فاکتور</span>
+            <span class="link-badge-hot">آنلاین</span>
+          </a>
+        </li>
+        <li>
+          <a href="about.html" class="mobile-link" data-page="about">
+            <span class="m-link-title"><span class="m-link-icon">👥</span> درباره ما و اصول کاری</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+        <li>
+          <a href="contact.html" class="mobile-link" data-page="contact">
+            <span class="m-link-title"><span class="m-link-icon">📞</span> تماس مستقیم و مشاوره</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+      </ul>
 
-    <!-- بخش شبکه‌های اجتماعی در انتهای دراور موبایل -->
-    <div class="drawer-socials">
-      <div class="socials-title">شبکه‌های اجتماعی و ارتباطی</div>
-      <div class="social-icons-row">
-        <!-- تلگرام -->
-        <a href="https://t.me/seeep7" target="_blank" class="social-btn tg-btn" title="تلگرام">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.75 4-1.74 6.67-2.89 8.01-3.45 3.81-1.6 4.6-.88 4.6 1.83z"/>
-          </svg>
-          <span>تلگرام</span>
+      <a href="order.html" class="mobile-cta-btn">
+        <span>🚀 محاسبه آنلاین هزینه و سفارش</span>
+      </a>
+    </div>
+
+    <!-- تب ۲: شبکه‌های اجتماعی با کارت‌های تعاملی شیک -->
+    <div id="drawerTabSocials" class="drawer-tab-content">
+      <div class="social-cards-stack">
+        
+        <!-- کارت تلگرام -->
+        <a href="https://t.me/seeep7" target="_blank" class="social-card-rich tg-rich">
+          <div class="sc-icon-wrap tg-gradient">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.75 4-1.74 6.67-2.89 8.01-3.45 3.81-1.6 4.6-.88 4.6 1.83z"/>
+            </svg>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title-row">
+              <strong>تلگرام (پشتیبانی سریع)</strong>
+              <span class="sc-pill-online">پاسخگویی فوری</span>
+            </div>
+            <div class="sc-handle" dir="ltr">@seeep7</div>
+            <p class="sc-desc">ارسال ویس، مستندات و مشاوره مستقیم</p>
+          </div>
+          <span class="sc-arrow">‹</span>
         </a>
 
-        <!-- اینستاگرام -->
-        <a href="https://instagram.com/seep.7" target="_blank" class="social-btn ig-btn" title="اینستاگرام">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-          </svg>
-          <span>اینستاگرام</span>
+        <!-- کارت اینستاگرام -->
+        <a href="https://instagram.com/seep.7" target="_blank" class="social-card-rich ig-rich">
+          <div class="sc-icon-wrap ig-gradient">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title-row">
+              <strong>اینستاگرام</strong>
+              <span class="sc-pill-tag">استوری و نمونه</span>
+            </div>
+            <div class="sc-handle" dir="ltr">@seep.7</div>
+            <p class="sc-desc">نکات طراحی وب، توسعه و ویدیوها</p>
+          </div>
+          <span class="sc-arrow">‹</span>
         </a>
 
-        <!-- آپارات -->
-        <a href="https://www.aparat.com/hamidlog" target="_blank" class="social-btn aparat-btn" title="آپارات">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
-          </svg>
-          <span>آپارات</span>
+        <!-- کارت آپارات -->
+        <a href="https://www.aparat.com/hamidlog" target="_blank" class="social-card-rich aparat-rich">
+          <div class="sc-icon-wrap aparat-gradient">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+          </div>
+          <div class="sc-body">
+            <div class="sc-title-row">
+              <strong>کانال آپارات</strong>
+              <span class="sc-pill-tag">ویدیو و آموزش</span>
+            </div>
+            <div class="sc-handle" dir="ltr">aparat.com/hamidlog</div>
+            <p class="sc-desc">آموزش‌های کاربردی و ویدیوهای پروژه‌ها</p>
+          </div>
+          <span class="sc-arrow">‹</span>
         </a>
+
       </div>
     </div>
   </div>
 </header>
 
-<!-- نوار ناوبری شناور و ثابت پایین صفحه برای موبایل (Bottom Navigation Bar) -->
-<nav class="mobile-bottom-bar">
-  <a href="index.html" class="bottom-nav-item" data-bottom-page="index">
-    <div class="bottom-icon-wrap">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
-    </div>
-    <span>خانه</span>
-    <span class="active-indicator"></span>
-  </a>
+<!-- ==================== نوار ناوبری شناور جزیره‌ای در پایین موبایل (Floating Island) ==================== -->
+<nav class="floating-island-bar" aria-label="ناوبری سریع">
+  <div class="island-container">
+    
+    <!-- گزینه ۱: خانه -->
+    <a href="index.html" class="island-item" data-bottom-page="index">
+      <div class="island-icon-halo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="island-text">خانه</span>
+      <span class="island-dot"></span>
+    </a>
 
-  <a href="order.html" class="bottom-nav-item" data-bottom-page="order">
-    <div class="bottom-icon-wrap">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M11 15h2v2h-2zm0-8h2v6h-2zm1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-      </svg>
-    </div>
-    <span>خدمات</span>
-    <span class="active-indicator"></span>
-  </a>
+    <!-- گزینه ۲: خدمات و استعلام (دکمه کانون با ظاهر برجسته) -->
+    <a href="order.html" class="island-item" data-bottom-page="order">
+      <div class="island-icon-halo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <span class="island-text">خدمات</span>
+      <span class="island-dot"></span>
+    </a>
 
-  <a href="contact.html" class="bottom-nav-item" data-bottom-page="contact">
-    <div class="bottom-icon-wrap">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.29-.29.39-.71.25-1.1A11.025 11.025 0 0 1 9 5.25c0-.55-.45-1-1-1H4.5c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-.99-1.37z"/>
-      </svg>
-    </div>
-    <span>تماس</span>
-    <span class="active-indicator"></span>
-  </a>
+    <!-- گزینه ۳: تماس -->
+    <a href="contact.html" class="island-item" data-bottom-page="contact">
+      <div class="island-icon-halo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+      </div>
+      <span class="island-text">تماس</span>
+      <span class="island-dot"></span>
+    </a>
+
+  </div>
 </nav>
