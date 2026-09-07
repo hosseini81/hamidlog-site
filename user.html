@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حساب کاربری و پیگیری سفارش‌ها | استودیو حمیدرضا</title>
+  
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/order.css">
+  <link rel="stylesheet" href="css/user.css">
+</head>
+<body>
+
+  <!-- هدر سایت -->
+  <div id="header-slot"></div>
+
+  <!-- بدنه اصلی داشبورد -->
+  <main>
+    <div class="user-hub-container">
+
+      <!-- پاپ‌آپ اختصاصی سیستم -->
+      <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert-card">
+          <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
+          <div id="customAlertTitle" class="custom-alert-title">پیام سیستم</div>
+          <div id="customAlertText" class="custom-alert-text"></div>
+          <button type="button" class="btn-main" onclick="closeCustomAlert()" style="width: 100%;">متوجه شدم</button>
+        </div>
+      </div>
+
+      <!-- وضعیت ۱: فرم ورود و ثبت‌نام (در صورت عدم لاگین) -->
+      <div id="authBox" class="user-auth-card">
+        <h2 id="authTitle">ورود به حساب کاربری</h2>
+        <p>جهت دسترسی به پروژه‌ها، تسویه اقساط و محصولات دانلودی وارد شوید</p>
+
+        <div id="regNameField" class="auth-input-group" style="display:none;">
+          <label for="authName">نام و نام خانوادگی:</label>
+          <input type="text" id="authName" placeholder="مثال: علی محمدی" />
+        </div>
+
+        <div class="auth-input-group">
+          <label for="authPhone">شماره موبایل:</label>
+          <input type="tel" id="authPhone" dir="ltr" placeholder="09xxxxxxxxx" />
+        </div>
+
+        <div class="auth-input-group">
+          <label for="authPass">رمز عبور:</label>
+          <input type="password" id="authPass" placeholder="••••••••" />
+        </div>
+
+        <button type="button" class="btn-main" id="authSubmitBtn" onclick="submitAuth()" style="width:100%; padding:12px; margin-top:8px;">
+          ورود به حساب کاربری
+        </button>
+
+        <div class="auth-switch-text" style="margin-top:16px;">
+          <span id="authToggleText">حساب کاربری ندارید؟</span>
+          <a href="javascript:void(0)" id="authToggleLink" onclick="toggleAuthMode()">ثبت‌نام کنید</a>
+        </div>
+      </div>
+
+      <!-- وضعیت ۲: داشبورد کاربر پس از ورود -->
+      <div id="userDashboard" style="display:none;">
+        
+        <!-- سربرگ هویت و پروفایل -->
+        <div class="user-dash-header-card">
+          <div class="dash-user-meta">
+            <div class="dash-avatar-wrapper">
+              <img id="dashAvatarImg" src="https://via.placeholder.com/60?text=User" alt="پروفایل" />
+              <label for="avatarInput" class="avatar-change-badge" title="تغییر تصویر">📷</label>
+              <input type="file" id="avatarInput" style="display:none;" accept="image/*" onchange="uploadAvatarFile(event)" />
+            </div>
+            <div class="dash-user-titles">
+              <h3 id="dashUserName">کاربر گرامی</h3>
+              <span id="dashUserPhone">09...</span>
+            </div>
+          </div>
+          <button type="button" class="btn-logout-dash" onclick="logoutUser()">خروج از حساب</button>
+        </div>
+
+        <!-- تب‌های سه‌گانه تفکیک‌شده داشبورد -->
+        <div class="dash-tabs-bar">
+          <button type="button" class="dash-tab-btn active" id="tabBtnProjects" onclick="switchUserPanelTab('projects')">
+            📋 پروژه‌ها و اقساط
+          </button>
+          <button type="button" class="dash-tab-btn" id="tabBtnDownloads" onclick="switchUserPanelTab('downloads')">
+            📦 محصولات دانلودی
+          </button>
+          <button type="button" class="dash-tab-btn" id="tabBtnProfile" onclick="switchUserPanelTab('profile')">
+            👤 مشخصات کاربری
+          </button>
+        </div>
+
+        <!-- تب اول: پروژه‌ها و پیگیری روند کار و اقساط -->
+        <div id="panelTabProjects" class="dash-panel-tab active">
+          <div id="userProjectsList" class="projects-list-stack">
+            <div class="loading-box"><span class="spinner"></span> در حال استعلام وضعیت سفارش‌ها...</div>
+          </div>
+        </div>
+
+        <!-- تب دوم: محصولات دانلودی خریداری‌شده -->
+        <div id="panelTabDownloads" class="dash-panel-tab">
+          <div id="userPurchasedDownloadsList" class="downloads-list-stack">
+            <div class="loading-box"><span class="spinner"></span> در حال بررسی لایسنس‌های دانلودی...</div>
+          </div>
+        </div>
+
+        <!-- تب سوم: ویرایش مشخصات هویتی و عکس -->
+        <div id="panelTabProfile" class="dash-panel-tab">
+          <div class="profile-edit-box">
+            <div class="box-title" style="margin-bottom:14px;">ویرایش اطلاعات هویتی</div>
+            
+            <div class="auth-input-group">
+              <label for="editProfileName">نام و نام خانوادگی:</label>
+              <input type="text" id="editProfileName" />
+            </div>
+
+            <div class="auth-input-group">
+              <label for="editProfilePhone">شماره موبایل (غیرقابل تغییر):</label>
+              <input type="tel" id="editProfilePhone" dir="ltr" disabled style="background:#f1f5f9; color:#64748b; cursor:not-allowed;" />
+              <div class="input-disabled-tip">🔒 شماره موبایل به عنوان شناسه یکتای حساب شما ثبت شده است.</div>
+            </div>
+
+            <button type="button" class="btn-main" onclick="saveUserProfileName()" style="width:100%; margin-top:12px;">
+              💾 ذخیره تغییرات نام
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- فوتر سایت -->
+  <div id="footer-slot"></div>
+
+  <!-- اسکریپت‌ها -->
+  <script src="js/layout.js"></script>
+  <script src="js/user-panel.js"></script>
+</body>
+</html>
