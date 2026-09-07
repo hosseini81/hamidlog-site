@@ -1,253 +1,54 @@
-/* ==================== استایل‌های اختصاصی صفحه درباره ما ==================== */
-.about-wrapper {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
+/* ==================== استایل‌های اختصاصی درباره ما ==================== */
+.about-wrapper { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 
-/* ۱. سربرگ هیرو */
 .about-hero {
   background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-surface) 100%);
-  border: 1px solid #334155;
-  border-radius: 18px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
   padding: 44px 24px;
   text-align: center;
   color: #f8fafc;
 }
+.about-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 20px; margin-bottom: 12px; }
+.about-hero h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.about-hero h1 span { color: var(--accent); }
+.about-hero p { font-size: 12px; color: #94a3b8; max-width: 620px; margin: 0 auto; line-height: 1.8; }
 
-.about-badge {
-  display: inline-block;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34d399;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 4px 14px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-}
+.story-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+.story-content { background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 28px; }
+.story-content h2 { font-size: 16px; font-weight: 800; color: var(--bg-dark); margin-bottom: 12px; position: relative; padding-bottom: 8px; }
+.story-content h2::after { content: ''; position: absolute; bottom: 0; right: 0; width: 36px; height: 3px; background: var(--primary); border-radius: 2px; }
+.story-content p { font-size: 12px; color: var(--text-main); line-height: 1.9; text-align: justify; margin-bottom: 12px; }
 
-.about-hero h1 {
-  font-size: 24px;
-  font-weight: 900;
-  margin-bottom: 8px;
-}
-
-.about-hero h1 span {
-  color: var(--accent);
-}
-
-.about-hero p {
-  font-size: 12px;
-  color: #94a3b8;
-  max-width: 620px;
-  margin: 0 auto;
-  line-height: 1.8;
-}
-
-/* ۲. داستان و رویکرد کاری */
-.story-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 24px;
-  align-items: center;
-}
-
-.story-content {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 28px;
-}
-
-.story-content h2 {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bg-dark);
-  margin-bottom: 12px;
-  position: relative;
-  padding-bottom: 8px;
-}
-
-.story-content h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 36px;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-}
-
-.story-content p {
-  font-size: 12px;
-  color: var(--text-main);
-  line-height: 1.9;
-  text-align: justify;
-  margin-bottom: 12px;
-}
-
-.story-highlights {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.highlight-card {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition: transform 0.2s, border-color 0.2s;
-}
-
-.highlight-card:hover {
-  transform: translateX(-4px);
-  border-color: var(--primary);
-}
-
-.highlight-icon {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
+.story-highlights { display: flex; flex-direction: column; gap: 12px; }
+.highlight-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: transform 0.2s; }
+.highlight-card:hover { transform: translateX(-4px); border-color: var(--primary); }
+.highlight-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .icon-green { background: #ecfdf5; color: var(--primary); }
 .icon-blue { background: #f0f9ff; color: #0284c7; }
 .icon-amber { background: #fffbeb; color: #f59e0b; }
+.highlight-text h4 { font-size: 13px; font-weight: 800; color: var(--bg-dark); margin-bottom: 2px; }
+.highlight-text p { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
 
-.highlight-text h4 {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--bg-dark);
-  margin-bottom: 2px;
-}
+.values-wrap { background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 28px; }
+.values-title { text-align: center; margin-bottom: 22px; }
+.values-title h3 { font-size: 16px; font-weight: 800; color: var(--bg-dark); margin-bottom: 4px; }
+.values-title p { font-size: 11px; color: var(--text-muted); }
+.values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.value-box { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; text-align: center; }
+.value-emoji { font-size: 26px; margin-bottom: 8px; display: inline-block; }
+.value-box h4 { font-size: 13px; font-weight: 800; color: var(--bg-dark); margin-bottom: 6px; }
+.value-box p { font-size: 11px; color: var(--text-muted); line-height: 1.7; }
 
-.highlight-text p {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
+.skills-section { background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 26px; text-align: center; }
+.skills-section h3 { font-size: 14px; font-weight: 800; color: var(--bg-dark); margin-bottom: 14px; }
+.skills-list { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.skill-pill { background: #f8fafc; border: 1px solid var(--border-color); color: #334155; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; }
 
-/* ۳. ارزش‌های محوری */
-.values-wrap {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 28px;
-}
-
-.values-title {
-  text-align: center;
-  margin-bottom: 22px;
-}
-
-.values-title h3 {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bg-dark);
-  margin-bottom: 4px;
-}
-
-.values-title p {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.value-box {
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 18px;
-  text-align: center;
-  transition: transform 0.2s;
-}
-
-.value-box:hover {
-  transform: translateY(-2px);
-}
-
-.value-emoji {
-  font-size: 26px;
-  margin-bottom: 8px;
-  display: inline-block;
-}
-
-.value-box h4 {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--bg-dark);
-  margin-bottom: 6px;
-}
-
-.value-box p {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
-
-/* ۴. ابزارها و فناوری‌ها */
-.skills-section {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 26px;
-  text-align: center;
-}
-
-.skills-section h3 {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--bg-dark);
-  margin-bottom: 14px;
-}
-
-.skills-list {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.skill-pill {
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  color: #334155;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-  transition: all 0.2s;
-}
-
-.skill-pill:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-/* ۵. دعوت به اقدام پایانی */
 .about-cta {
-  background: #f0fdf4;
+  background: var(--success-bg);
   border: 1px dashed #86efac;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 24px;
   display: flex;
   align-items: center;
@@ -255,45 +56,12 @@
   gap: 20px;
   flex-wrap: wrap;
 }
-
-.about-cta-text h3 {
-  font-size: 15px;
-  font-weight: 900;
-  color: #166534;
-  margin-bottom: 4px;
-}
-
-.about-cta-text p {
-  font-size: 11px;
-  color: #475569;
-}
-
-.btn-cta-link {
-  background: var(--primary);
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 10px 22px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-  transition: background 0.2s, transform 0.2s;
-}
-
-.btn-cta-link:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-}
+.about-cta-text h3 { font-size: 15px; font-weight: 900; color: #166534; margin-bottom: 4px; }
+.about-cta-text p { font-size: 11px; color: #475569; }
+.btn-cta-link { background: var(--primary); color: #ffffff; text-decoration: none; font-size: 11px; font-weight: 800; padding: 10px 22px; border-radius: 8px; }
 
 @media (max-width: 768px) {
-  .story-grid {
-    grid-template-columns: 1fr;
-  }
-  .about-hero {
-    padding: 32px 16px;
-  }
-  .about-cta {
-    flex-direction: column;
-    text-align: center;
-  }
+  .story-grid { grid-template-columns: 1fr; }
+  .about-hero { padding: 32px 16px; }
+  .about-cta { flex-direction: column; text-align: center; }
 }
