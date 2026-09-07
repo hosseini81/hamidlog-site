@@ -1,0 +1,36 @@
+/* ==================== متغیرهای سیستم و هویت بصری ==================== */
+:root {
+  /* رنگ‌های پایه */
+  --bg-dark: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-light: #f8fafc;
+  --bg-card: #ffffff;
+  
+  /* رنگ‌های برند و تعاملی */
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --accent: #38bdf8;
+  --accent-hover: #0284c7;
+  
+  /* رنگ‌های وضعیت */
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+
+  /* متون و مرزها */
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --border-dark: #334155;
+
+  /* تایپوگرافی و اندازه‌بندی */
+  --font-family: 'Vazirmatn', Tahoma, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 36px;
+}
