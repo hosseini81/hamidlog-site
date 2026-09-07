@@ -10,20 +10,31 @@
       </div>
     </a>
 
-    <!-- منوی دسکتاپ -->
+    <!-- منوی دسکتاپ تفکیک‌شده -->
     <nav class="desktop-menu">
       <ul class="nav-list">
         <li><a href="index.html" class="nav-link" data-page="index">صفحه اصلی</a></li>
+        <li><a href="services.html" class="nav-link" data-page="services">خدمات طراحی سایت</a></li>
+        <li><a href="shop.html" class="nav-link" data-page="shop">فروشگاه محصولات</a></li>
         <li><a href="portfolio.html" class="nav-link" data-page="portfolio">نمونه‌کارها</a></li>
-        <li><a href="order.html" class="nav-link" data-page="order">استعلام و خدمات</a></li>
         <li><a href="about.html" class="nav-link" data-page="about">درباره ما</a></li>
         <li><a href="contact.html" class="nav-link" data-page="contact">تماس با ما</a></li>
       </ul>
     </nav>
 
-    <!-- اکشن‌ها: پروفایل سراسری کاربری و دکمه همبرگری -->
+    <!-- اکشن‌های هدر: سبد خرید، حساب کاربری و دکمه همبرگری -->
     <div class="nav-actions">
-      <!-- دکمه پروفایل کاربری در دسکتاپ -->
+      <!-- آیکون سبد خرید دسکتاپ -->
+      <a href="cart.html" class="header-cart-btn" title="سبد خرید">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-count-badge" id="headerCartCount" style="display:none;">0</span>
+      </a>
+
+      <!-- دکمه پروفایل کاربری سراسری -->
       <a href="user.html" class="header-user-btn" id="headerUserBtn" title="حساب کاربری">
         <div class="user-avatar-wrap">
           <img id="headerUserAvatar" src="" alt="آواتار" style="display:none;" />
@@ -39,10 +50,7 @@
         </div>
       </a>
 
-      <!-- دکمه استعلام سریع -->
-      <a href="order.html" class="header-cta-btn">🚀 استعلام هزینه</a>
-
-      <!-- دکمه همبرگری موبایل -->
+      <!-- دکمه همبرگری منوی موبایل -->
       <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="منوی موبایل">
         <span></span>
         <span></span>
@@ -51,7 +59,7 @@
     </div>
   </div>
 
-  <!-- پس‌زمینه تیره منوی کشویی موبایل -->
+  <!-- پس‌زمینه تیره منوی کشویی -->
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
   <!-- منوی کشویی دو تب موبایل (Drawer) -->
@@ -61,13 +69,13 @@
         <span class="brand-avatar" style="width:32px; height:32px; font-size:14px;">H</span>
         <div>
           <div style="font-weight:900; font-size:13px; color:#fff;">استودیو حمیدرضا</div>
-          <div style="font-size:10px; color:#94a3b8;">منوی دسترسی و ارتباط</div>
+          <div style="font-size:10px; color:#94a3b8;">منوی دسترسی سریع</div>
         </div>
       </div>
       <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="بستن">✕</button>
     </div>
 
-    <!-- سوئیچر دو تب منوی جانبی: صفحات / شبکه‌ها -->
+    <!-- سوئیچر دو تب دراور -->
     <div class="drawer-tabs-nav">
       <button type="button" class="drawer-tab-btn active" id="btnDrawerPages" onclick="switchDrawerTab('pages')">
         📑 صفحات سایت
@@ -77,12 +85,30 @@
       </button>
     </div>
 
-    <!-- تب ۱: لیست صفحات سایت -->
+    <!-- تب ۱: صفحات سایت -->
     <div id="drawerTabPages" class="drawer-tab-content active">
       <ul class="mobile-nav-list">
         <li>
           <a href="index.html" class="mobile-link" data-page="index">
             <span class="m-link-title"><span class="m-link-icon">🏠</span> صفحه اصلی</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+        <li>
+          <a href="services.html" class="mobile-link" data-page="services">
+            <span class="m-link-title"><span class="m-link-icon">💻</span> خدمات طراحی سایت</span>
+            <span class="link-badge-hot">استعلام</span>
+          </a>
+        </li>
+        <li>
+          <a href="shop.html" class="mobile-link" data-page="shop">
+            <span class="m-link-title"><span class="m-link-icon">🛍️</span> فروشگاه محصولات</span>
+            <span class="link-arrow">‹</span>
+          </a>
+        </li>
+        <li>
+          <a href="cart.html" class="mobile-link" data-page="cart">
+            <span class="m-link-title"><span class="m-link-icon">🛒</span> سبد خرید من</span>
             <span class="link-arrow">‹</span>
           </a>
         </li>
@@ -93,20 +119,8 @@
           </a>
         </li>
         <li>
-          <a href="order.html" class="mobile-link" data-page="order">
-            <span class="m-link-title"><span class="m-link-icon">⚡</span> استعلام آنلاین و خدمات</span>
-            <span class="link-badge-hot">محاسبه زنده</span>
-          </a>
-        </li>
-        <li>
           <a href="user.html" class="mobile-link" data-page="user">
             <span class="m-link-title"><span class="m-link-icon">👤</span> حساب کاربری و اقساط</span>
-            <span class="link-arrow">‹</span>
-          </a>
-        </li>
-        <li>
-          <a href="about.html" class="mobile-link" data-page="about">
-            <span class="m-link-title"><span class="m-link-icon">👥</span> درباره ما</span>
             <span class="link-arrow">‹</span>
           </a>
         </li>
@@ -117,122 +131,68 @@
           </a>
         </li>
       </ul>
-
-      <a href="order.html" class="mobile-cta-btn">
-        <span>🚀 محاسبه آنلاین هزینه و سفارش</span>
-      </a>
     </div>
 
     <!-- تب ۲: شبکه‌های اجتماعی -->
     <div id="drawerTabSocials" class="drawer-tab-content">
       <div class="social-cards-stack">
-        <!-- تلگرام -->
         <a href="https://t.me/seeep7" target="_blank" class="social-card-rich tg-rich">
           <div class="sc-icon-wrap tg-gradient">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.75 4-1.74 6.67-2.89 8.01-3.45 3.81-1.6 4.6-.88 4.6 1.83z"/>
-            </svg>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.75 4-1.74 6.67-2.89 8.01-3.45 3.81-1.6 4.6-.88 4.6 1.83z"/></svg>
           </div>
           <div class="sc-body">
-            <div class="sc-title-row">
-              <strong>تلگرام (پشتیبانی سریع)</strong>
-              <span class="sc-pill-online">پاسخگویی فوری</span>
-            </div>
+            <div class="sc-title-row"><strong>تلگرام استودیو</strong><span class="sc-pill-online">آنلاین</span></div>
             <div class="sc-handle" dir="ltr">@seeep7</div>
-            <p class="sc-desc">ارسال ویس، مستندات و مشاوره مستقیم</p>
           </div>
-          <span class="sc-arrow">‹</span>
-        </a>
-
-        <!-- اینستاگرام -->
-        <a href="https://instagram.com/seep.7" target="_blank" class="social-card-rich ig-rich">
-          <div class="sc-icon-wrap ig-gradient">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
-          </div>
-          <div class="sc-body">
-            <div class="sc-title-row">
-              <strong>اینستاگرام</strong>
-              <span class="sc-pill-tag">استوری و نمونه</span>
-            </div>
-            <div class="sc-handle" dir="ltr">@seep.7</div>
-            <p class="sc-desc">نکات طراحی وب، توسعه و ویدیوها</p>
-          </div>
-          <span class="sc-arrow">‹</span>
-        </a>
-
-        <!-- آپارات -->
-        <a href="https://www.aparat.com/hamidlog" target="_blank" class="social-card-rich aparat-rich">
-          <div class="sc-icon-wrap aparat-gradient">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
-            </svg>
-          </div>
-          <div class="sc-body">
-            <div class="sc-title-row">
-              <strong>کانال آپارات</strong>
-              <span class="sc-pill-tag">ویدیو و آموزش</span>
-            </div>
-            <div class="sc-handle" dir="ltr">aparat.com/hamidlog</div>
-            <p class="sc-desc">آموزش‌های کاربردی و ویدیوهای پروژه‌ها</p>
-          </div>
-          <span class="sc-arrow">‹</span>
         </a>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ==================== نوار شناور جزیره‌ای ۴ گانه در پایین موبایل ==================== -->
+<!-- ==================== نوار شناور جزیره‌ای ۵ گانه پایین موبایل ==================== -->
 <nav class="floating-island-bar" aria-label="ناوبری سریع موبایل">
   <div class="island-container">
-    
-    <!-- ۱. خانه -->
     <a href="index.html" class="island-item" data-bottom-page="index">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
       </div>
       <span class="island-text">خانه</span>
       <span class="island-dot"></span>
     </a>
 
-    <!-- ۲. استعلام و خدمات -->
-    <a href="order.html" class="island-item" data-bottom-page="order">
+    <a href="services.html" class="island-item" data-bottom-page="services">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-        </svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
       </div>
       <span class="island-text">خدمات</span>
       <span class="island-dot"></span>
     </a>
 
-    <!-- ۳. تماس -->
-    <a href="contact.html" class="island-item" data-bottom-page="contact">
+    <a href="shop.html" class="island-item" data-bottom-page="shop">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-        </svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
       </div>
-      <span class="island-text">تماس</span>
+      <span class="island-text">فروشگاه</span>
       <span class="island-dot"></span>
     </a>
 
-    <!-- ۴. حساب کاربری سراسری -->
+    <!-- دکمه سبد خرید در موبایل با بج هوشمند -->
+    <a href="cart.html" class="island-item" data-bottom-page="cart" style="position:relative;">
+      <div class="island-icon-halo">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+      </div>
+      <span class="island-cart-badge" id="bottomCartCount" style="display:none;">0</span>
+      <span class="island-text">سبد</span>
+      <span class="island-dot"></span>
+    </a>
+
     <a href="user.html" class="island-item" data-bottom-page="user">
       <div class="island-icon-halo">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
       <span class="island-text" id="bottomNavUserLabel">حساب من</span>
       <span class="island-dot"></span>
     </a>
-
   </div>
 </nav>
