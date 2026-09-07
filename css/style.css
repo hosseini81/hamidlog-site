@@ -588,3 +588,204 @@ main {
   font-size: 11px;
   color: #475569;
 }
+
+
+
+/* استایل‌های سامانه استعلام و پیش‌فاکتور */
+.order-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+  margin-top: 10px;
+}
+.order-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.order-box h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--bg-dark);
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+.plan-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.plan-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.plan-card.active {
+  border-color: var(--primary);
+  background: #f0fdf4;
+}
+.plan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.plan-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--bg-dark);
+}
+.plan-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.plan-cost {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.addon-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.addon-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+}
+.addon-info strong {
+  color: var(--primary);
+}
+
+/* فاکتور و ثبت نام */
+.invoice-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 20px;
+  position: sticky;
+  top: 80px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+.invoice-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+.invoice-head h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--bg-dark);
+}
+.order-code {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+.invoice-summary {
+  font-size: 11px;
+  color: #334155;
+  margin-bottom: 16px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+.features-summary-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.feature-item-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.summary-divider {
+  border-top: 1px dashed var(--border-color);
+  margin: 10px 0;
+}
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+.summary-total strong {
+  color: var(--primary);
+  font-size: 15px;
+}
+.form-group {
+  margin-bottom: 10px;
+}
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 11px;
+  outline: none;
+}
+.form-group input:focus {
+  border-color: var(--primary);
+}
+.btn-submit-order {
+  width: 100%;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-submit-order:hover {
+  background: var(--primary-hover);
+}
+.status-msg {
+  margin-top: 10px;
+  font-size: 11px;
+  text-align: center;
+  display: none;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+@media (max-width: 800px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+}
