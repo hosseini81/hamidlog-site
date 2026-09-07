@@ -48,12 +48,20 @@ window.closeCustomAlert = function() {
   if (alertEl) alertEl.style.display = 'none';
 };
 
-// راه‌اندازی پس از اطمینان از تزریق کامل فایل‌های HTML به صفحه
-window.addEventListener("allModulesLoaded", () => {
+// راه‌اندازی مستقل و مستقیم
+function initOrderEngine() {
   if (document.getElementById("dataLoader") || document.getElementById("packagesGrid")) {
     fetchInitialData();
   }
-});
+}
+
+// گوش دادن به هر دو حالت لود
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initOrderEngine);
+} else {
+  initOrderEngine();
+}
+window.addEventListener("allModulesLoaded", initOrderEngine);
 
 // سوئیچ تب‌های سامانه
 window.switchNavTab = function(tabId) {
