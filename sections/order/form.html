@@ -1,6 +1,6 @@
 <section class="order-system-hub">
 
-  <!-- پاپ‌آپ سراسری پیام‌ها -->
+  <!-- پاپ‌آپ پیام‌های سیستم -->
   <div id="customAlert" class="custom-alert-overlay">
     <div class="custom-alert-card">
       <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
@@ -10,122 +10,96 @@
     </div>
   </div>
 
-  <!-- نوار سوئیچر اصلی دو تب: خدمات طراحی سایت / محصولات دانلودی -->
-  <div class="hub-top-nav">
-    <div class="hub-nav-tabs">
-      <button type="button" class="hub-tab-btn active" id="btn-tabOrder" onclick="switchNavTab('tabOrder')">
-        💻 خدمات طراحی و توسعه وب‌سایت
-      </button>
-      <button type="button" class="hub-tab-btn" id="btn-tabProduct" onclick="switchNavTab('tabProduct')">
-        🛍️ محصولات و بسته‌های دانلودی
-      </button>
-    </div>
-    <a href="user.html" class="user-mini-badge" style="text-decoration:none;">
-      <span>👤 ورود به پنل کاربری و اقساط ➔</span>
-    </a>
+  <!-- لودر اولیه دریافت داده‌ها از شیت -->
+  <div id="dataLoader" class="loading-box">
+    <span class="spinner"></span>
+    در حال دریافت تعرفه‌ها و امکانات از سرور ابری...
   </div>
 
-  <!-- ==================== تب ۱: خدمات طراحی و شخصی‌سازی سایت ==================== -->
-  <div id="tabOrder" class="hub-tab-panel active">
-    
-    <div id="dataLoader" class="loading-box">
-      <span class="spinner"></span>
-      در حال دریافت تعرفه‌ها و امکانات از سرور ابری...
-    </div>
+  <!-- کانتینر اصلی خدمات طراحی سایت -->
+  <div class="order-main-grid" id="orderMainGrid" style="display:none;">
 
-    <div class="order-main-grid" id="orderMainGrid" style="display:none;">
+    <!-- ستون گام‌های پیکربندی پروژه -->
+    <div class="order-config-col">
+      <div class="steps-bar" id="stepsBar">
+        <button type="button" class="step-btn active" onclick="goStep(1)">۱. انتخاب پکیج پایه</button>
+        <button type="button" class="step-btn" onclick="goStep(2)">۲. ماژول‌ها و امکانات مازاد</button>
+        <button type="button" class="step-btn" onclick="goStep(3)">۳. کسر اقلام موجود شما</button>
+      </div>
 
-      <!-- ستون مراحل انتخاب خدمات -->
-      <div class="order-config-col">
-        <div class="steps-bar" id="stepsBar">
-          <button type="button" class="step-btn active" onclick="goStep(1)">۱. انتخاب پکیج پایه</button>
-          <button type="button" class="step-btn" onclick="goStep(2)">۲. ماژول‌ها و خدمات مازاد</button>
-          <button type="button" class="step-btn" onclick="goStep(3)">۳. کسر اقلام موجود شما</button>
-        </div>
+      <!-- گام ۱: انتخاب پکیج پایه -->
+      <div id="step1" class="step-content active">
+        <div class="step-head-title">یکی از پکیج‌های پایه متناسب با کسب‌وکار خود را انتخاب فرمایید:</div>
+        <div id="packagesGrid" class="package-grid"></div>
+      </div>
 
-        <!-- گام ۱: پکیج‌ها -->
-        <div id="step1" class="step-content active">
-          <div class="step-head-title">یکی از پکیج‌های پایه متناسب با کسب‌وکار خود را انتخاب فرمایید:</div>
-          <div id="packagesGrid" class="package-grid"></div>
-        </div>
-
-        <!-- گام ۲: خدمات مازاد -->
-        <div id="step2" class="step-content">
-          <div class="layout-switcher">
-            <label class="step-head-title" style="margin-bottom:0;">امکانات فنی و ماژول‌های تکمیلی:</label>
-            <div class="view-toggle-btns">
-              <button type="button" class="view-btn active" id="extraListBtn" onclick="toggleLayout('extra', 'list')">لیست</button>
-              <button type="button" class="view-btn" id="extraGridBtn" onclick="toggleLayout('extra', 'grid')">شبکه</button>
-            </div>
-          </div>
-          <div class="category-filter-bar" id="extraCatFilters"></div>
-          <div class="scrollable-service-list">
-            <div id="extraItemsList" class="services-container list-view"></div>
+      <!-- گام ۲: ماژول‌ها و امکانات جانبی -->
+      <div id="step2" class="step-content">
+        <div class="layout-switcher">
+          <label class="step-head-title" style="margin-bottom:0;">امکانات فنی و ماژول‌های تکمیلی:</label>
+          <div class="view-toggle-btns">
+            <button type="button" class="view-btn active" id="extraListBtn" onclick="toggleLayout('extra', 'list')">لیست</button>
+            <button type="button" class="view-btn" id="extraGridBtn" onclick="toggleLayout('extra', 'grid')">شبکه</button>
           </div>
         </div>
-
-        <!-- گام ۳: اقلام موجود جهت کسر -->
-        <div id="step3" class="step-content">
-          <div class="layout-switcher">
-            <label class="step-head-title" style="margin-bottom:0;">اقلام از قبل موجود شما (کسر خودکار از مبلغ):</label>
-            <div class="view-toggle-btns">
-              <button type="button" class="view-btn active" id="deductListBtn" onclick="toggleLayout('deduct', 'list')">لیست</button>
-              <button type="button" class="view-btn" id="deductGridBtn" onclick="toggleLayout('deduct', 'grid')">شبکه</button>
-            </div>
-          </div>
-          <div class="category-filter-bar" id="deductCatFilters"></div>
-          <div class="scrollable-service-list">
-            <div id="deductItemsList" class="services-container list-view"></div>
-          </div>
-        </div>
-
-        <!-- ناوبری گام‌ها -->
-        <div class="footer-step-actions" id="footerActions">
-          <button type="button" class="btn-step-prev" id="prevBtn" onclick="changeStep(-1)" style="visibility:hidden;">➔ مرحله قبل</button>
-          <button type="button" class="btn-step-next" id="nextBtn" onclick="changeStep(1)">مرحله بعد ➔</button>
+        <div class="category-filter-bar" id="extraCatFilters"></div>
+        <div class="scrollable-service-list">
+          <div id="extraItemsList" class="services-container list-view"></div>
         </div>
       </div>
 
-      <!-- ستون خلاصه و دکمه رفتن به تسویه حساب -->
-      <div class="order-summary-col">
-        <div class="invoice-sticky-box">
-          <div class="invoice-head">
-            <h4>خلاصه برآورد پروژه</h4>
-            <span class="badge-status-green">محاسبه آنلاین</span>
+      <!-- گام ۳: اقلام از قبل موجود جهت کسر -->
+      <div id="step3" class="step-content">
+        <div class="layout-switcher">
+          <label class="step-head-title" style="margin-bottom:0;">اقلام از قبل موجود شما (کسر خودکار از مبلغ):</label>
+          <div class="view-toggle-btns">
+            <button type="button" class="view-btn active" id="deductListBtn" onclick="toggleLayout('deduct', 'list')">لیست</button>
+            <button type="button" class="view-btn" id="deductGridBtn" onclick="toggleLayout('deduct', 'grid')">شبکه</button>
           </div>
-
-          <div class="summary-kpi-grid">
-            <div class="kpi-card"><div class="kpi-t">تخفیف پکیج</div><div class="kpi-v" id="kpiDiscount">۰٪</div></div>
-            <div class="kpi-card"><div class="kpi-t">کسر اقلام</div><div class="kpi-v" id="kpiDeducted">۰ ت</div></div>
-            <div class="kpi-card"><div class="kpi-t">مدت اجرا</div><div class="kpi-v" id="kpiDays">۰ روز</div></div>
-          </div>
-
-          <div class="total-highlight-box">
-            <div class="tot-label">برآورد کل هزینه پروژه</div>
-            <div class="tot-value" id="kpiTotal">۰ تومان</div>
-          </div>
-
-          <div class="order-items-scrollbox">
-            <div class="items-title">📋 جزئیات گزینه‌های انتخابی:</div>
-            <div id="orderItemsSummaryList"></div>
-          </div>
-
-          <button type="button" class="btn-main" onclick="proceedToCheckout()" style="width:100%; padding:14px; font-size:13px;">
-            💳 تأیید و رفتن به تسویه حساب و پرداخت ➔
-          </button>
+        </div>
+        <div class="category-filter-bar" id="deductCatFilters"></div>
+        <div class="scrollable-service-list">
+          <div id="deductItemsList" class="services-container list-view"></div>
         </div>
       </div>
 
+      <!-- ناوبری گام‌ها -->
+      <div class="footer-step-actions" id="footerActions">
+        <button type="button" class="btn-step-prev" id="prevBtn" onclick="changeStep(-1)" style="visibility:hidden;">➔ مرحله قبل</button>
+        <button type="button" class="btn-step-next" id="nextBtn" onclick="changeStep(1)">مرحله بعد ➔</button>
+      </div>
     </div>
-  </div>
 
-  <!-- ==================== تب ۲: ویترین محصولات دانلودی ==================== -->
-  <div id="tabProduct" class="hub-tab-panel">
-    <div class="products-tab-intro">
-      <h3>🛍️ فروشگاه محصولات، قالب‌ها و اسکریپت‌های آماده</h3>
-      <p>هر یک از محصولات زیر بلافاصله پس از پرداخت به همراه لایسنس و لینک مستقیم در پنل کاربری شما قرار می‌گیرند.</p>
+    <!-- ستون خلاصه برآورد پروژه و دکمه سبد خرید -->
+    <div class="order-summary-col">
+      <div class="invoice-sticky-box">
+        <div class="invoice-head">
+          <h4>خلاصه برآورد پروژه</h4>
+          <span class="badge-status-green">محاسبه آنلاین</span>
+        </div>
+
+        <div class="summary-kpi-grid">
+          <div class="kpi-card"><div class="kpi-t">تخفیف پکیج</div><div class="kpi-v" id="kpiDiscount">۰٪</div></div>
+          <div class="kpi-card"><div class="kpi-t">کسر اقلام</div><div class="kpi-v" id="kpiDeducted">۰ ت</div></div>
+          <div class="kpi-card"><div class="kpi-t">مدت زمان</div><div class="kpi-v" id="kpiDays">۰ روز</div></div>
+        </div>
+
+        <div class="total-highlight-box">
+          <div class="tot-label">برآورد نهایی هزینه پروژه</div>
+          <div class="tot-value" id="kpiTotal">۰ تومان</div>
+        </div>
+
+        <div class="order-items-scrollbox">
+          <div class="items-title">📋 جزئیات گزینه‌های انتخابی:</div>
+          <div id="orderItemsSummaryList"></div>
+        </div>
+
+        <button type="button" class="btn-main" onclick="proceedToCheckout()" style="width:100%; padding:14px; font-size:13px;">
+          🛒 افزودن به سبد خرید و ادامه ➔
+        </button>
+      </div>
     </div>
-    <div id="shopProductsGrid" class="package-grid"></div>
+
   </div>
 
 </section>
