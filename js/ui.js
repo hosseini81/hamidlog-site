@@ -230,3 +230,125 @@ function initBoomTransitions() {
     }, 280);
   }
 }
+
+
+
+// ==================== موتور کدهای نامحدود و تعقیب و گریز فوتر ====================
+document.addEventListener("DOMContentLoaded", () => {
+  initInfiniteCodeTerminal();
+  initVirusChaseGame();
+});
+
+// ۱. تایپر نامحدود و سریع کدهای وب
+function initInfiniteCodeTerminal() {
+  const terminal = document.getElementById("codeStreamOutput");
+  const screen = document.getElementById("terminalScreen");
+  if (!terminal || !screen) return;
+
+  const codeSnippets = [
+    '<span class="token-kw">import</span> { createApp } <span class="token-kw">from</span> <span class="token-val">"vue"</span>;\n',
+    '<span class="token-kw">const</span> app = <span class="token-fn">createApp</span>({ data() { <span class="token-kw">return</span> { secure: <span class="token-val">true</span> } } });\n',
+    '<span class="token-tag">&lt;div</span> <span class="token-attr">class</span>=<span class="token-val">"cloud-database-sync"</span><span class="token-tag">&gt;</span>\n',
+    '  <span class="token-tag">&lt;h3&gt;</span>Connecting to Shaparak Gateway...<span class="token-tag">&lt;/h3&gt;</span>\n',
+    '<span class="token-tag">&lt;/div&gt;</span>\n',
+    '<span class="token-comment">/* CSS Core Layout */</span>\n',
+    '<span class="token-tag">.app-cluster</span> {\n',
+    '  <span class="token-attr">display</span>: flex;\n',
+    '  <span class="token-attr">backdrop-filter</span>: <span class="token-fn">blur</span>(16px);\n',
+    '  <span class="token-attr">box-shadow</span>: 0 10px 30px <span class="token-val">rgba(0,0,0,0.5)</span>;\n',
+    '}\n',
+    '<span class="token-kw">async function</span> <span class="token-fn">executeOrder</span>(payload) {\n',
+    '  <span class="token-kw">const</span> token = <span class="token-kw">await</span> crypto.<span class="token-fn">randomUUID</span>();\n',
+    '  <span class="token-kw">const</span> res = <span class="token-kw">await</span> fetch(<span class="token-val">"/api/v2/orders"</span>, { body: JSON.<span class="token-fn">stringify</span>(payload) });\n',
+    '  <span class="token-kw">return</span> res.<span class="token-fn">json</span>();\n',
+    '}\n',
+    '<span class="token-comment">// Live Apps Script Pipeline Ready</span>\n'
+  ];
+
+  let snippetIndex = 0;
+  let charIndex = 0;
+  let buffer = "";
+
+  function streamNextChar() {
+    const currentSnippet = codeSnippets[snippetIndex];
+
+    if (charIndex < currentSnippet.length) {
+      // پیدا کردن تگ‌های HTML در متن برای جلوگیری از شکسته شدن آن‌ها
+      if (currentSnippet[charIndex] === '<') {
+        const closeTag = currentSnippet.indexOf('>', charIndex);
+        if (closeTag !== -1) {
+          buffer += currentSnippet.substring(charIndex, closeTag + 1);
+          charIndex = closeTag + 1;
+        } else {
+          buffer += currentSnippet[charIndex++];
+        }
+      } else {
+        buffer += currentSnippet[charIndex++];
+      }
+
+      terminal.innerHTML = buffer;
+      screen.scrollTop = screen.scrollHeight;
+      setTimeout(streamNextChar, 14); // سرعت بسیار بالا در تایپ
+    } else {
+      charIndex = 0;
+      snippetIndex = (snippetIndex + 1) % codeSnippets.length;
+      // جلوگیری از سنگین شدن DOM با حذف خطوط ابتدایی
+      if (buffer.length > 2500) {
+        buffer = buffer.substring(buffer.indexOf('\n') + 1);
+      }
+      setTimeout(streamNextChar, 80);
+    }
+  }
+
+  streamNextChar();
+}
+
+// ۲. شبیه‌ساز تعقیب و گریز ویروس و آنتی‌ویروس با حلقه بی‌نهایت و وقفه ۱۰ ثانیه‌ای
+function initVirusChaseGame() {
+  const virus = document.getElementById("actorVirus");
+  const defender = document.getElementById("actorAntivirus");
+  const stage = document.getElementById("chaseStage");
+  if (!virus || !defender || !stage) return;
+
+  function runChaseSequence() {
+    const stageWidth = window.innerWidth;
+    const duration = 6500; // مدت‌زمان دویدن در صفحه: ۶.۵ ثانیه
+    const startTime = performance.now();
+
+    function animateChase(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // مسیر حرکت افقی
+      const virusX = progress * (stageWidth + 300) - 100;
+      const defenderX = virusX - 95; // آنتی‌ویروس با فاصله به دنبال ویروس است اما به آن نمی‌رسد
+
+      // مسیر مارپیچ و عمودی (حرکت زیگزاگی بین بخش‌ها بدون برخورد به لینک‌ها)
+      const waveY = Math.sin(progress * Math.PI * 6) * 45 + 55;
+      const defenderWaveY = Math.sin((progress - 0.05) * Math.PI * 6) * 45 + 55;
+
+      // زاویه چرخش کاراکترها براساس شیب مسیر
+      const rotVirus = Math.cos(progress * Math.PI * 6) * 20;
+      const rotDefender = Math.cos((progress - 0.05) * Math.PI * 6) * 15;
+
+      virus.style.transform = `translate(${virusX}px, ${waveY}px) rotate(${rotVirus}deg)`;
+      defender.style.transform = `translate(${defenderX}px, ${defenderWaveY}px) rotate(${rotDefender}deg)`;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateChase);
+      } else {
+        // خروج از صفحه و ریست پوزیشن به خارج از کادر
+        virus.style.transform = "translate(-250px, 0)";
+        defender.style.transform = "translate(-250px, 0)";
+
+        // توقف ۱۰ ثانیه‌ای قبل از اجرای دور بعدی
+        setTimeout(runChaseSequence, 10000);
+      }
+    }
+
+    requestAnimationFrame(animateChase);
+  }
+
+  // شروع اولین دور ۳ ثانیه پس از لود صفحه
+  setTimeout(runChaseSequence, 3000);
+}
