@@ -3,19 +3,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   const loadSlot = async (id, file) => {
     const el = document.getElementById(id);
     if (el) {
-      const res = await fetch(file);
-      el.innerHTML = await res.text();
+      try {
+        const res = await fetch(file);
+        el.innerHTML = await res.text();
+      } catch (err) {
+        console.error(`Error loading ${file}:`, err);
+      }
     }
   };
+
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // ۲. بارگذاری قطعات اختصاصی صفحه (مانند بخش‌های صفحه اصلی)
+  // ۲. بارگذاری خودکار تمام بخش‌های مشخص شده با data-include
   const includes = document.querySelectorAll("[data-include]");
   for (const el of includes) {
     const file = el.getAttribute("data-include");
-    const res = await fetch(file);
-    el.innerHTML = await res.text();
+    try {
+      const res = await fetch(file);
+      el.outerHTML = await res.text();
+    } catch (err) {
+      console.error(`Error loading ${file}:`, err);
+    }
   }
 
   // ۳. فعال‌سازی منوی همبرگری موبایل
@@ -28,11 +37,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ۴. اکتیو کردن تب صفحه در منو
+  // ۴. اکتیو کردن لینک صفحه در منو
   const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
   document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
 
-  // ۵. راه‌اندازی اسکریپت‌های پویا پس از لود کامل HTMLها
+  // ۵. اجرای توابع تعاملی (تایپ متن و آکاردئون)
   initDynamicFeatures();
 });
 
