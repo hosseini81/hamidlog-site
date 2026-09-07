@@ -113,3 +113,91 @@
   .footer-container { grid-template-columns: 1fr; padding: 36px 16px 20px; }
   .footer-bottom-inner { flex-direction: column; text-align: center; gap: 6px; }
 }
+
+
+
+<footer class="site-footer">
+  <!-- لایه انحنای مدرن بالای فوتر -->
+  <div class="footer-wave-top">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,32 C320,78 420,10 720,45 C1020,80 1180,15 1440,38 L1440,80 L0,80 Z"></path>
+    </svg>
+    <div class="footer-glow-line"></div>
+  </div>
+
+  <div class="footer-container">
+    <!-- ستون اول: معرفی و نشانگر وضعیت زنده -->
+    <div class="footer-brand">
+      <div class="footer-brand-title">
+        <span class="brand-cube">⚡</span>
+        <h3>استودیو حمیدرضا</h3>
+      </div>
+      <p class="footer-bio">
+        طراحی فروشگاه‌های آنلاین ووکامرس، وب‌سایت‌های شرکتی پرسرعت و سامانه‌های متصل به دیتابیس ابری با تسویه رسمی شاپرک. تلفیق مهندسی دقیق با معماری پیشرفته وب.
+      </p>
+      
+      <div class="footer-live-badge">
+        <span class="pulse-ring"></span>
+        <span class="pulse-core"></span>
+        <span>هم‌اکنون در دسترس برای سفارش‌های جدید</span>
+      </div>
+    </div>
+
+    <!-- ستون دوم: دسترسی سریع به صفحات تفکیک‌شده -->
+    <div class="footer-col">
+      <h4>بخش‌های وب‌سایت</h4>
+      <ul class="footer-links">
+        <li><a href="index.html" class="boom-link">صفحه اصلی</a></li>
+        <li><a href="services.html" class="boom-link">خدمات طراحی سایت</a></li>
+        <li><a href="shop.html" class="boom-link">فروشگاه محصولات</a></li>
+        <li><a href="cart.html" class="boom-link">سبد خرید من</a></li>
+        <li><a href="portfolio.html" class="boom-link">نمونه‌کارها و پروژه‌ها</a></li>
+        <li><a href="user.html" class="boom-link">پنل کاربری و اقساط</a></li>
+      </ul>
+    </div>
+
+    <!-- ستون سوم: حوزه‌های تخصصی و خدمات -->
+    <div class="footer-col">
+      <h4>تخصص‌ها و راهکارها</h4>
+      <ul class="footer-links">
+        <li><a href="services.html" class="boom-link">طراحی فروشگاه اینترنتی ووکامرس</a></li>
+        <li><a href="services.html" class="boom-link">شخصی‌سازی پیشرفته قالب وودمارت</a></li>
+        <li><a href="services.html" class="boom-link">اتوماسیون Google Apps Script</a></li>
+        <li><a href="services.html" class="boom-link">بهینه‌سازی سرعت و امتیاز ۱۰۰ لایت‌هاوس</a></li>
+        <li><a href="services.html" class="boom-link">یکپارچه‌سازی درگاه بانکی شاپرک</a></li>
+      </ul>
+    </div>
+
+    <!-- ستون چهارم: ارتباط مستقیم و پشتیبانی -->
+    <div class="footer-col">
+      <h4>ارتباط مستقیم</h4>
+      <ul class="footer-links contact-items">
+        <li>
+          <span class="icon-bubble">📞</span>
+          <a href="tel:09965206696" dir="ltr" class="boom-link">۰۹۹۶ ۵۲۰ ۶۶۹۶</a>
+        </li>
+        <li>
+          <span class="icon-bubble">💬</span>
+          <a href="https://t.me/seeep7" target="_blank" dir="ltr" class="boom-link">تلگرام: seeep7@</a>
+        </li>
+        <li>
+          <span class="icon-bubble">⏰</span>
+          <span>پاسخگویی: شنبه تا پنج‌شنبه ۹ الی ۲۱</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ردیف کپی‌رایت انتهای فوتر -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <span>تمامی حقوق محفوظ است © ۲۰۲۶ | استودیو مهندسی وب حمیدرضا</span>
+      <span class="footer-tagline">طراحی شده با استاندارد مدرن و معماری ماژولار</span>
+    </div>
+  </div>
+
+  <!-- کانواس اختصاصی ذرات آتش و ترکش‌های انفجار -->
+  <canvas id="boomCanvas" class="boom-canvas"></canvas>
+  <!-- لایه فلش نوری و موج آتش -->
+  <div id="fireShockwave" class="fire-shockwave"></div>
+</footer>
