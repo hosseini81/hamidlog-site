@@ -201,7 +201,7 @@ function startCodeStream() {
   streamLoop();
 }
 
-// ۲. موتور تعقیب و گریز ۲۵ ثانیه‌ای شطرنجی با وقفه‌ها و انیمیشن روان
+// ==================== موتور تعقیب و گریز شطرنجی ۲۵ ثانیه‌ای 👾 و 🤖 ====================
 function startPixelChaseGame() {
   const virus = document.getElementById("actorVirus");
   const defender = document.getElementById("actorAntivirus");
@@ -211,157 +211,112 @@ function startPixelChaseGame() {
   if (!virus || !defender || !stage || stage.dataset.running) return;
   stage.dataset.running = "true";
 
-  function getWaypoints() {
-    const w = stage.clientWidth || window.innerWidth;
-    const h = stage.clientHeight || 180;
+  const delay = ms => new Promise(res => setTimeout(res, ms));
 
-    // مسیر شطرنجی گام‌به‌گام (حرکت‌ها با زوایای ۹۰ درجه و در فضاهای خالی بدون متن)
-    return [
+  function setPos(actor, leftPx, topPx, durationMs = 800) {
+    actor.style.transition = `left ${durationMs}ms linear, top ${durationMs}ms linear`;
+    actor.style.left = leftPx + "px";
+    actor.style.top = topPx + "px";
+  }
+
+  async function runEpicChase() {
+    const stageWidth = stage.clientWidth || window.innerWidth;
+    const stageHeight = Math.max(160, stage.clientHeight);
+
+    // ایستگاه‌های شطرنجی در کریدورهای خالی فوتر (حرکت‌های ۹۰ درجه پله‌پله)
+    const waypoints = [
       { x: -50, y: 15 },
-      { x: w * 0.12, y: 15 },
-      { x: w * 0.12, y: h - 35 },
-      { x: w * 0.36, y: h - 35 },
-      { x: w * 0.36, y: 15 },
-      { x: w * 0.60, y: 15 },
-      { x: w * 0.60, y: h - 35 },
-      { x: w * 0.84, y: h - 35 },
-      { x: w * 0.84, y: 18 },
-      { x: w * 0.48, y: 18 }, // نقطه مواجهه نهایی
-      { x: w + 90, y: 18 }    // خروج نهایی
+      { x: Math.round(stageWidth * 0.12), y: 15 },
+      { x: Math.round(stageWidth * 0.12), y: stageHeight - 45 },
+      { x: Math.round(stageWidth * 0.36), y: stageHeight - 45 },
+      { x: Math.round(stageWidth * 0.36), y: 15 },
+      { x: Math.round(stageWidth * 0.60), y: 15 },
+      { x: Math.round(stageWidth * 0.60), y: stageHeight - 45 },
+      { x: Math.round(stageWidth * 0.84), y: stageHeight - 45 },
+      { x: Math.round(stageWidth * 0.84), y: 20 },
+      { x: Math.round(stageWidth * 0.50), y: 20 }, // نقطه مواجهه روبه‌رو
+      { x: stageWidth + 80, y: 20 }                // فرار به بیرون
     ];
-  }
 
-  function setPos(actor, x, y) {
-    actor.style.transform = `translate(${x}px, ${y}px)`;
-  }
-
-  // تابع درون‌یابی حرکت پله‌ای برای گام برداشتن شطرنجی
-  function stepInterpolate(p1, p2, t) {
-    // ابتدا در یک محور حرکت کن، سپس در محور دیگر (حرکت شطرنجی واقعی)
-    if (t < 0.5) {
-      const subT = t * 2;
-      return {
-        x: p1.x + (p2.x - p1.x) * subT,
-        y: p1.y
-      };
-    } else {
-      const subT = (t - 0.5) * 2;
-      return {
-        x: p2.x,
-        y: p1.y + (p2.y - p1.y) * subT
-      };
-    }
-  }
-
-  function runEpicChase() {
-    const waypoints = getWaypoints();
-    const totalLegs = waypoints.length - 2;
-    const legDuration = 2200; // هر خانه شطرنجی ۲.۲ ثانیه طول می‌کشد تا حس چرخیدن ۲۰ الی ۲۵ ثانیه‌ای ایجاد شود
-    const totalTime = totalLegs * legDuration;
-    const startTime = performance.now();
-
-    // پاکسازی کلاس‌های حالت قبلی
+    // ۱. ریست حالت‌های اولیه
     virus.className = "grid-actor actor-alien-virus";
     defender.className = "grid-actor actor-cyber-bot";
     virusBubble.classList.remove("show");
     defBubble.classList.remove("show");
 
-    let isFacingBoss = false;
+    // قرار دادن اولیه بیرون صفحه سمت چپ
+    setPos(virus, waypoints[0].x, waypoints[0].y, 0);
+    setPos(defender, waypoints[0].x - 60, waypoints[0].y, 0);
+    await delay(200);
 
-    function frame(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / totalTime, 1);
+    // ۲. چرخیدن شطرنجی پله‌به‌پله در طول ۲۰ ثانیه
+    for (let i = 1; i < waypoints.length - 2; i++) {
+      const p = waypoints[i];
+      const prevP = waypoints[i - 1];
 
-      // محاسبه شاخص نقطه فعلی
-      const currentFloatLeg = progress * totalLegs;
-      const legIndex = Math.min(Math.floor(currentFloatLeg), totalLegs - 1);
-      const legT = currentFloatLeg - legIndex;
+      // حرکت ویروس
+      setPos(virus, p.x, p.y, 900);
 
-      // ۱. حرکت شطرنجی ویروس 👾
-      const vPos = stepInterpolate(waypoints[legIndex], waypoints[legIndex + 1], legT);
-      setPos(virus, vPos.x, vPos.y);
+      // آنتی‌ویروس به نقطه قبلی ویروس می‌رود (تعقیب گام به گام)
+      setPos(defender, prevP.x, prevP.y, 900);
+      await delay(1100);
 
-      // ۲. حرکت شطرنجی آنتی‌ویروس 🤖 با ۲ ثانیه تأخیر
-      const defDelaySec = 0.8;
-      const defLegFloat = Math.max(0, currentFloatLeg - defDelaySec);
-      const defLegIndex = Math.min(Math.floor(defLegFloat), totalLegs - 1);
-      const defLegT = defLegFloat - defLegIndex;
-      const dPos = stepInterpolate(waypoints[defLegIndex], waypoints[defLegIndex + 1], defLegT);
-      setPos(defender, dPos.x, dPos.y);
-
-      // رویداد ۱: خنده و قهقهه ویروس در گام ۳ (ثانیه ۷)
-      if (legIndex === 3 && legT > 0.2 && legT < 0.8) {
+      // رویداد ۱: ویروس می‌ایستد و قهقهه می‌زند (گام ۳)
+      if (i === 3) {
         virus.classList.add("laughing");
         virusBubble.textContent = "HA! HA!";
         virusBubble.classList.add("show");
-      } else if (legIndex !== 3) {
+        await delay(1600);
         virus.classList.remove("laughing");
-        if (!isFacingBoss) virusBubble.classList.remove("show");
+        virusBubble.classList.remove("show");
       }
 
-      // رویداد ۲: تعجب و چهره سوالی آنتی‌ویروس در گام ۵ (ثانیه ۱۳)
-      if (defLegIndex === 5 && defLegT > 0.2 && defLegT < 0.8) {
+      // رویداد ۲: آنتی‌ویروس می‌ایستد و چهره سوالی و گیج می‌گیرد (گام ۵)
+      if (i === 5) {
         defender.classList.add("confused");
         defBubble.textContent = "?!";
         defBubble.classList.add("show");
-      } else if (defLegIndex !== 5) {
+        await delay(1600);
         defender.classList.remove("confused");
-        if (!isFacingBoss) defBubble.classList.remove("show");
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(frame);
-      } else {
-        // مرحله ۳: اوج مواجهه و فرار سریع
-        triggerBossEncounter();
+        defBubble.classList.remove("show");
       }
     }
 
-    requestAnimationFrame(frame);
+    // ۳. مرحله مواجهه نهایی: رو در رو شدن در مرکز
+    const meetSpot = waypoints[waypoints.length - 2];
+    setPos(virus, meetSpot.x, meetSpot.y, 800);
+    setPos(defender, meetSpot.x - 70, meetSpot.y, 800);
+    await delay(900);
 
-    function triggerBossEncounter() {
-      isFacingBoss = true;
-      const spot = waypoints[waypoints.length - 2];
-      setPos(virus, spot.x, spot.y);
-      setPos(defender, spot.x - 55, spot.y);
+    // آنتی‌ویروس عصبانی و شکارچی می‌شود
+    defender.classList.add("hunter");
+    defBubble.textContent = "LOCKED ON!";
+    defBubble.classList.add("show");
 
-      // چهره خفن و خشمگین آنتی‌ویروس 🤖
-      defender.classList.add("hunter");
-      defBubble.textContent = "LOCKED ON!";
-      defBubble.classList.add("show");
+    // ویروس می‌ترسد و به لرزه می‌افتد
+    virus.classList.add("panic");
+    virusBubble.textContent = "OH NOOO!";
+    virusBubble.classList.add("show");
+    await delay(1500);
 
-      // چهره ترس و لرزش شدید ویروس 👾
-      virus.classList.add("panic");
-      virusBubble.textContent = "OH NOOO!";
-      virusBubble.classList.add("show");
+    // ۴. فرار سریع از صفحه
+    const exitSpot = waypoints[waypoints.length - 1];
+    setPos(virus, exitSpot.x, exitSpot.y, 700);
+    setPos(defender, exitSpot.x + 40, exitSpot.y, 750);
+    await delay(1000);
 
-      // بعد از ۱.۴ ثانیه فرار با نهایت سرعت
-      setTimeout(() => {
-        const exit = waypoints[waypoints.length - 1];
-        virus.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
-        defender.style.transition = "transform 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
+    // ۵. ریست کاراکترها و آماده‌سازی برای دور بعد
+    virusBubble.classList.remove("show");
+    defBubble.classList.remove("show");
+    virus.classList.remove("panic");
+    defender.classList.remove("hunter");
+    setPos(virus, -120, 20, 0);
+    setPos(defender, -180, 20, 0);
 
-        setPos(virus, exit.x, exit.y);
-        setPos(defender, exit.x + 50, exit.y);
-
-        setTimeout(() => {
-          // ریست کردن پوزیشن برای خارج از کادر و آماده‌سازی برای دور بعد
-          virus.style.transition = "none";
-          defender.style.transition = "none";
-          setPos(virus, -150, -150);
-          setPos(defender, -150, -150);
-          virusBubble.classList.remove("show");
-          defBubble.classList.remove("show");
-          virus.classList.remove("panic");
-          defender.classList.remove("hunter");
-
-          // وقفه دقیقاً ۱۰ ثانیه‌ای قبل از اجرای مجدد دور بعدی
-          setTimeout(runEpicChase, 10000);
-        }, 1000);
-      }, 1400);
-    }
+    // توقف دقیقاً ۱۰ ثانیه‌ای قبل از شروع دور بعدی
+    setTimeout(runEpicChase, 10000);
   }
 
-  // استارت دور اول پس از ۱.۵ ثانیه
-  setTimeout(runEpicChase, 1500);
+  // استارت اولین دور تعقیب پس از ۱ ثانیه
+  setTimeout(runEpicChase, 1000);
 }
