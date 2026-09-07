@@ -1,162 +1,271 @@
-<section class="order-system-wrap">
-  
-  <!-- تب‌های بالای سامانه -->
-  <div class="system-tabs">
-    <button class="sys-tab-btn active" onclick="switchMainTab('order-tab', this)">🛒 استعلام هزینه و ثبت سفارش</button>
-    <button class="sys-tab-btn" onclick="switchMainTab('dashboard-tab', this)">👤 پنل مشتریان و پیگیری اقساط</button>
+<section class="order-system-hub">
+
+  <!-- پاپ‌آپ سراسری پیام‌های سیستم -->
+  <div id="customAlert" class="custom-alert-overlay">
+    <div class="custom-alert-card">
+      <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
+      <div id="customAlertTitle" class="custom-alert-title">پیام سیستم</div>
+      <div id="customAlertText" class="custom-alert-text"></div>
+      <button type="button" class="btn-main" onclick="closeCustomAlert()" style="width: 100%;">متوجه شدم</button>
+    </div>
   </div>
 
-  <!-- ================= تب ۱: استعلام و سفارش ================= -->
-  <div id="order-tab" class="tab-content active">
-    <div class="order-layout">
-      
-      <!-- ستون انتخاب خدمات -->
-      <div class="order-controls">
-        
-        <!-- لودینگ اطلاعات پایه از گوگل شیت -->
-        <div id="dataLoader" class="loading-box">
-          <span class="spinner"></span>
-          در حال دریافت لیست خدمات، پکیج‌ها و تعرفه‌های به‌روز از سرور ابری...
+  <!-- نوار ناوبری ۳ تب اصلی سامانه -->
+  <div class="hub-top-nav">
+    <div class="hub-nav-tabs">
+      <button class="hub-tab-btn active" id="btn-tabOrder" onclick="switchNavTab('tabOrder')">🚀 استعلام خدمات و محاسبه فاکتور</button>
+      <button class="hub-tab-btn" id="btn-tabProduct" onclick="switchNavTab('tabProduct')">🛍️ محصولات دانلودی</button>
+      <button class="hub-tab-btn" id="btn-tabUserPanel" onclick="switchNavTab('tabUserPanel')">👤 حساب کاربری و اقساط</button>
+    </div>
+    <div id="headerUserProfile" class="user-mini-badge" onclick="switchNavTab('tabUserPanel')">
+      <img id="headerUserAvatar" src="https://via.placeholder.com/26?text=U" alt="پروفایل" />
+      <span id="headerUserName">ورود / ثبت‌نام</span>
+    </div>
+  </div>
+
+  <!-- بنر وضعیت زنده پذیرش سفارش -->
+  <div class="live-status-banner">
+    <div style="display:flex; align-items:center; gap:6px;">
+      <span class="pulse-dot"></span>
+      <strong>وضعیت پذیرش:</strong>
+      <span>فعال و در دسترس با اولویت‌بندی زمانی تحویل</span>
+    </div>
+    <span class="badge-status-green">تحویل آن‌تایم شاپرکی</span>
+  </div>
+
+  <!-- کادر هیرو تایپ‌رایتر -->
+  <div class="hub-hero-box">
+    <h2>محاسبه آنلاین و برآورد هزینه <span id="typingHeroText" style="color: var(--accent);"></span><span class="type-cursor"></span></h2>
+    <p>پکیج و خدمات مدنظر را انتخاب کنید؛ پیش‌فاکتور رسمی و تاریخ تحویل به‌صورت زنده تولید می‌شود.</p>
+  </div>
+
+  <!-- ==================== تب ۱: استعلام خدمات و ثبت سفارش ==================== -->
+  <div id="tabOrder" class="main-tab-content active">
+
+    <!-- لودینگ اولیه تا بارگذاری اطلاعات شیت -->
+    <div id="dataLoader" class="loading-box">
+      <span class="spinner"></span>
+      در حال دریافت لیست خدمات، پکیج‌ها و تعرفه‌های به‌روز از پایگاه ابری...
+    </div>
+
+    <div class="order-main-grid" id="orderMainGrid" style="display:none;">
+
+      <!-- ستون راست: مراحل ۳ گانه انتخاب خدمات -->
+      <div class="order-config-col">
+        <!-- نوار مراحل گام‌به‌گام -->
+        <div class="steps-bar" id="stepsBar">
+          <button class="step-btn active" onclick="goStep(1)">۱. انتخاب پکیج</button>
+          <button class="step-btn" onclick="goStep(2)">۲. خدمات جانبی</button>
+          <button class="step-btn" onclick="goStep(3)">۳. اقلام موجود شما</button>
         </div>
 
-        <!-- انتخاب پکیج -->
-        <div class="order-box" id="pkgSection" style="display:none;">
-          <h3 class="box-title">۱. انتخاب پکیج پایه</h3>
-          <div class="plans-grid" id="packagesContainer"></div>
+        <!-- گام ۱: پکیج‌ها -->
+        <div id="step1" class="step-content active">
+          <div class="step-head-title">یکی از پکیج‌های پایه را انتخاب نمایید:</div>
+          <div id="packagesGrid" class="package-grid"></div>
         </div>
 
-        <!-- خدمات تکمیلی -->
-        <div class="order-box" id="servicesSection" style="display:none;">
-          <h3 class="box-title">۲. افزودن خدمات تخصصی و امکانات جانبی</h3>
-          <div class="services-list" id="servicesContainer"></div>
-        </div>
-
-        <!-- نحوه پرداخت -->
-        <div class="order-box" id="paymentTypeSection" style="display:none;">
-          <h3 class="box-title">۳. نوع تسویه حساب</h3>
-          <div class="payment-types-grid">
-            <label class="pay-type-card active">
-              <input type="radio" name="paymentType" value="full" checked onchange="calculateOrderTotal()">
-              <div>
-                <strong>پرداخت نقدی (با ۵٪ تخفیف ویژه)</strong>
-                <p>تسویه یک‌مرحله‌ای با اعمال ۵٪ کسر از مبلغ کل فاکتور</p>
-              </div>
-            </label>
-            <label class="pay-type-card">
-              <input type="radio" name="paymentType" value="installments" onchange="calculateOrderTotal()">
-              <div>
-                <strong>پرداخت اقساطی (۴۰٪ پیش‌پرداخت)</strong>
-                <p>شروع پروژه با ۴۰٪ پیش‌پرداخت، مابقی در طول مراحل اجرا</p>
-              </div>
-            </label>
+        <!-- گام ۲: خدمات مازاد -->
+        <div id="step2" class="step-content">
+          <div class="layout-switcher">
+            <label class="step-head-title" style="margin-bottom:0;">امکانات و ماژول‌های مازاد:</label>
+            <div class="view-toggle-btns">
+              <button type="button" class="view-btn active" id="extraListBtn" onclick="toggleLayout('extra', 'list')">لیست</button>
+              <button type="button" class="view-btn" id="extraGridBtn" onclick="toggleLayout('extra', 'grid')">شبکه</button>
+            </div>
           </div>
+          <div class="category-filter-bar" id="extraCatFilters"></div>
+          <div id="extraItemsList" class="services-container list-view"></div>
         </div>
 
+        <!-- گام ۳: اقلام موجود جهت کسر -->
+        <div id="step3" class="step-content">
+          <div class="layout-switcher">
+            <label class="step-head-title" style="margin-bottom:0;">اقلام از قبل موجود شما (با انتخاب، از فاکتور کسر می‌شود):</label>
+            <div class="view-toggle-btns">
+              <button type="button" class="view-btn active" id="deductListBtn" onclick="toggleLayout('deduct', 'list')">لیست</button>
+              <button type="button" class="view-btn" id="deductGridBtn" onclick="toggleLayout('deduct', 'grid')">شبکه</button>
+            </div>
+          </div>
+          <div class="category-filter-bar" id="deductCatFilters"></div>
+          <div id="deductItemsList" class="services-container list-view"></div>
+        </div>
+
+        <!-- دکمه‌های جلو/عقب مراحل انتخاب خدمات -->
+        <div class="footer-step-actions" id="footerActions">
+          <button type="button" class="btn-outline" id="prevBtn" onclick="changeStep(-1)" style="visibility:hidden;">➔ مرحله قبلی</button>
+          <button type="button" class="btn-main" id="nextBtn" onclick="changeStep(1)">مرحله بعدی ➔</button>
+        </div>
       </div>
 
-      <!-- ستون پیش‌فاکتور آنلاین و زرین‌پال -->
-      <div class="order-invoice-col">
-        <div class="invoice-sticky-card">
-          <div class="invoice-header">
-            <h4>پیش‌فاکتور رسمی</h4>
-            <span class="status-pill">محاسبه آنلاین</span>
-          </div>
+      <!-- ستون چپ: فاکتور زنده، مشخصات، تسویه حساب و اتصال به درگاه -->
+      <div class="order-summary-col">
+        <div class="invoice-sticky-box">
 
-          <div class="invoice-items">
-            <div class="inv-row base-pkg-row">
-              <span id="invPkgTitle">هیچ پکیجی انتخاب نشده</span>
-              <strong id="invPkgPrice">۰ تومان</strong>
+          <!-- فرم فعال پیش‌فاکتور -->
+          <div id="step4FormWrap">
+            <div class="invoice-head">
+              <h4>پیش‌فاکتور آنلاین و رسمی</h4>
+              <span class="status-badge">محاسبه زنده</span>
             </div>
 
-            <div id="invAddedServices" class="inv-added-list"></div>
+            <!-- KPI شاخص‌ها -->
+            <div class="summary-kpi-grid">
+              <div class="kpi-card"><div class="kpi-t">تخفیف پکیج</div><div class="kpi-v" id="kpiDiscount">۰٪</div></div>
+              <div class="kpi-card"><div class="kpi-t">کسر اقلام</div><div class="kpi-v" id="kpiDeducted">۰ ت</div></div>
+              <div class="kpi-card"><div class="kpi-t">زمان تحویل</div><div class="kpi-v" id="kpiDays">۰ روز</div></div>
+            </div>
+
+            <!-- باکس مجموع فاکتور -->
+            <div class="total-highlight-box">
+              <div class="tot-label">مبلغ نهایی پروژه</div>
+              <div class="tot-value" id="kpiTotal">۰ تومان</div>
+            </div>
+
+            <!-- اقلام فاکتور -->
+            <div class="order-items-scrollbox">
+              <div class="items-title">📑 شرح اقلام و امکانات انتخابی:</div>
+              <div id="orderItemsSummaryList"></div>
+            </div>
+
+            <!-- مشخصات کارفرما -->
+            <div class="customer-inputs-box">
+              <div class="inputs-head">
+                <span>مشخصات کارفرما:</span>
+                <span id="autoFilledBadge" style="display:none;" class="badge-status-green">✔ تکمیل خودکار از حساب</span>
+              </div>
+              <input type="text" id="custName" placeholder="نام و نام خانوادگی کارفرما *" required />
+              <input type="tel" id="custPhone" dir="ltr" placeholder="شماره موبایل جهت هماهنگی (09xxxxxxxxx) *" pattern="09[0-9]{9}" required />
+            </div>
 
             <!-- کد تخفیف -->
-            <div class="coupon-box">
-              <input type="text" id="couponInput" placeholder="کد تخفیف دارید؟">
-              <button type="button" onclick="applyCoupon()">اعمال</button>
+            <div class="coupon-action-row">
+              <input type="text" id="couponInput" placeholder="کد تخفیف (مثال: NOROOZ)" />
+              <button type="button" class="btn-outline" onclick="applyCoupon()">اعمال</button>
             </div>
-            <div id="couponMsg" class="coupon-msg"></div>
+            <div id="couponMessage" class="coupon-feedback-msg"></div>
 
-            <div class="inv-divider"></div>
+            <!-- نحوه تسویه حساب (در ستون چپ و بالای دکمه پرداخت) -->
+            <div class="payment-method-wrap">
+              <div class="pay-title">نحوه تسویه و پرداخت:</div>
+              
+              <label class="pay-choice-card" onclick="onPaymentPlanChanged('full')">
+                <input type="radio" name="payType" value="full" checked />
+                <div>
+                  <strong>پرداخت نقدی (با ۵٪ تخفیف تسویه کامل)</strong>
+                  <div id="fullPaySummary" class="pay-subtext-green">محاسبه آنلاین...</div>
+                </div>
+              </label>
 
-            <div class="inv-row">
-              <span>تخفیف / تفاوت تسویه:</span>
-              <span id="invDiscountPrice" style="color:#16a34a;">۰ تومان</span>
+              <label class="pay-choice-card" onclick="onPaymentPlanChanged('installments')">
+                <input type="radio" name="payType" value="installments" />
+                <div>
+                  <strong>پرداخت اقساطی در ۳ مرحله (۵٪ کارمزد)</strong>
+                  <div id="installmentPaySummary" class="pay-subtext-gray">قسط اول (۴۰٪ پیش‌پرداخت) + ۲ قسط ماهانه</div>
+                </div>
+              </label>
             </div>
 
-            <div class="inv-row total-row">
-              <span>مبلغ کل فاکتور:</span>
-              <strong id="invFinalPrice">۰ تومان</strong>
-            </div>
+            <button type="button" class="btn-main submit-order-btn" id="submitBtn" onclick="finishOrder()">
+              💳 ثبت سفارش و ورود به درگاه شاپرک
+            </button>
+          </div>
 
-            <div class="inv-row payable-now-row">
-              <span>پیش‌پرداخت آنلاین شاپرک:</span>
-              <strong id="invPayableNow">۰ تومان</strong>
+          <!-- باکس موفقیت و هدایت به درگاه پس از ثبت فاکتور -->
+          <div id="orderSuccessWrap" style="display:none;" class="payment-redirect-box">
+            <h3 style="color:#16a34a; font-size:15px; margin-bottom:8px;">✅ پیش‌فاکتور با موفقیت ایجاد شد</h3>
+            <div style="font-size:12px; color:#475569; margin-bottom:12px;">
+              شناسه پیگیری سفارش: <strong id="successTrackCodeText">---</strong>
+            </div>
+            <p style="font-size:11px; color:#1e293b; margin-bottom:10px;">
+              جهت ورود مستقیم به شبکه پرداخت شاپرک، روی دکمه زیر کلیک فرمایید:
+            </p>
+            <a href="#" id="successGatewayLink" target="_blank" class="btn-main" style="display:block; text-align:center; padding:12px;">
+              💳 ورود مستقیم به درگاه پرداخت شاپرک
+            </a>
+            <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+              <a href="#" id="successInvoiceLink" target="_blank" class="btn-outline" style="text-align:center; text-decoration:none;">
+                📄 دانلود پیش‌فاکتور رسمی (PDF)
+              </a>
+              <button type="button" class="btn-outline" onclick="resetFormForNewOrder()">
+                ➕ ثبت یک سفارش جدید
+              </button>
             </div>
           </div>
 
-          <!-- فرم ورود مشخصات مشتری -->
-          <form id="orderForm" onsubmit="handleFinalSubmit(event)" class="customer-info-form">
-            <div class="form-group">
-              <input type="text" id="orderCustName" placeholder="نام و نام خانوادگی کارفرما *" required>
-            </div>
-            <div class="form-group">
-              <input type="tel" id="orderCustPhone" placeholder="شماره موبایل (جهت صدور فاکتور) *" dir="ltr" pattern="09[0-9]{9}" required>
-            </div>
-            <button type="submit" id="submitOrderBtn" class="btn-pay-zarinpal">
-              💳 ثبت سفارش و ورود به درگاه شاپرک
-            </button>
-          </form>
-
-          <div id="orderStatusMsg" class="order-status-msg"></div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ================= تب ۲: پنل کاربری و اقساط ================= -->
-  <div id="dashboard-tab" class="tab-content">
-    
-    <!-- بخش لاگین/ثبت نام -->
-    <div id="authBox" class="auth-card">
-      <h3 id="authTitle">ورود به پنل کاربری</h3>
-      <p>جهت پیگیری سفارشات، دانلود فاکتور و تسویه اقساط وارد شوید</p>
-
-      <div class="auth-inputs">
-        <input type="text" id="authName" placeholder="نام شما (مخصوص ثبت‌نام)" style="display:none;">
-        <input type="tel" id="authPhone" placeholder="شماره موبایل (۰۹xxxxxxxxx)" dir="ltr">
-        <input type="password" id="authPass" placeholder="رمز عبور">
-        <button type="button" id="authSubmitBtn" class="btn-main" onclick="processAuth()">ورود به پنل</button>
-      </div>
-
-      <div class="auth-toggle">
-        <span id="authToggleText">حساب کاربری ندارید؟</span>
-        <a href="javascript:void(0)" onclick="toggleAuthMode()">ثبت نام در سامانه</a>
-      </div>
-      <div id="authMsg" class="auth-msg"></div>
+  <!-- ==================== تب ۲: محصولات دانلودی ==================== -->
+  <div id="tabProduct" class="main-tab-content">
+    <div class="products-tab-intro">
+      <h3>🛍️ قالب‌ها، افزونه‌ها و بسته‌های کد آماده</h3>
+      <p>پس از خرید آنلاین، لایسنس و فایل محصول به شکل آنی در پنل کاربری فعال و قابل دانلود خواهد بود.</p>
     </div>
+    <div id="shopProductsGrid" class="package-grid"></div>
+  </div>
 
-    <!-- داشبورد کاربر پس از ورود -->
-    <div id="userDashboard" class="user-dashboard" style="display:none;">
-      <div class="user-dash-header">
-        <div class="user-profile-info">
-          <div class="user-avatar-placeholder" id="userAvatar">U</div>
-          <div>
-            <h3 id="dashUserName">کاربر عزیز</h3>
-            <span id="dashUserPhone" style="font-size:11px; color:#64748b;">-</span>
-          </div>
+  <!-- ==================== تب ۳: حساب کاربری، فایل‌ها و اقساط ==================== -->
+  <div id="tabUserPanel" class="main-tab-content">
+    <div class="user-panel-wrapper">
+      
+      <!-- باکس ورود / ثبت‌نام -->
+      <div id="authBox" class="hub-auth-card">
+        <h3 id="authTitle">ورود به حساب کاربری</h3>
+        <p style="font-size:11px; color:#64748b; margin-bottom:14px;">جهت پیگیری وضعیت پروژه‌ها، دانلود فایل‌ها و تسویه اقساط وارد شوید</p>
+
+        <div id="regNameField" style="display:none; margin-bottom:10px;">
+          <input type="text" id="authName" placeholder="نام و نام خانوادگی شما *" />
         </div>
-        <button class="btn-logout" onclick="logoutUser()">خروج از حساب</button>
+        <div style="margin-bottom:10px;">
+          <input type="tel" id="authPhone" dir="ltr" placeholder="شماره موبایل (09xxxxxxxxx) *" />
+        </div>
+        <div style="margin-bottom:14px;">
+          <input type="password" id="authPass" placeholder="رمز عبور *" />
+        </div>
+
+        <button type="button" class="btn-main" id="authSubmitBtn" onclick="submitAuth()" style="width:100%;">
+          ورود به حساب کاربری
+        </button>
+
+        <div class="auth-switch-text">
+          <span id="authToggleText">حساب کاربری ندارید؟</span>
+          <a href="javascript:void(0)" onclick="toggleAuthMode()">ثبت‌نام کنید</a>
+        </div>
       </div>
 
-      <h4 style="margin:20px 0 10px; font-size:14px; font-weight:800;">پروژه‌ها و سفارشات شما</h4>
-      <div id="ordersContainer" class="dash-orders-grid"></div>
+      <!-- داشبورد فعال کاربر بعد از لاگین -->
+      <div id="userDashboard" style="display:none;">
+        
+        <!-- کارت پروفایل و آواتار -->
+        <div class="user-dash-topbar">
+          <div class="profile-info-wrap">
+            <div class="avatar-holder">
+              <img id="dashAvatarImg" src="https://via.placeholder.com/46?text=User" alt="نمایه" />
+              <label for="avatarInput" title="تغییر تصویر نمایه">📷</label>
+              <input type="file" id="avatarInput" style="display:none;" accept="image/*" onchange="uploadAvatarFile(event)" />
+            </div>
+            <div>
+              <div id="dashUserName" class="dash-user-name">کاربر محترم</div>
+              <div id="dashUserPhone" class="dash-user-phone">09...</div>
+            </div>
+          </div>
+          <button type="button" class="btn-outline" onclick="logoutUser()">خروج</button>
+        </div>
 
-      <h4 style="margin:24px 0 10px; font-size:14px; font-weight:800;">محصولات دانلودی و لایسنس‌ها</h4>
-      <div id="downloadsContainer" class="dash-downloads-grid"></div>
+        <!-- فایل‌های خریداری‌شده -->
+        <div class="dash-section-head">📦 محصولات دانلودی و لایسنس‌های شما:</div>
+        <div id="userPurchasedDownloadsList" class="downloads-list-stack"></div>
+
+        <!-- پروژه‌ها و مراحل اقساط -->
+        <div class="dash-section-head" style="margin-top:20px;">📋 وضعیت اجرای پروژه‌ها و اقساط:</div>
+        <div id="userProjectsList" class="projects-list-stack"></div>
+      </div>
+
     </div>
-
   </div>
 
 </section>
