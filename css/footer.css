@@ -1,36 +1,245 @@
-/* ==================== فوتر مدرن با افکت‌های زنده ==================== */
+/* ==================== فوتر مدرن مهندسی شده ==================== */
 .site-footer {
   background: var(--bg-dark);
   color: var(--text-muted);
   position: relative;
   margin-top: auto;
   overflow: hidden;
+  border-top: 1px solid rgba(51, 65, 85, 0.6);
 }
-.footer-glow-line {
+
+/* ۱. استایل ترمینال شبیه‌ساز کدنویسی نامحدود */
+.code-stream-terminal {
   width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #10b981, #38bdf8, #6366f1, #10b981);
-  background-size: 300% 100%;
-  animation: streamGlow 4s linear infinite;
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.8);
+  position: relative;
+  z-index: 1;
 }
-@keyframes streamGlow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 300% 50%; }
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #090d16;
+  padding: 6px 14px;
+  border-bottom: 1px solid #1e293b;
 }
+
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #eab308; }
+.dot-green { background: #22c55e; }
+
+.terminal-title {
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+  direction: ltr;
+}
+
+.terminal-status {
+  font-size: 10px;
+  color: #10b981;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: monospace;
+}
+
+.pulse-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: liveBlink 1s infinite alternate;
+}
+@keyframes liveBlink { from { opacity: 0.3; } to { opacity: 1; } }
+
+.terminal-screen {
+  height: 95px;
+  max-height: 95px;
+  overflow: hidden;
+  padding: 8px 16px;
+  position: relative;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+#codeStreamOutput {
+  margin: 0;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  direction: ltr;
+  text-align: left;
+  color: #38bdf8;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: none;
+}
+
+/* هایلایت‌های نحوی در کد استریم */
+.token-tag { color: #f43f5e; font-weight: 700; }
+.token-attr { color: #fbbf24; }
+.token-val { color: #34d399; }
+.token-fn { color: #60a5fa; }
+.token-kw { color: #c084fc; font-weight: 700; }
+.token-comment { color: #475569; font-style: italic; }
+
+/* ۲. استیج تعقیب و گریز ویروس و آنتی‌ویروس */
+.chase-stage {
+  position: absolute;
+  top: 110px;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.chase-actor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+  transform: translate(-200px, 0);
+}
+
+.actor-label {
+  font-size: 9px;
+  font-family: monospace;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-top: 3px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* کاراکتر ویروس */
+.actor-virus .actor-label {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.virus-body {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle, #dc2626 20%, #991b1b 90%);
+  border-radius: 40% 60% 60% 40% / 50% 40% 60% 50%;
+  position: relative;
+  box-shadow: 0 0 14px rgba(220, 38, 38, 0.8), inset 0 0 6px #fca5a5;
+  animation: virusMorph 0.35s infinite alternate;
+}
+
+@keyframes virusMorph {
+  0% { border-radius: 40% 60% 60% 40% / 50% 40% 60% 50%; transform: scale(1) rotate(-3deg); }
+  100% { border-radius: 60% 40% 50% 50% / 40% 60% 40% 60%; transform: scale(1.1) rotate(5deg); }
+}
+
+.virus-eye {
+  position: absolute;
+  top: 9px;
+  width: 6px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+}
+.virus-eye::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 3px;
+  height: 4px;
+  background: #000;
+  border-radius: 50%;
+}
+.virus-eye.left { left: 7px; }
+.virus-eye.right { right: 7px; }
+
+.virus-mouth {
+  position: absolute;
+  bottom: 7px;
+  left: 10px;
+  width: 12px;
+  height: 4px;
+  background: #450a0a;
+  border-radius: 0 0 8px 8px;
+}
+
+/* کاراکتر آنتی‌ویروس */
+.actor-antivirus .actor-label {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+.shield-body {
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle, #0284c7 10%, #0369a1 90%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.8);
+  border: 2px solid #7dd3fc;
+  position: relative;
+  animation: defenderPulse 0.4s infinite alternate;
+}
+
+@keyframes defenderPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 10px #0284c7; }
+  100% { transform: scale(1.06); box-shadow: 0 0 20px #38bdf8; }
+}
+
+.shield-core { font-size: 16px; }
+
+.laser-scanner {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(to left, #38bdf8, transparent);
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+/* استایل عمومی ستون‌های فوتر */
 .footer-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 48px 20px 28px;
+  padding: 38px 20px 24px;
   display: grid;
   grid-template-columns: 1.6fr 1fr 1.2fr 1.3fr;
   gap: 32px;
+  position: relative;
+  z-index: 5;
 }
+
 .footer-brand-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.brand-cube { font-size: 20px; animation: gentleFloat 3s ease-in-out infinite; }
-@keyframes gentleFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
+.brand-cube { font-size: 20px; }
 .footer-brand h3 { color: #f8fafc; font-size: 16px; font-weight: 900; margin: 0; }
 .footer-bio { font-size: 11px; line-height: 1.9; color: #94a3b8; margin-bottom: 16px; text-align: justify; }
 
@@ -47,6 +256,7 @@
   color: #34d399;
   position: relative;
 }
+
 .pulse-core { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; z-index: 2; }
 .pulse-ring {
   position: absolute;
@@ -82,19 +292,30 @@
   background: var(--primary);
   border-radius: 2px;
 }
+
 .footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
 .footer-links a {
   color: #94a3b8;
   text-decoration: none;
   font-size: 11px;
   display: inline-block;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  position: relative;
 }
-.footer-links a:hover { color: var(--accent); transform: translateX(-5px); }
+.footer-links a:hover {
+  color: var(--accent);
+  transform: translateX(-4px);
+}
+
 .contact-items li { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; }
 .icon-bubble { font-size: 13px; }
 
-.footer-bottom { border-top: 1px solid rgba(51, 65, 85, 0.6); background: rgba(15, 23, 42, 0.95); padding: 16px 20px; }
+.footer-bottom {
+  border-top: 1px solid rgba(51, 65, 85, 0.6);
+  background: rgba(15, 23, 42, 0.95);
+  padding: 16px 20px;
+}
+
 .footer-bottom-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -108,96 +329,10 @@
 }
 .footer-tagline { color: #475569; }
 
-@media (max-width: 850px) { .footer-container { grid-template-columns: 1fr 1fr; gap: 24px; } }
+@media (max-width: 850px) {
+  .footer-container { grid-template-columns: 1fr 1fr; gap: 24px; }
+}
 @media (max-width: 550px) {
-  .footer-container { grid-template-columns: 1fr; padding: 36px 16px 20px; }
+  .footer-container { grid-template-columns: 1fr; padding: 28px 16px 20px; }
   .footer-bottom-inner { flex-direction: column; text-align: center; gap: 6px; }
 }
-
-
-
-<footer class="site-footer">
-  <!-- لایه انحنای مدرن بالای فوتر -->
-  <div class="footer-wave-top">
-    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-      <path d="M0,32 C320,78 420,10 720,45 C1020,80 1180,15 1440,38 L1440,80 L0,80 Z"></path>
-    </svg>
-    <div class="footer-glow-line"></div>
-  </div>
-
-  <div class="footer-container">
-    <!-- ستون اول: معرفی و نشانگر وضعیت زنده -->
-    <div class="footer-brand">
-      <div class="footer-brand-title">
-        <span class="brand-cube">⚡</span>
-        <h3>استودیو حمیدرضا</h3>
-      </div>
-      <p class="footer-bio">
-        طراحی فروشگاه‌های آنلاین ووکامرس، وب‌سایت‌های شرکتی پرسرعت و سامانه‌های متصل به دیتابیس ابری با تسویه رسمی شاپرک. تلفیق مهندسی دقیق با معماری پیشرفته وب.
-      </p>
-      
-      <div class="footer-live-badge">
-        <span class="pulse-ring"></span>
-        <span class="pulse-core"></span>
-        <span>هم‌اکنون در دسترس برای سفارش‌های جدید</span>
-      </div>
-    </div>
-
-    <!-- ستون دوم: دسترسی سریع به صفحات تفکیک‌شده -->
-    <div class="footer-col">
-      <h4>بخش‌های وب‌سایت</h4>
-      <ul class="footer-links">
-        <li><a href="index.html" class="boom-link">صفحه اصلی</a></li>
-        <li><a href="services.html" class="boom-link">خدمات طراحی سایت</a></li>
-        <li><a href="shop.html" class="boom-link">فروشگاه محصولات</a></li>
-        <li><a href="cart.html" class="boom-link">سبد خرید من</a></li>
-        <li><a href="portfolio.html" class="boom-link">نمونه‌کارها و پروژه‌ها</a></li>
-        <li><a href="user.html" class="boom-link">پنل کاربری و اقساط</a></li>
-      </ul>
-    </div>
-
-    <!-- ستون سوم: حوزه‌های تخصصی و خدمات -->
-    <div class="footer-col">
-      <h4>تخصص‌ها و راهکارها</h4>
-      <ul class="footer-links">
-        <li><a href="services.html" class="boom-link">طراحی فروشگاه اینترنتی ووکامرس</a></li>
-        <li><a href="services.html" class="boom-link">شخصی‌سازی پیشرفته قالب وودمارت</a></li>
-        <li><a href="services.html" class="boom-link">اتوماسیون Google Apps Script</a></li>
-        <li><a href="services.html" class="boom-link">بهینه‌سازی سرعت و امتیاز ۱۰۰ لایت‌هاوس</a></li>
-        <li><a href="services.html" class="boom-link">یکپارچه‌سازی درگاه بانکی شاپرک</a></li>
-      </ul>
-    </div>
-
-    <!-- ستون چهارم: ارتباط مستقیم و پشتیبانی -->
-    <div class="footer-col">
-      <h4>ارتباط مستقیم</h4>
-      <ul class="footer-links contact-items">
-        <li>
-          <span class="icon-bubble">📞</span>
-          <a href="tel:09965206696" dir="ltr" class="boom-link">۰۹۹۶ ۵۲۰ ۶۶۹۶</a>
-        </li>
-        <li>
-          <span class="icon-bubble">💬</span>
-          <a href="https://t.me/seeep7" target="_blank" dir="ltr" class="boom-link">تلگرام: seeep7@</a>
-        </li>
-        <li>
-          <span class="icon-bubble">⏰</span>
-          <span>پاسخگویی: شنبه تا پنج‌شنبه ۹ الی ۲۱</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- ردیف کپی‌رایت انتهای فوتر -->
-  <div class="footer-bottom">
-    <div class="footer-bottom-inner">
-      <span>تمامی حقوق محفوظ است © ۲۰۲۶ | استودیو مهندسی وب حمیدرضا</span>
-      <span class="footer-tagline">طراحی شده با استاندارد مدرن و معماری ماژولار</span>
-    </div>
-  </div>
-
-  <!-- کانواس اختصاصی ذرات آتش و ترکش‌های انفجار -->
-  <canvas id="boomCanvas" class="boom-canvas"></canvas>
-  <!-- لایه فلش نوری و موج آتش -->
-  <div id="fireShockwave" class="fire-shockwave"></div>
-</footer>
