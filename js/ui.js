@@ -1,6 +1,5 @@
 // ==================== تعاملات رابط کاربری، منوها و انیمیشن‌های فوتر ====================
 
-// راه‌اندازی لیسنرهای رابط کاربری
 function initUIInteractions() {
   const burger = document.getElementById("hamburgerBtn");
   const drawer = document.getElementById("mobileDrawer");
@@ -30,7 +29,6 @@ function initUIInteractions() {
   initTypeWriter();
 }
 
-// سوئیچر تب‌های دراور موبایل (صفحات / شبکه‌های اجتماعی)
 window.switchDrawerTab = function(tabName) {
   const tabPages = document.getElementById("drawerTabPages");
   const tabSocials = document.getElementById("drawerTabSocials");
@@ -50,7 +48,6 @@ window.switchDrawerTab = function(tabName) {
   }
 };
 
-// پاپ‌آپ سیستم
 window.showCustomAlert = function(title, text, icon = '⚠️') {
   const iconEl = document.getElementById('customAlertIcon');
   const titleEl = document.getElementById('customAlertTitle');
@@ -68,7 +65,6 @@ window.closeCustomAlert = function() {
   if (alertEl) alertEl.style.display = 'none';
 };
 
-// افکت تایپ ماشین‌نویسی در صفحه اصلی
 function initTypeWriter() {
   const target = document.getElementById("typeTarget");
   if (!target) return;
@@ -93,7 +89,6 @@ function initTypeWriter() {
   if (activeFaq) activeFaq.style.maxHeight = activeFaq.scrollHeight + "px";
 }
 
-// آکاردئون FAQ
 window.toggleFaq = function(btn) {
   const item = btn.parentElement;
   const ans = item.querySelector(".faq-a");
@@ -110,7 +105,6 @@ window.toggleFaq = function(btn) {
   }
 };
 
-// فیلتر پروژه‌ها در نمونه‌کار
 window.filterProjects = function(cat, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -124,9 +118,8 @@ window.filterProjects = function(cat, btn) {
   });
 };
 
-// ==================== موتور کدهای زنده و تعقیب و گریز شطرنجی فوتر ====================
+// ==================== انیمیشن‌های فوتر: ترمینال کدها و تعقیب و گریز 👾 و 🤖 ====================
 
-// بررسی لود فوتر و راه‌اندازی امن
 function bootFooterAnimations() {
   const terminal = document.getElementById("codeStreamOutput");
   const virus = document.getElementById("actorVirus");
@@ -137,16 +130,15 @@ function bootFooterAnimations() {
   }
 
   startCodeStream();
-  startGridChaseSequence();
-  spawnClickableMiniBugs();
+  startPixelChaseGame();
 }
 
 window.addEventListener("allModulesLoaded", bootFooterAnimations);
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(bootFooterAnimations, 300);
+  setTimeout(bootFooterAnimations, 350);
 });
 
-// ۱. تایپر فوق‌سریع و نامحدود کدهای HTML / CSS / JS
+// ۱. تایپ پیوسته و نامحدود کدها
 function startCodeStream() {
   const terminal = document.getElementById("codeStreamOutput");
   const screen = document.getElementById("terminalScreen");
@@ -195,7 +187,7 @@ function startCodeStream() {
 
       terminal.innerHTML = textAccumulator;
       screen.scrollTop = screen.scrollHeight;
-      setTimeout(streamLoop, 14); // سرعت بسیار بالای تایپ
+      setTimeout(streamLoop, 14);
     } else {
       charIdx = 0;
       snipIdx = (snipIdx + 1) % snippets.length;
@@ -209,8 +201,8 @@ function startCodeStream() {
   streamLoop();
 }
 
-// ۲. الگوریتم تعقیب و گریز شطرنجی (بیش از ۲۰ ثانیه در کریدورهای خالی، بدون برخورد به لینک‌ها)
-function startGridChaseSequence() {
+// ۲. موتور تعقیب و گریز ۲۵ ثانیه‌ای شطرنجی با وقفه‌ها و انیمیشن روان
+function startPixelChaseGame() {
   const virus = document.getElementById("actorVirus");
   const defender = document.getElementById("actorAntivirus");
   const virusBubble = document.getElementById("virusBubble");
@@ -219,195 +211,157 @@ function startGridChaseSequence() {
   if (!virus || !defender || !stage || stage.dataset.running) return;
   stage.dataset.running = "true";
 
-  // ساخت مسیرهای پله‌پله شطرنجی ۹۰ درجه در کانال‌های بدون متن فوتر
-  function generateGridWaypoints() {
+  function getWaypoints() {
     const w = stage.clientWidth || window.innerWidth;
     const h = stage.clientHeight || 180;
 
+    // مسیر شطرنجی گام‌به‌گام (حرکت‌ها با زوایای ۹۰ درجه و در فضاهای خالی بدون متن)
     return [
-      { x: -50, y: 12 },
-      { x: w * 0.12, y: 12 },
+      { x: -50, y: 15 },
+      { x: w * 0.12, y: 15 },
       { x: w * 0.12, y: h - 35 },
-      { x: w * 0.35, y: h - 35 },
-      { x: w * 0.35, y: 12 },
-      { x: w * 0.58, y: 12 },
-      { x: w * 0.58, y: h - 35 },
-      { x: w * 0.82, y: h - 35 },
-      { x: w * 0.82, y: 15 },
-      { x: w * 0.48, y: 15 }, // مواجهه رو در رو
-      { x: w + 80, y: 15 }    // فرار از کادر
+      { x: w * 0.36, y: h - 35 },
+      { x: w * 0.36, y: 15 },
+      { x: w * 0.60, y: 15 },
+      { x: w * 0.60, y: h - 35 },
+      { x: w * 0.84, y: h - 35 },
+      { x: w * 0.84, y: 18 },
+      { x: w * 0.48, y: 18 }, // نقطه مواجهه نهایی
+      { x: w + 90, y: 18 }    // خروج نهایی
     ];
   }
 
-  async function runGrandChase() {
-    const points = generateGridWaypoints();
-    const delay = ms => new Promise(r => setTimeout(r, ms));
+  function setPos(actor, x, y) {
+    actor.style.transform = `translate(${x}px, ${y}px)`;
+  }
 
-    // ریست حالت‌های بصری
-    virus.className = "grid-actor virus-claude";
-    defender.className = "grid-actor defender-bot";
+  // تابع درون‌یابی حرکت پله‌ای برای گام برداشتن شطرنجی
+  function stepInterpolate(p1, p2, t) {
+    // ابتدا در یک محور حرکت کن، سپس در محور دیگر (حرکت شطرنجی واقعی)
+    if (t < 0.5) {
+      const subT = t * 2;
+      return {
+        x: p1.x + (p2.x - p1.x) * subT,
+        y: p1.y
+      };
+    } else {
+      const subT = (t - 0.5) * 2;
+      return {
+        x: p2.x,
+        y: p1.y + (p2.y - p1.y) * subT
+      };
+    }
+  }
+
+  function runEpicChase() {
+    const waypoints = getWaypoints();
+    const totalLegs = waypoints.length - 2;
+    const legDuration = 2200; // هر خانه شطرنجی ۲.۲ ثانیه طول می‌کشد تا حس چرخیدن ۲۰ الی ۲۵ ثانیه‌ای ایجاد شود
+    const totalTime = totalLegs * legDuration;
+    const startTime = performance.now();
+
+    // پاکسازی کلاس‌های حالت قبلی
+    virus.className = "grid-actor actor-alien-virus";
+    defender.className = "grid-actor actor-cyber-bot";
     virusBubble.classList.remove("show");
     defBubble.classList.remove("show");
 
-    // گام‌زدن شطرنجی در طول حدود ۲۰ ثانیه
-    for (let i = 0; i < points.length - 2; i++) {
-      const p = points[i];
+    let isFacingBoss = false;
 
-      // حرکت گام‌به‌گام ویروس
-      virus.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    function frame(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / totalTime, 1);
 
-      // تعقیب آنتی‌ویروس با ۱ خانه تأخیر شطرنجی
-      if (i > 0) {
-        const prevP = points[i - 1];
-        defender.style.transform = `translate(${prevP.x}px, ${prevP.y}px)`;
-      }
+      // محاسبه شاخص نقطه فعلی
+      const currentFloatLeg = progress * totalLegs;
+      const legIndex = Math.min(Math.floor(currentFloatLeg), totalLegs - 1);
+      const legT = currentFloatLeg - legIndex;
 
-      await delay(1250);
+      // ۱. حرکت شطرنجی ویروس 👾
+      const vPos = stepInterpolate(waypoints[legIndex], waypoints[legIndex + 1], legT);
+      setPos(virus, vPos.x, vPos.y);
 
-      // توقف ۱: ویروس می‌ایستد و قهقهه می‌زند
-      if (i === 2) {
+      // ۲. حرکت شطرنجی آنتی‌ویروس 🤖 با ۲ ثانیه تأخیر
+      const defDelaySec = 0.8;
+      const defLegFloat = Math.max(0, currentFloatLeg - defDelaySec);
+      const defLegIndex = Math.min(Math.floor(defLegFloat), totalLegs - 1);
+      const defLegT = defLegFloat - defLegIndex;
+      const dPos = stepInterpolate(waypoints[defLegIndex], waypoints[defLegIndex + 1], defLegT);
+      setPos(defender, dPos.x, dPos.y);
+
+      // رویداد ۱: خنده و قهقهه ویروس در گام ۳ (ثانیه ۷)
+      if (legIndex === 3 && legT > 0.2 && legT < 0.8) {
         virus.classList.add("laughing");
         virusBubble.textContent = "HA! HA!";
         virusBubble.classList.add("show");
-        await delay(1600);
+      } else if (legIndex !== 3) {
         virus.classList.remove("laughing");
-        virusBubble.classList.remove("show");
+        if (!isFacingBoss) virusBubble.classList.remove("show");
       }
 
-      // توقف ۲: آنتی‌ویروس می‌ایستد و چهره تعجب و سوالی می‌گیرد
-      if (i === 4) {
+      // رویداد ۲: تعجب و چهره سوالی آنتی‌ویروس در گام ۵ (ثانیه ۱۳)
+      if (defLegIndex === 5 && defLegT > 0.2 && defLegT < 0.8) {
         defender.classList.add("confused");
         defBubble.textContent = "?!";
         defBubble.classList.add("show");
-        await delay(1600);
+      } else if (defLegIndex !== 5) {
         defender.classList.remove("confused");
-        defBubble.classList.remove("show");
+        if (!isFacingBoss) defBubble.classList.remove("show");
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        // مرحله ۳: اوج مواجهه و فرار سریع
+        triggerBossEncounter();
       }
     }
 
-    // مرحله مواجهه نهایی
-    const spot = points[points.length - 2];
-    virus.style.transform = `translate(${spot.x}px, ${spot.y}px)`;
-    defender.style.transform = `translate(${spot.x - 65}px, ${spot.y}px)`;
-    await delay(500);
+    requestAnimationFrame(frame);
 
-    // آنتی‌ویروس متوجه شده و چهره خفن و خشمگین می‌گیرد
-    defender.classList.add("hunter");
-    defBubble.textContent = "LOCKED ON!";
-    defBubble.classList.add("show");
+    function triggerBossEncounter() {
+      isFacingBoss = true;
+      const spot = waypoints[waypoints.length - 2];
+      setPos(virus, spot.x, spot.y);
+      setPos(defender, spot.x - 55, spot.y);
 
-    // ویروس وحشت‌زده می‌شود
-    virus.classList.add("panic");
-    virusBubble.textContent = "OH NOOO!";
-    virusBubble.classList.add("show");
-    await delay(1400);
+      // چهره خفن و خشمگین آنتی‌ویروس 🤖
+      defender.classList.add("hunter");
+      defBubble.textContent = "LOCKED ON!";
+      defBubble.classList.add("show");
 
-    // فرار سریع و شتاب‌زده هر دو کاراکتر به بیرون از صفحه فوتر
-    const exitPoint = points[points.length - 1];
-    virus.style.transition = "transform 0.75s cubic-bezier(0.4, 0, 0.2, 1)";
-    defender.style.transition = "transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)";
+      // چهره ترس و لرزش شدید ویروس 👾
+      virus.classList.add("panic");
+      virusBubble.textContent = "OH NOOO!";
+      virusBubble.classList.add("show");
 
-    virus.style.transform = `translate(${exitPoint.x}px, ${exitPoint.y}px)`;
-    defender.style.transform = `translate(${exitPoint.x + 50}px, ${exitPoint.y}px)`;
-
-    await delay(1100);
-
-    // ریست به پوزیشن خارج از کادر
-    virus.style.transition = "none";
-    defender.style.transition = "none";
-    virus.style.transform = "translate(-150px, -150px)";
-    defender.style.transform = "translate(-150px, -150px)";
-    virusBubble.classList.remove("show");
-    defBubble.classList.remove("show");
-    virus.classList.remove("panic");
-    defender.classList.remove("hunter");
-
-    setTimeout(() => {
-      virus.style.transition = "transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2)";
-      defender.style.transition = "transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2)";
-    }, 100);
-
-    // وقفه دقیقاً ۱۰ ثانیه‌ای قبل از شروع دور بعدی
-    setTimeout(runGrandChase, 10000);
-  }
-
-  setTimeout(runGrandChase, 1500);
-}
-
-// ۳. ویروس‌های بنفش کوچک تعاملی جهت کلیک یا لمس
-function spawnClickableMiniBugs() {
-  const container = document.getElementById("miniBugsContainer");
-  if (!container) return;
-  container.innerHTML = "";
-
-  // جایگاه‌های امن در حاشیه‌های آزاد
-  const safePositions = [
-    { top: "10px", left: "3%" },
-    { top: "120px", left: "26%" },
-    { top: "15px", right: "6%" },
-    { top: "115px", right: "24%" }
-  ];
-
-  safePositions.forEach((pos) => {
-    const bug = document.createElement("div");
-    bug.className = "mini-bug";
-    bug.style.top = pos.top;
-    if (pos.left) bug.style.left = pos.left;
-    if (pos.right) bug.style.right = pos.right;
-    bug.title = "روی من بزن تا نابود بشم!";
-
-    bug.innerHTML = `
-      <div class="mini-bug-body">
-        <span class="mini-bug-eye l"></span>
-        <span class="mini-bug-eye r"></span>
-      </div>
-    `;
-
-    const popBug = (e) => {
-      e.stopPropagation();
-      if (bug.classList.contains("popping")) return;
-
-      bug.classList.add("popping");
-
-      if (navigator.vibrate) navigator.vibrate(40);
-      createPopParticles(bug.getBoundingClientRect());
-
+      // بعد از ۱.۴ ثانیه فرار با نهایت سرعت
       setTimeout(() => {
-        bug.remove();
-        setTimeout(() => spawnClickableMiniBugs(), 12000);
-      }, 400);
-    };
+        const exit = waypoints[waypoints.length - 1];
+        virus.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+        defender.style.transition = "transform 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
 
-    bug.addEventListener("click", popBug);
-    bug.addEventListener("touchstart", popBug, { passive: true });
+        setPos(virus, exit.x, exit.y);
+        setPos(defender, exit.x + 50, exit.y);
 
-    container.appendChild(bug);
-  });
-}
+        setTimeout(() => {
+          // ریست کردن پوزیشن برای خارج از کادر و آماده‌سازی برای دور بعد
+          virus.style.transition = "none";
+          defender.style.transition = "none";
+          setPos(virus, -150, -150);
+          setPos(defender, -150, -150);
+          virusBubble.classList.remove("show");
+          defBubble.classList.remove("show");
+          virus.classList.remove("panic");
+          defender.classList.remove("hunter");
 
-function createPopParticles(rect) {
-  for (let i = 0; i < 6; i++) {
-    const spark = document.createElement("div");
-    spark.style.position = "fixed";
-    spark.style.left = rect.left + rect.width / 2 + "px";
-    spark.style.top = rect.top + rect.height / 2 + "px";
-    spark.style.width = "4px";
-    spark.style.height = "4px";
-    spark.style.background = "#c084fc";
-    spark.style.borderRadius = "50%";
-    spark.style.pointerEvents = "none";
-    spark.style.zIndex = "99999";
-    spark.style.boxShadow = "0 0 6px #a855f7";
-    document.body.appendChild(spark);
-
-    const angle = (Math.PI * 2 / 6) * i;
-    const distance = 24;
-    const destX = Math.cos(angle) * distance;
-    const destY = Math.sin(angle) * distance;
-
-    spark.animate([
-      { transform: "translate(0, 0) scale(1)", opacity: 1 },
-      { transform: `translate(${destX}px, ${destY}px) scale(0)`, opacity: 0 }
-    ], { duration: 350, easing: "ease-out" }).onfinish = () => spark.remove();
+          // وقفه دقیقاً ۱۰ ثانیه‌ای قبل از اجرای مجدد دور بعدی
+          setTimeout(runEpicChase, 10000);
+        }, 1000);
+      }, 1400);
+    }
   }
+
+  // استارت دور اول پس از ۱.۵ ثانیه
+  setTimeout(runEpicChase, 1500);
 }
