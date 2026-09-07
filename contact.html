@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تماس با ما | استودیو حمیدرضا</title>
   
+  <!-- فونت وزیرمتن -->
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
-  <!-- ۱. استایل عمومی سایت -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- ۲. استایل اختصاصی صفحه تماس -->
-  <link rel="stylesheet" href="css/contact.css">
+  
+  <!-- فایل استایل‌های یکپارچه و ماژولار -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-  <!-- هدر سایت -->
+  <!-- هدر ماژولار سایت -->
   <div id="header-slot"></div>
 
   <!-- محتوای اصلی تماس با ما -->
@@ -21,13 +21,14 @@
     <div data-include="sections/contact/content.html"></div>
   </main>
 
-  <!-- فوتر سایت -->
+  <!-- فوتر ماژولار سایت -->
   <div id="footer-slot"></div>
 
-  <!-- اسکریپت هسته قالب -->
+  <!-- اسکریپت‌های ماژولار قالب -->
   <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
   
-  <!-- لاجیک ساده ارسال فرم تماس -->
+  <!-- لاجیک ارسال فرم تماس -->
   <script>
     function handleContactFormSubmit(e) {
       e.preventDefault();
