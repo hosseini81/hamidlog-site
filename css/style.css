@@ -1665,3 +1665,107 @@ main {
   .order-main-grid { grid-template-columns: 1fr; }
   .invoice-sticky-box { position: static; }
 }
+
+
+
+/* مخفی‌سازی تب‌های غیرفعال و نمایش اختصاصی تب فعال */
+.hub-tab-panel {
+  display: none !important;
+}
+.hub-tab-panel.active {
+  display: block !important;
+  animation: tabFadeIn 0.25s ease;
+}
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* اسکرول‌بار اختصاصی لیست خدمات و اقلام */
+.scrollable-service-list {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-left: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+.scrollable-service-list::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-service-list::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+}
+.scrollable-service-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* اصلاح رنگ دکمه قبلی و دکمه‌های ثانویه (عدم تداخل با سفید) */
+.btn-step-prev {
+  background: #e2e8f0;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-step-prev:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+.btn-step-next {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-step-next:hover {
+  background: #1d4ed8;
+}
+
+/* اصلاح رنگ و استایل دکمه اعمال تخفیف */
+.btn-coupon-apply {
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.btn-coupon-apply:hover {
+  background: #1e293b;
+}
+
+/* دکمه ویدیوی معرفی خدمت */
+.btn-video-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+  margin-top: 4px;
+  transition: all 0.2s;
+}
+.btn-video-badge:hover {
+  background: #fecaca;
+}
