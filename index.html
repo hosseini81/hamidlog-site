@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+    body { background: transparent; direction: rtl; }
+    .hero-container {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      padding: 60px 24px;
+      border-radius: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+    }
+    .hero-title {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .hero-title span { color: #38bdf8; }
+    .hero-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      max-width: 650px;
+      margin: 0 auto 28px;
+      line-height: 1.8;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: #10b981;
+      color: #fff;
+      padding: 12px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #059669; transform: translateY(-2px); }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); border-color: #94a3b8; }
+    @media(max-width: 600px) {
+      .hero-title { font-size: 22px; }
+      .hero-desc { font-size: 12px; }
+      .hero-container { padding: 40px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero-container">
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      پذیرش مستقیم سفارش‌های طراحی و توسعه
+    </div>
+    <h1 class="hero-title">
+      طراحی، بازطراحی و ارتقای <br>
+      <span id="dynamicHeroText">وب‌سایت‌های فروشگاهی و شرکتی</span>
+    </h1>
+    <p class="hero-desc">
+      توسعه ساختار وب، رفع ایرادات فنی، بهبود سرعت و افزودن امکانات اختصاصی و درگاه پرداخت شاپرک با کدهای استاندارد و بهینه.
+    </p>
+    <div class="hero-actions">
+      <a href="/سفارش" target="_top" class="btn-primary">🚀 استعلام آنلاین هزینه و فاکتور</a>
+      <a href="/خدمات" target="_top" class="btn-secondary">مشاهده خدمات و تعرفه‌ها</a>
+    </div>
+  </section>
+
+  <script>
+    const titles = ["سایت‌های فروشگاهی مدرن", "وب‌سایت‌های شرکتی لوکس", "سامانه‌های اختصاصی با دیتابیس", "قالب‌های بهینه و واکنش‌گرا"];
+    let i = 0, j = 0, erasing = false;
+    function typeEffect() {
+      const el = document.getElementById("dynamicHeroText");
+      const cur = titles[i];
+      if (erasing) {
+        el.textContent = cur.substring(0, j--);
+        if (j < 0) { erasing = false; i = (i + 1) % titles.length; setTimeout(typeEffect, 300); return; }
+      } else {
+        el.textContent = cur.substring(0, j++);
+        if (j > cur.length) { erasing = true; setTimeout(typeEffect, 1800); return; }
+      }
+      setTimeout(typeEffect, erasing ? 35 : 70);
+    }
+    typeEffect();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+    body { background: transparent; direction: rtl; padding: 10px 0; }
+    .services-wrap { max-width: 1100px; margin: 0 auto; }
+    .section-head { text-align: center; margin-bottom: 30px; }
+    .section-head h2 { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 6px; }
+    .section-head p { font-size: 12px; color: #64748b; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .service-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 22px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border-color: #10b981; }
+    .icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+    .icon-green { background: #ecfdf5; color: #10b981; }
+    .icon-blue { background: #f0f9ff; color: #0284c7; }
+    .icon-amber { background: #fffbeb; color: #f59e0b; }
+    .icon-purple { background: #faf5ff; color: #9333ea; }
+    .service-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .service-desc { font-size: 12px; color: #64748b; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="services-wrap">
+    <div class="section-head">
+      <h2>خدمات تخصصی وب‌استودیو</h2>
+      <p>پوشش کلیه نیازمندی‌های توسعه، راه‌اندازی و بهینه‌سازی وب‌سایت</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="icon-box icon-green">🛍️</div>
+        <h3 class="service-title">طراحی فروشگاه اینترنتی</h3>
+        <p class="service-desc">راه‌اندازی فروشگاه با ووکامرس، قالب‌های استاندارد مثل وودمارت، تعریف ویژگی‌ها و اتصال به درگاه شاپرک.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon-box icon-blue">🧩</div>
+        <h3 class="service-title">افزودن ماژول و امکانات</h3>
+        <p class="service-desc">اتصال پنل‌های پیامکی، فرم‌های استعلام، سیستم نوبت‌دهی و اتصال به اکسل یا شیت‌های ابری گوگل.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon-box icon-amber">⚡</div>
+        <h3 class="service-title">افزایش سرعت و سئو فنی</h3>
+        <p class="service-desc">پاک‌سازی کدهای اضافه، بهینه‌سازی دیتابیس، کش، فشرده‌سازی و ارتقای امتیاز Core Web Vitals گوگل.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon-box icon-purple">🛠️</div>
+        <h3 class="service-title">تعمیر و بازطراحی صفحات</h3>
+        <p class="service-desc">اصلاح چیدمان‌های به‌هم‌ریخته، راست‌چین‌سازی کامل فونت‌ها (RTL) و رفع خطاهای ناگهانی سرور و وردپرس.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+    }
+
+    body {
+      background-color: transparent;
+      padding: 20px 10px;
+      direction: rtl;
+    }
+
+    .faq-section {
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .faq-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .faq-badge {
+      display: inline-block;
+      background: #ecfdf5;
+      color: #059669;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .faq-header h2 {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .faq-header p {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f8fafc;
+      transition: all 0.25s ease;
+    }
+
+    .faq-item.active {
+      border-color: #10b981;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: 16px 18px;
+      background: none;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+      gap: 12px;
+    }
+
+    .faq-item.active .faq-question {
+      color: #059669;
+    }
+
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      transition: transform 0.3s ease, background 0.25s, color 0.25s;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+      padding: 0 18px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #475569;
+      border-top: 1px solid transparent;
+    }
+
+    .faq-item.active .faq-answer {
+      padding: 0 18px 16px 18px;
+      border-top-color: #f1f5f9;
+    }
+
+    .faq-support-box {
+      margin-top: 24px;
+      padding: 14px;
+      background: #f0fdf4;
+      border: 1px dashed #86efac;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: #166534;
+    }
+
+    .faq-support-box a {
+      color: #059669;
+      font-weight: 800;
+      text-decoration: none;
+      margin-right: 4px;
+    }
+
+    .faq-support-box a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="faq-section">
+    <div class="faq-header">
+      <span class="faq-badge">راهنمای شفاف</span>
+      <h2>سوالات متداول شما</h2>
+      <p>پاسخ به سوالات پرتکرار درباره روند سفارش، پشتیبانی و نحوه تحویل پروژه‌ها</p>
+    </div>
+
+    <div class="faq-list">
+
+      <!-- سوال ۱ -->
+      <div class="faq-item active">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>۱. روند طراحی و ارتقای سایت از زمان ثبت سفارش چگونه است؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          بلافاصله پس از ثبت استعلام و سفارش، پیش‌فاکتور رسمی صادر شده و کارشناس فنی جهت دریافت جزئیات، نیازمندی‌ها و اطلاعات دسترسی با شما هماهنگ می‌شود. مراحل پیشرفت به صورت گام‌به‌گام در پنل کاربری قابل رهگیری است.
+        </div>
+      </div>
+
+      <!-- سوال ۲ -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>۲. آیا امکان اضافه کردن ماژول و امکانات به سایت فعلی من وجود دارد؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          بله، خدمات ما تنها به راه‌اندازی سایت از صفر محدود نمی‌شود. شما می‌توانید برای بازطراحی، افزودن سیستم درگاه بانکی، بهینه‌سازی سرعت، یا اضافه کردن فرم‌های پیشرفته و کدهای اختصاصی روی قالب فعلی خود سفارش ثبت کنید.
+        </div>
+      </div>
+
+      <!-- سوال ۳ -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>۳. نحوه پرداخت اقساطی به چه صورت محاسبه می‌شود؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          در شیوه پرداخت اقساطی، ۴۰ درصد کل مبلغ فاکتور به عنوان پیش‌پرداخت دریافت می‌شود و باقی‌مانده طی ۲ قسط ماهانه بعدی از طریق بخش حساب کاربری تسویه خواهد شد. در صورت تسویه کامل آنلاین، ۵ درصد تخفیف نقدی اعمال می‌شود.
+        </div>
+      </div>
+
+      <!-- سوال ۴ -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>۴. محصولات دانلودی (قالب و افزونه‌ها) چه زمانی تحویل داده می‌شوند؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          محصولات دانلودی بلافاصله پس از پرداخت موفق در درگاه بانکی شاپرک، در بخش حساب کاربری شما فعال می‌شوند و لینک دانلود مستقیم فایل با دسترسی دائمی در اختیارتان قرار می‌گیرد.
+        </div>
+      </div>
+
+      <!-- سوال ۵ -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>۵. پشتیبانی و ضمانت انجام پروژه‌ها به چه صورت است؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          کلیه پروژه‌های طراحی و ویرایش سایت شامل دوره تست و رفع ایرادات احتمالی پس از تحویل هستند. همچنین در صورت بروز هرگونه سوال یا ابهام، پشتیبانی مستقیم از طریق تلگرام و تیکت فراهم است.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- کادر پشتیبانی تکمیلی -->
+    <div class="faq-support-box">
+      سوال دیگری دارید که در لیست بالا نبود؟
+      <a href="https://t.me/seeep7" target="_blank">در تلگرام با ما گفتگو کنید ➔</a>
+    </div>
+  </section>
+
+  <script>
+    // فعال‌سازی ارتفاع پاسخ پیش‌فرض اولیه
+    document.addEventListener("DOMContentLoaded", () => {
+      const defaultActive = document.querySelector(".faq-item.active .faq-answer");
+      if (defaultActive) {
+        defaultActive.style.maxHeight = defaultActive.scrollHeight + "px";
+      }
+    });
+
+    function toggleFaq(btn) {
+      const currentItem = btn.parentElement;
+      const answer = currentItem.querySelector(".faq-answer");
+      const isActive = currentItem.classList.contains("active");
+
+      // بستن سایر سوالات برای باز ماندن تنها یک سوال در لحظه
+      document.querySelectorAll(".faq-item").forEach(item => {
+        item.classList.remove("active");
+        item.querySelector(".faq-answer").style.maxHeight = null;
+      });
+
+      // تغییر وضعیت آیتم کلیک شده
+      if (!isActive) {
+        currentItem.classList.add("active");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+<!--  بخش فوتر  -->
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+    body { background: transparent; direction: rtl; padding: 10px 0; }
+    .stats-box {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 30px 20px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 20px;
+      text-align: center;
+    }
+    .stat-item { padding: 10px; }
+    .stat-number { font-size: 26px; font-weight: 900; color: #0f172a; margin-bottom: 4px; }
+    .stat-number span { color: #10b981; }
+    .stat-title { font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 4px; }
+    .stat-desc { font-size: 11px; color: #64748b; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="stats-box">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">۱۰۰<span>٪</span></div>
+        <div class="stat-title">راست‌چین و استاندارد</div>
+        <p class="stat-desc">تایپوگرافی اصولی فارسی و چیدمان ریسپانسیو در انواع موبایل</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">۲۴<span>/۷</span></div>
+        <div class="stat-title">پشتیبانی مستقیم</div>
+        <p class="stat-desc">ارتباط در تلگرام و رفع ایرادات فنی بدون پیچیدگی‌های اداری</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">۴۰<span>٪</span></div>
+        <div class="stat-title">پرداخت اقساطی</div>
+        <p class="stat-desc">شروع پروژه با ۴۰٪ پیش‌پرداخت و تسویه باقی‌مانده در ۲ قسط</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">⚡<span>آنلاین</span></div>
+        <div class="stat-title">محاسبه زنده قیمت</div>
+        <p class="stat-desc">امکان استعلام دقیق و صدور فوری پیش‌فاکتور رسمی برای مشتری</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <style>
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+.site-footer {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+    }
+
+    .site-footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 48px 20px 24px;
+      direction: rtl;
+      border-top: 3px solid #10b981;
+    }
+
+    .footer-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.2fr;
+      gap: 32px;
+    }
+
+    /* ستون درباره ما و برند */
+    .footer-brand h3 {
+      color: #f8fafc;
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand h3 span {
+      color: #10b981;
+    }
+
+    .footer-brand p {
+      font-size: 12px;
+      line-height: 1.8;
+      color: #94a3b8;
+      text-align: justify;
+    }
+
+    /* ستون‌های لینک */
+    .footer-col h4 {
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      position: relative;
+      padding-bottom: 6px;
+    }
+
+    .footer-col h4::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 2px;
+      background: #10b981;
+      border-radius: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s, padding-right 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #38bdf8;
+      padding-right: 4px;
+    }
+
+    /* بخش نمادها و مجوزها */
+    .trust-badges {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 11px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .badge-box:hover {
+      border-color: #10b981;
+    }
+
+    /* خط جداکننده و کپی‌رایت پایین */
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 36px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom a {
+      color: #10b981;
+      text-decoration: none;
+    }
+
+    /* واکنش‌گرایی در موبایل */
+    @media (max-width: 768px) {
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شروع بخش فوتر -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      
+      <!-- ۱. معرفی کوتاه استودیو -->
+      <div class="footer-brand">
+        <h3>💻 طراحی و توسعه <span>حمیدرضا</span></h3>
+        <p>
+          ارائه راهکارهای نوین طراحی وب، بازطراحی و بهینه‌سازی سامانه‌های اختصاصی. ما در کنار شما هستیم تا ایده‌های دیجیتال شما را با بهترین کیفیت، امنیت پایدار و سرعت ایده‌آل به واقعیت تبدیل کنیم.
+        </p>
+      </div>
+
+      <!-- ۲. دسترسی سریع -->
+      <div class="footer-col">
+        <h4>لینک‌های سریع</h4>
+        <ul class="footer-links">
+          <li><a href="/" target="_top">صفحه اصلی</a></li>
+          <li><a href="/خدمات" target="_top">خدمات طراحی سایت</a></li>
+          <li><a href="/محصولات" target="_top">قالب‌ها و افزونه‌ها</a></li>
+          <li><a href="/سفارش" target="_top">محاسبه آنلاین هزینه</a></li>
+        </ul>
+      </div>
+
+      <!-- ۳. پشتیبانی و تماس -->
+      <div class="footer-col">
+        <h4>ارتباط با ما</h4>
+        <ul class="footer-links">
+          <li><span style="color:#64748b;">تلفن:</span> ۰۹۹۶۵۲۰۶۶۹۶</li>
+          <li><a href="https://t.me/seeep7" target="_blank">پشتیبانی در تلگرام</a></li>
+          <li><a href="/حساب-کاربری" target="_top">پیگیری وضعیت سفارش</a></li>
+          <li><a href="/قوانین" target="_top">قوانین و ضمانت خدمات</a></li>
+        </ul>
+      </div>
+
+      <!-- ۴. نمادهای اعتماد و پرداخت -->
+      <div class="footer-col">
+        <h4>مجوزها و پرداخت</h4>
+        <div class="trust-badges">
+          <!-- محل قرارگیری لوگوی اینماد یا زرین‌پال -->
+          <div class="badge-box" title="درگاه پرداخت زرین‌پال">
+            <span>زرین‌پال</span>
+          </div>
+          <div class="badge-box" title="نماد اعتماد">
+            <span>اینماد</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- کپی‌رایت و حقوق محفوظ -->
+    <div class="footer-bottom">
+      <div>
+        تمامی حقوق مادی و معنوی برای <strong>وب‌استودیو حمیدرضا</strong> محفوظ است.
+      </div>
+      <div>
+        طراحی و پیاده‌سازی شده با استانداردهای مدرن وب
+      </div>
+    </div>
+  </footer>
+  <!-- پایان بخش فوتر -->
+
+</body>
+</html>
