@@ -1,5 +1,15 @@
+// ==================== تنظیمات و آدرس وب‌اپلیکیشن ====================
+const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
+
+let appDb = { packages: [], services: [], downloadProducts: [] };
+let activePackage = null;
+let currentDiscountAmount = 0;
+let appliedCouponCode = "";
+let isLoginMode = true;
+
+// ==================== ۱. بارگذاری ساختار ماژولار قالب ====================
 document.addEventListener("DOMContentLoaded", async () => {
-  // ۱. بارگذاری هدر و فوتر
+  // الف) لود اسلات‌های اصلی (هدر و فوتر)
   const loadSlot = async (id, file) => {
     const el = document.getElementById(id);
     if (el) {
@@ -15,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // ۲. بارگذاری خودکار تمام بخش‌های مشخص شده با data-include
+  // ب) لود سکشن‌های داخلی صفحات با data-include
   const includes = document.querySelectorAll("[data-include]");
   for (const el of includes) {
     const file = el.getAttribute("data-include");
@@ -27,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ۳. فعال‌سازی منوی همبرگری موبایل
+  // ج) منوی همبرگری موبایل
   const burger = document.getElementById("hamburgerBtn");
   const drawer = document.getElementById("mobileDrawer");
   if (burger && drawer) {
@@ -37,16 +47,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ۴. اکتیو کردن لینک صفحه در منو
+  // د) هایلایت کردن تب صفحه فعال
   const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
   document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
 
-  // ۵. اجرای توابع تعاملی (تایپ متن و آکاردئون)
+  // هـ) اجرای رفتارهای متحرک صفحه اصلی
   initDynamicFeatures();
+
+  // و) فراخوانی اطلاعات سامانه سفارش در صورت حضور فرم در صفحه
+  if (document.getElementById("dataLoader")) {
+    fetchAppInitialData();
+  }
 });
 
+// ==================== ۲. رفتارهای تعاملی صفحات ====================
 function initDynamicFeatures() {
-  // افکت تایپ
+  // انیمیشن تایپ یکنواخت
   const target = document.getElementById("typeTarget");
   if (target) {
     const phrases = ["فروشگاه‌های آنلاین ووکامرس", "وب‌سایت‌های شرکتی مدرن", "سامانه‌های متصل به دیتابیس"];
@@ -65,12 +81,12 @@ function initDynamicFeatures() {
     runType();
   }
 
-  // تنظیم ارتفاع اولیه FAQ باز
+  // ارتفاع اولیه FAQ باز
   const activeFaq = document.querySelector(".faq-item.active .faq-a");
   if (activeFaq) activeFaq.style.maxHeight = activeFaq.scrollHeight + "px";
 }
 
-// تابع سراسری باز و بسته شدن سوالات متداول
+// باز و بسته شدن سوالات متداول
 window.toggleFaq = function(btn) {
   const item = btn.parentElement;
   const ans = item.querySelector(".faq-a");
@@ -87,9 +103,7 @@ window.toggleFaq = function(btn) {
   }
 };
 
-
-
-// تابع فیلتر دسته‌بندی پروژه‌ها
+// فیلتر دسته‌بندی پروژه‌ها
 window.filterProjects = function(cat, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -103,152 +117,81 @@ window.filterProjects = function(cat, btn) {
   });
 };
 
-
-
-// متغیر ذخیره URL دریافتی از گوگل شیت
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
-
-// تولید کد تصادفی سفارش
-let currentOrderId = "ORD-" + Math.floor(1000 + Math.random() * 9000);
-
-// محاسبه آنلاین مجموع فاکتور
-window.calcTotal = function() {
-  const codeEl = document.getElementById("orderIdText");
-  if (codeEl) codeEl.textContent = "#" + currentOrderId;
-
-  const planEl = document.querySelector('input[name="plan"]:checked');
-  if (!planEl) return;
-
-  const planPrice = parseInt(planEl.getAttribute("data-price"), 10);
-  const planName = planEl.getAttribute("data-name");
-
-  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('active'));
-  planEl.closest('.plan-card').classList.add('active');
-
-  let featuresPrice = 0;
-  const featuresListWrap = document.getElementById("selectedFeaturesList");
-  if (featuresListWrap) featuresListWrap.innerHTML = "";
-
-  document.querySelectorAll('.feature-opt:checked').forEach(f => {
-    const fPrice = parseInt(f.getAttribute("data-price"), 10);
-    featuresPrice += fPrice;
-
-    if (featuresListWrap) {
-      const row = document.createElement("div");
-      row.className = "feature-item-row";
-      row.innerHTML = `<span>+ ${f.value}</span><span>${fPrice.toLocaleString('fa-IR')}</span>`;
-      featuresListWrap.appendChild(row);
-    }
+// ==================== ۳. هسته ارتباط با سرور و حل CORS ====================
+// تابع ارسال درخواست به Apps Script بدون تداخل CORS
+async function sendToAppScript(payloadData) {
+  const response = await fetch(SCRIPT_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payloadData)
   });
+  return await response.json();
+}
 
-  const grandTotal = planPrice + featuresPrice;
-
-  const sumPlanName = document.getElementById("sumPlanName");
-  const sumPlanPrice = document.getElementById("sumPlanPrice");
-  const sumTotalPrice = document.getElementById("sumTotalPrice");
-
-  if (sumPlanName) sumPlanName.textContent = planName;
-  if (sumPlanPrice) sumPlanPrice.textContent = planPrice.toLocaleString('fa-IR') + " تومان";
-  if (sumTotalPrice) sumTotalPrice.textContent = grandTotal.toLocaleString('fa-IR') + " تومان";
-
-  return { planName, grandTotal };
-};
-
-// ارسال سفارش به گوگل‌شیت
-window.submitOrder = async function(e) {
-  e.preventDefault();
-  const btn = document.getElementById("submitBtn");
-  const msg = document.getElementById("statusMessage");
-
-  const name = document.getElementById("custName").value.trim();
-  const phone = document.getElementById("custPhone").value.trim();
-  const activePlan = document.querySelector('input[name="plan"]:checked');
-
-  const selectedFeatures = [];
-  document.querySelectorAll('.feature-opt:checked').forEach(f => selectedFeatures.push(f.value));
-
-  const total = window.calcTotal();
-
-  btn.disabled = true;
-  btn.textContent = "در حال ثبت اطلاعات...";
-  msg.style.display = "block";
-  msg.style.background = "#eff6ff";
-  msg.style.color = "#1d4ed8";
-  msg.textContent = "ارتباط با سرور...";
-
-  try {
-    await fetch(WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        orderId: currentOrderId,
-        fullName: name,
-        phone: phone,
-        planName: total.planName,
-        features: selectedFeatures,
-        totalPrice: total.grandTotal
-      })
-    });
-
-    msg.style.background = "#dcfce7";
-    msg.style.color = "#166534";
-    msg.textContent = "✅ فاکتور با موفقیت ثبت شد. به زودی جهت هماهنگی با شما تماس می‌گیریم.";
-    document.getElementById("leadForm").reset();
-
-  } catch (err) {
-    msg.style.background = "#fee2e2";
-    msg.style.color = "#991b1b";
-    msg.textContent = "خطا در برقراری ارتباط. لطفاً از طریق تلگرام با ما تماس بگیرید.";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "ثبت نهایی و دریافت مشاوره ➔";
-  }
-};
-
-
-
-// ==================== لاجیک سامانه خدمات و پرداخت ====================
-// آدرس وب‌اپلیکیشن گوگل‌اسکریپت برگرفته از فایل Code.gs
-const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbzN_Bi4QiDSHA7WoWs1ZoaolA3ipi47GvJ9FrEpsUVDCGLj6QJ6lurKkPCAt-eGXMpT-Q/exec";
-
-let appDb = { packages: [], services: [], downloadProducts: [] };
-let activePackage = null;
-let currentDiscountAmount = 0;
-let appliedCouponCode = "";
-let isLoginMode = true;
-
-// بارگذاری اولیه داده‌ها
+// تابع واکشی اولیه اطلاعات با راهکار ضد قفل
 async function fetchAppInitialData() {
   const loader = document.getElementById("dataLoader");
   if (!loader) return;
 
   try {
-    const res = await fetch(SCRIPT_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "getInitialData" })
-    });
+    const res = await fetch(`${SCRIPT_API_URL}?action=getInitialData`);
     const result = await res.json();
 
-    if (result.success) {
-      appDb = result.data;
-      renderPackages();
-      renderServices();
-      loader.style.display = "none";
-      document.getElementById("pkgSection").style.display = "block";
-      document.getElementById("servicesSection").style.display = "block";
-      document.getElementById("paymentTypeSection").style.display = "block";
-      calculateOrderTotal();
+    if (result && result.success && result.data) {
+      setupInitialDb(result.data);
+    } else {
+      throw new Error(result.error || "خطا در خروجی داده‌ها");
     }
   } catch (err) {
-    loader.innerHTML = "❌ خطا در بارگذاری تعرفه‌ها. لطفاً مجدداً صفحه را رفرش کنید.";
+    console.warn("ارتباط مستقیم با متد GET مسدود شد. تلاش با روش جانبی JSONP...", err);
+    loadViaJsonp();
   }
 }
 
-// نمایش پکیج‌ها
+// راهکار کمکی بارگذاری از سرور در صورت انسداد مرورگر
+function loadViaJsonp() {
+  const loader = document.getElementById("dataLoader");
+  const script = document.createElement("script");
+  
+  window.onGoogleSheetDataLoaded = function(result) {
+    if (result && result.success && result.data) {
+      setupInitialDb(result.data);
+    } else {
+      if (loader) loader.innerHTML = "⚠️ خطا در خواندن شیت. لطفاً ستون‌های شیت را بررسی کنید.";
+    }
+  };
+
+  script.src = `${SCRIPT_API_URL}?action=getInitialData&callback=onGoogleSheetDataLoaded`;
+  script.onerror = () => {
+    if (loader) loader.innerHTML = "❌ ارتباط با سرور ابری برقرار نشد. لطفاً دسترسی Deploy را در گوگل روی Anyone قرار دهید.";
+  };
+  document.body.appendChild(script);
+}
+
+// آماده‌سازی المان‌ها پس از دریافت داده
+function setupInitialDb(data) {
+  appDb = data;
+  const loader = document.getElementById("dataLoader");
+  if (loader) loader.style.display = "none";
+
+  renderPackages();
+  renderServices();
+
+  const pkgSec = document.getElementById("pkgSection");
+  const srvSec = document.getElementById("servicesSection");
+  const paySec = document.getElementById("paymentTypeSection");
+
+  if (pkgSec) pkgSec.style.display = "block";
+  if (srvSec) srvSec.style.display = "block";
+  if (paySec) paySec.style.display = "block";
+
+  calculateOrderTotal();
+}
+
+// ==================== ۴. رندر پکیج‌ها و خدمات ====================
 function renderPackages() {
   const container = document.getElementById("packagesContainer");
-  if (!container) return;
+  if (!container || !appDb.packages) return;
   container.innerHTML = "";
 
   appDb.packages.forEach((pkg, index) => {
@@ -262,7 +205,7 @@ function renderPackages() {
       </div>
       <div class="pkg-meta">
         <span>⏱️ ${pkg.days} روز کاری</span>
-        <span class="pkg-price">${pkg.discount ? `تخفیف: ${pkg.discount}٪` : "تعرفه اصلی"}</span>
+        <span class="pkg-price">${pkg.discount ? `تخفیف: ${pkg.discount}٪` : "تعرفه پایه"}</span>
       </div>
     `;
     container.appendChild(card);
@@ -277,10 +220,9 @@ function selectPackage(pkgId, cardEl) {
   calculateOrderTotal();
 }
 
-// نمایش خدمات تکمیلی
 function renderServices() {
   const container = document.getElementById("servicesContainer");
-  if (!container) return;
+  if (!container || !appDb.services) return;
   container.innerHTML = "";
 
   appDb.services.forEach(srv => {
@@ -291,7 +233,7 @@ function renderServices() {
     if (srv.variants && srv.variants.length > 0) {
       variantsHtml = `<select class="variant-select" onchange="calculateOrderTotal()">`;
       srv.variants.forEach(v => {
-        variantsHtml += `<option value="${v.id}" data-price="${v.price}" data-days="${v.days}">${v.brand} - ${v.modelTitle} (+${v.price.toLocaleString('fa-IR')} ت)</option>`;
+        variantsHtml += `<option value="${v.id}" data-price="${v.price}" data-days="${v.days}">${v.brand} - ${v.modelTitle} (+${Number(v.price).toLocaleString('fa-IR')} ت)</option>`;
       });
       variantsHtml += `</select>`;
     }
@@ -302,7 +244,7 @@ function renderServices() {
           <input type="checkbox" class="srv-checkbox" value="${srv.id}" data-base-price="${srv.price}" data-days="${srv.days}" data-title="${srv.title}" onchange="calculateOrderTotal()">
           <span>${srv.title}</span>
         </label>
-        <strong style="color:var(--primary); font-size:11px;">+${srv.price.toLocaleString('fa-IR')} تومان</strong>
+        <strong style="color:var(--primary); font-size:11px;">+${Number(srv.price).toLocaleString('fa-IR')} تومان</strong>
       </div>
       ${variantsHtml}
     `;
@@ -310,8 +252,8 @@ function renderServices() {
   });
 }
 
-// محاسبه قیمت، اقساط و فاکتور
-function calculateOrderTotal() {
+// ==================== ۵. محاسبات آنلاین پیش‌فاکتور ====================
+window.calculateOrderTotal = function() {
   if (!activePackage) return;
 
   const invPkgTitle = document.getElementById("invPkgTitle");
@@ -321,31 +263,31 @@ function calculateOrderTotal() {
   const invFinal = document.getElementById("invFinalPrice");
   const invPayable = document.getElementById("invPayableNow");
 
-  invPkgTitle.textContent = activePackage.title;
+  if (invPkgTitle) invPkgTitle.textContent = activePackage.title;
 
-  // محاسبه مجموع پکیج پایه (با خدمات شامل‌شده)
+  // مجموع مبالغ خدمات پایه پکیج
   let pkgBaseSum = 0;
-  if (activePackage.services) {
+  if (activePackage.services && appDb.services) {
     activePackage.services.forEach(sId => {
       const match = appDb.services.find(s => s.id === sId);
       if (match) pkgBaseSum += match.price;
     });
   }
-  if (pkgBaseSum === 0) pkgBaseSum = 7500000; // پیش‌فرض در صورت خالی بودن شیت پکیج
-  invPkgPrice.textContent = pkgBaseSum.toLocaleString('fa-IR') + " تومان";
+  if (pkgBaseSum === 0) pkgBaseSum = 7500000;
+  if (invPkgPrice) invPkgPrice.textContent = pkgBaseSum.toLocaleString('fa-IR') + " تومان";
 
-  // خدمات اضافه شده انتخابی
-  invAddedList.innerHTML = "";
+  // خدمات مازاد
+  if (invAddedList) invAddedList.innerHTML = "";
   let addedSum = 0;
   const addedDetails = [];
 
   document.querySelectorAll(".srv-checkbox:checked").forEach(cb => {
     const parent = cb.closest(".service-check-item");
-    const vSelect = parent.querySelector(".variant-select");
+    const vSelect = parent ? parent.querySelector(".variant-select") : null;
     let itemPrice = Number(cb.getAttribute("data-base-price")) || 0;
     let vTitle = "";
 
-    if (vSelect) {
+    if (vSelect && vSelect.selectedOptions[0]) {
       const opt = vSelect.selectedOptions[0];
       itemPrice = Number(opt.getAttribute("data-price")) || itemPrice;
       vTitle = opt.text;
@@ -360,33 +302,35 @@ function calculateOrderTotal() {
       days: Number(cb.getAttribute("data-days")) || 0
     });
 
-    const row = document.createElement("div");
-    row.className = "inv-add-item";
-    row.innerHTML = `<span>+ ${cb.getAttribute("data-title")}</span><strong>${itemPrice.toLocaleString('fa-IR')} ت</strong>`;
-    invAddedList.appendChild(row);
+    if (invAddedList) {
+      const row = document.createElement("div");
+      row.className = "inv-add-item";
+      row.innerHTML = `<span>+ ${cb.getAttribute("data-title")}</span><strong>${itemPrice.toLocaleString('fa-IR')} ت</strong>`;
+      invAddedList.appendChild(row);
+    }
   });
 
   const rawSubTotal = pkgBaseSum + addedSum;
-  const payType = document.querySelector('input[name="paymentType"]:checked').value;
+  const payTypeEl = document.querySelector('input[name="paymentType"]:checked');
+  const payType = payTypeEl ? payTypeEl.value : "full";
 
-  // اعمال تخفیف نقدی ۵٪ یا افزایش اقساطی ۵٪
   let finalPrice = rawSubTotal;
   let payableAmount = 0;
 
   if (payType === "full") {
     finalPrice = Math.round(rawSubTotal * 0.95);
     payableAmount = finalPrice - currentDiscountAmount;
-    invDiscount.textContent = "۵٪ نقدی" + (currentDiscountAmount > 0 ? ` + ${currentDiscountAmount.toLocaleString('fa-IR')} تخفیف` : "");
+    if (invDiscount) invDiscount.textContent = "۵٪ نقدی" + (currentDiscountAmount > 0 ? ` + ${currentDiscountAmount.toLocaleString('fa-IR')} تخفیف` : "");
   } else {
     finalPrice = Math.round(rawSubTotal * 1.05);
     payableAmount = Math.round(finalPrice * 0.4) - currentDiscountAmount;
-    invDiscount.textContent = "اقساطی (۴۰٪ پیش‌پرداخت)";
+    if (invDiscount) invDiscount.textContent = "اقساطی (۴۰٪ پیش‌پرداخت)";
   }
 
   payableAmount = Math.max(1000, payableAmount);
 
-  invFinal.textContent = finalPrice.toLocaleString('fa-IR') + " تومان";
-  invPayable.textContent = payableAmount.toLocaleString('fa-IR') + " تومان";
+  if (invFinal) invFinal.textContent = finalPrice.toLocaleString('fa-IR') + " تومان";
+  if (invPayable) invPayable.textContent = payableAmount.toLocaleString('fa-IR') + " تومان";
 
   return {
     packageName: activePackage.title,
@@ -398,23 +342,22 @@ function calculateOrderTotal() {
     paymentType: payType,
     payableAmount: payableAmount
   };
-}
+};
 
-// بررسی کد تخفیف
-async function applyCoupon() {
-  const code = document.getElementById("couponInput").value.trim();
+// اعمال کوپن تخفیف
+window.applyCoupon = async function() {
+  const codeInput = document.getElementById("couponInput");
   const msg = document.getElementById("couponMsg");
+  if (!codeInput || !msg) return;
+
+  const code = codeInput.value.trim();
   if (!code) return;
 
-  msg.textContent = "در حال بررسی...";
+  msg.textContent = "در حال بررسی اعتبارسنجی...";
   msg.style.color = "#2563eb";
 
   try {
-    const res = await fetch(SCRIPT_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "validateCoupon", code: code, total: 5000000 })
-    });
-    const data = await res.json();
+    const data = await sendToAppScript({ action: "validateCoupon", code: code, total: 5000000 });
     if (data.valid) {
       currentDiscountAmount = data.discountAmount;
       appliedCouponCode = data.code;
@@ -429,64 +372,62 @@ async function applyCoupon() {
     msg.textContent = "خطا در ارتباط با سرور تخفیف.";
     msg.style.color = "#dc2626";
   }
-}
+};
 
-// ارسال نهایی سفارش و دریافت درگاه زرین‌پال
-async function handleFinalSubmit(e) {
+// ==================== ۶. ارسال سفارش و اتصال به درگاه شاپرک ====================
+window.handleFinalSubmit = async function(e) {
   e.preventDefault();
   const btn = document.getElementById("submitOrderBtn");
   const msg = document.getElementById("orderStatusMsg");
-  const name = document.getElementById("orderCustName").value.trim();
-  const phone = document.getElementById("orderCustPhone").value.trim();
+  const nameInput = document.getElementById("orderCustName");
+  const phoneInput = document.getElementById("orderCustPhone");
+
+  if (!nameInput || !phoneInput) return;
 
   const orderData = calculateOrderTotal();
-  orderData.customerName = name;
-  orderData.customerPhone = phone;
+  orderData.customerName = nameInput.value.trim();
+  orderData.customerPhone = phoneInput.value.trim();
 
   btn.disabled = true;
-  btn.textContent = "در حال ایجاد پیش‌فاکتور و اتصال به درگاه شاپرک...";
+  btn.textContent = "در حال صدور فاکتور و اتصال به درگاه شاپرک...";
   msg.style.display = "block";
   msg.style.background = "#eff6ff";
   msg.style.color = "#1d4ed8";
-  msg.textContent = "در حال صدور فاکتور رسمی و ارسال داده‌ها به زرین‌پال...";
+  msg.textContent = "در حال ثبت فاکتور رسمی و اتصال به زرین‌پال...";
 
   try {
-    const res = await fetch(SCRIPT_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "submitOrder", payload: orderData })
-    });
-    const result = await res.json();
+    const result = await sendToAppScript({ action: "submitOrder", payload: orderData });
 
     if (result.success && result.paymentUrl) {
       msg.style.background = "#dcfce7";
       msg.style.color = "#166534";
-      msg.textContent = `پیش‌فاکتور صادر شد (${result.trackingCode}). انتقال به درگاه بانکی...`;
+      msg.textContent = `پیش‌فاکتور با کد ${result.trackingCode} صادر شد. انتقال به درگاه بانکی...`;
       window.location.href = result.paymentUrl;
     } else {
       msg.style.background = "#fee2e2";
       msg.style.color = "#991b1b";
-      msg.textContent = result.error || "خطا در اتصال به درگاه زرین‌پال.";
+      msg.textContent = result.error || "خطا در اتصال به درگاه بانکی.";
       btn.disabled = false;
       btn.textContent = "💳 ثبت سفارش و ورود به درگاه شاپرک";
     }
   } catch (err) {
     msg.style.background = "#fee2e2";
     msg.style.color = "#991b1b";
-    msg.textContent = "خطای ارتباطی با سرور ابری.";
+    msg.textContent = "خطای غیرمنتظره در ثبت سفارش.";
     btn.disabled = false;
     btn.textContent = "💳 ثبت سفارش و ورود به درگاه شاپرک";
   }
-}
+};
 
-// جابجایی تب‌های سامانه
+// ==================== ۷. پنل مشتریان، ورود و پیگیری اقساط ====================
 window.switchMainTab = function(tabId, btn) {
   document.querySelectorAll(".sys-tab-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
   btn.classList.add("active");
-  document.getElementById(tabId).classList.add("active");
+  const targetTab = document.getElementById(tabId);
+  if (targetTab) targetTab.classList.add("active");
 };
 
-// ورود و ثبت نام
 window.toggleAuthMode = function() {
   isLoginMode = !isLoginMode;
   document.getElementById("authTitle").textContent = isLoginMode ? "ورود به پنل کاربری" : "ثبت نام حساب جدید";
@@ -501,19 +442,15 @@ window.processAuth = async function() {
   const name = document.getElementById("authName").value.trim();
   const msg = document.getElementById("authMsg");
 
-  msg.textContent = "در حال پردازش...";
+  msg.textContent = "در حال پردازش اطلاعات...";
   try {
-    const res = await fetch(SCRIPT_API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "auth",
-        authType: isLoginMode ? "login" : "register",
-        phone: phone,
-        pass: pass,
-        name: name
-      })
+    const result = await sendToAppScript({
+      action: "auth",
+      authType: isLoginMode ? "login" : "register",
+      phone: phone,
+      pass: pass,
+      name: name
     });
-    const result = await res.json();
 
     if (result.success) {
       document.getElementById("authBox").style.display = "none";
@@ -527,25 +464,24 @@ window.processAuth = async function() {
     }
   } catch (err) {
     msg.textContent = "خطا در برقراری ارتباط.";
+    msg.style.color = "#dc2626";
   }
 };
 
 async function loadUserDashboard(phone) {
   const ordersWrap = document.getElementById("ordersContainer");
   const dlWrap = document.getElementById("downloadsContainer");
+  if (!ordersWrap) return;
   ordersWrap.innerHTML = "در حال بارگذاری سوابق سفارشات...";
 
   try {
-    const res = await fetch(SCRIPT_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "getDashboard", phone: phone })
-    });
-    const result = await res.json();
+    const result = await sendToAppScript({ action: "getDashboard", phone: phone });
     ordersWrap.innerHTML = "";
-    dlWrap.innerHTML = "";
+    if (dlWrap) dlWrap.innerHTML = "";
 
-    if (result.data.orders.length === 0) {
-      ordersWrap.innerHTML = "<p style='font-size:12px; color:#64748b;'>هنوز سفارشی ثبت نکرده‌اید.</p>";
+    if (!result.data || result.data.orders.length === 0) {
+      ordersWrap.innerHTML = "<p style='font-size:12px; color:#64748b;'>هنوز سفارشی برای این شماره ثبت نشده است.</p>";
+      return;
     }
 
     result.data.orders.forEach(o => {
@@ -553,7 +489,7 @@ async function loadUserDashboard(phone) {
       card.className = "order-tracking-card";
       card.innerHTML = `
         <div class="tracking-header">
-          <span>کد: ${o.trackingCode}</span>
+          <span>کد پیگیری: ${o.trackingCode}</span>
           <span style="color:#16a34a;">${o.projectStatus}</span>
         </div>
         <p style="font-size:12px; font-weight:800; margin-bottom:4px;">${o.packageName}</p>
@@ -561,15 +497,15 @@ async function loadUserDashboard(phone) {
           <div class="progress-bar-fill" style="width:${o.progressPercent};"></div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:10px; color:#64748b; margin-top:8px;">
-          <span>مبلغ کل: ${o.totalPrice.toLocaleString('fa-IR')} ت</span>
-          <span>مانده: ${o.remainingAmount.toLocaleString('fa-IR')} ت</span>
+          <span>مبلغ کل: ${Number(o.totalPrice).toLocaleString('fa-IR')} ت</span>
+          <span>مانده حساب: ${Number(o.remainingAmount).toLocaleString('fa-IR')} ت</span>
         </div>
         <a href="${o.pdfUrl}" target="_blank" style="display:inline-block; margin-top:10px; font-size:11px; color:#2563eb; font-weight:800; text-decoration:none;">📄 دانلود PDF پیش‌فاکتور</a>
       `;
       ordersWrap.appendChild(card);
     });
   } catch (err) {
-    ordersWrap.innerHTML = "خطا در دریافت پروژه‌ها.";
+    ordersWrap.innerHTML = "خطا در دریافت لیست پروژه‌ها.";
   }
 }
 
@@ -577,8 +513,3 @@ window.logoutUser = function() {
   document.getElementById("userDashboard").style.display = "none";
   document.getElementById("authBox").style.display = "block";
 };
-
-// راه‌اندازی پس از لود شدن ماژول
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(fetchAppInitialData, 300);
-});
