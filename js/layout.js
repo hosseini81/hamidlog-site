@@ -86,3 +86,19 @@ window.toggleFaq = function(btn) {
     ans.style.maxHeight = ans.scrollHeight + "px";
   }
 };
+
+
+
+// تابع فیلتر دسته‌بندی پروژه‌ها
+window.filterProjects = function(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.project-card').forEach(card => {
+    if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+};
