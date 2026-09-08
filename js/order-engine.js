@@ -24,6 +24,19 @@ function initOrderEngine() {
 }
 window.addEventListener("allModulesLoaded", initOrderEngine);
 
+// تابع هوشمند تولید تگ تصویر بندانگشتی یا گیف برای پکیج و خدمات
+function renderMediaThumbnail(url, altText, fallbackIcon = '📦') {
+  if (!url || !url.trim()) {
+    return `<div class="service-thumb-placeholder">${fallbackIcon}</div>`;
+  }
+  const cleanUrl = url.trim();
+  return `
+    <div class="service-thumb-wrap">
+      <img src="${cleanUrl}" alt="${altText}" class="service-thumb-img" loading="lazy" onerror="this.outerHTML='<div class=\\'service-thumb-placeholder\\'>${fallbackIcon}</div>'" />
+    </div>
+  `;
+}
+
 async function loadOrderEngineData() {
   const loader = document.getElementById("dataLoader");
   try {
@@ -59,15 +72,21 @@ function renderPackages() {
   if (!grid || !appData.packages) return;
   grid.innerHTML = '';
 
-  if (!selectedPackage && appData.packages.length > 0) {
-    selectedPackage = appData.packages[0];
+  // ۱. فیلتر فقط پکیج‌های پروژه‌ای (جداسازی از پکیج‌های پشتیبانی دوره‌ای)
+  const projectPackages = appData.packages.filter(p => !p.type || p.type === 'پروژه‌ای');
+
+  if (projectPackages.length === 0) {
+    grid.innerHTML = '<div style="color:#64748b; padding:20px; text-align:center; grid-column:1/-1;">پکیجی یافت نشد.</div>';
+    return;
   }
 
-  appData.packages.forEach(pkg => {
+  if (!selectedPackage || !projectPackages.some(p => String(p.id) === String(selectedPackage.id))) {
+    selectedPackage = projectPackages[0];
+  }
+
+  projectPackages.forEach(pkg => {
     const isSelected = selectedPackage && String(selectedPackage.id) === String(pkg.id);
-    const mediaHtml = pkg.imageUrl 
-      ? `<img src="${pkg.imageUrl}" class="package-card-media" alt="${pkg.title}" onerror="this.outerHTML='<div class=\\'package-card-placeholder\\'>📦</div>'">`
-      : `<div class="package-card-placeholder">📦</div>`;
+    const mediaHtml = renderMediaThumbnail(pkg.imageUrl, pkg.title, '📦');
 
     grid.innerHTML += `
       <div class="package-card ${isSelected ? 'selected' : ''}" onclick="selectPackageById('${pkg.id}')">
@@ -75,17 +94,18 @@ function renderPackages() {
         <div class="package-card-body">
           <div class="package-card-title">
             <span>${pkg.title}</span>
-            ${isSelected ? '<span style="color:var(--primary);">✔</span>' : ''}
+            ${isSelected ? '<span style="color:var(--primary); font-weight:900;">✔</span>' : ''}
           </div>
           <div class="package-card-desc">${pkg.desc}</div>
           <div class="package-card-footer">
-            <span>زمان تحویل: <strong>${pkg.days} روز</strong></span>
+            <span>مدت زمان: <strong>${pkg.days} روز</strong></span>
             ${pkg.discount > 0 ? `<span class="badge badge-cycle">${pkg.discount}٪ تخفیف</span>` : ''}
           </div>
         </div>
       </div>
     `;
   });
+
   onPackageSelected();
 }
 
@@ -207,14 +227,16 @@ window.onCycleChanged = function(serviceId, cycleCount) {
 window.toggleLayout = function(type, mode) {
   if (type === 'extra') {
     extraViewMode = mode;
-    document.getElementById('extraListBtn').classList.toggle('active', mode === 'list');
-    document.getElementById('extraGridBtn').classList.toggle('active', mode === 'grid');
-    document.getElementById('extraItemsList').className = `services-container ${mode}-view`;
+    document.getElementById('extraListBtn')?.classList.toggle('active', mode === 'list');
+    document.getElementById('extraGridBtn')?.classList.toggle('active', mode === 'grid');
+    const el = document.getElementById('extraItemsList');
+    if (el) el.className = `services-container ${mode}-view`;
   } else {
     deductViewMode = mode;
-    document.getElementById('deductListBtn').classList.toggle('active', mode === 'list');
-    document.getElementById('deductGridBtn').classList.toggle('active', mode === 'grid');
-    document.getElementById('deductItemsList').className = `services-container ${mode}-view`;
+    document.getElementById('deductListBtn')?.classList.toggle('active', mode === 'list');
+    document.getElementById('deductGridBtn')?.classList.toggle('active', mode === 'grid');
+    const el = document.getElementById('deductItemsList');
+    if (el) el.className = `services-container ${mode}-view`;
   }
 };
 
@@ -238,9 +260,12 @@ function renderExtraItems() {
   container.innerHTML = '';
 
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
+  
+  // فیلتر فقط خدمات مازاد مادام‌العمر یا پروژه‌ای که داخل پکیج پایه نیستند
   const extras = appData.services.filter(s => {
     const currentId = String(s.id).trim().toLowerCase();
-    return currentId && !pkgServiceIds.includes(currentId);
+    const isInsidePkg = pkgServiceIds.includes(currentId);
+    return currentId && !isInsidePkg;
   });
 
   const categories = [...new Set(extras.map(s => s.category || 'عمومی'))];
@@ -253,12 +278,13 @@ function renderExtraItems() {
     const isChecked = extraSelectedIds.has(s.id);
     const hasReq = s.prerequisites && s.prerequisites.length > 0;
     const videoBtn = (s.videoUrl && s.videoUrl.trim()) ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 معرفی</a>` : '';
+    const thumbHtml = renderMediaThumbnail(s.imageUrl, s.title, '⚡');
 
     container.innerHTML += `
       <div class="service-card ${isChecked ? 'selected' : ''}" onclick="toggleExtraFromCard('${s.id}')">
         <div class="card-top">
           <input type="checkbox" ${isChecked ? 'checked' : ''} style="margin-left: 6px;" onclick="event.stopPropagation(); toggleExtra('${s.id}', this.checked)">
-          <div class="service-thumb-placeholder">⚡</div>
+          ${thumbHtml}
           <div class="service-info">
             <div class="service-title">
               ${s.title}
@@ -330,12 +356,13 @@ function renderDeductItems() {
     const eff = getEffectiveService(s);
     const isChecked = deductedIds.has(s.id);
     const badgeClass = s.source === 'پکیج پایه' ? 'badge-pkg' : 'badge-cycle';
+    const thumbHtml = renderMediaThumbnail(s.imageUrl, s.title, '⚡');
 
     container.innerHTML += `
       <div class="service-card ${isChecked ? 'selected' : ''}" onclick="toggleDeductFromCard('${s.id}')">
         <div class="card-top">
           <input type="checkbox" ${isChecked ? 'checked' : ''} style="margin-left: 8px;" onclick="event.stopPropagation(); toggleDeduct('${s.id}', this.checked)">
-          <div class="service-thumb-placeholder">⚡</div>
+          ${thumbHtml}
           <div class="service-info">
             <div class="service-title">
               ${s.title} 
@@ -454,7 +481,7 @@ window.goStep = function(step) {
 
 window.changeStep = function(delta) { goStep(currentStep + delta); };
 
-// افزودن پروژه شخصی‌سازی شده به سبد خرید و هدایت به cart.html
+// افزودن پروژه شخصی‌سازی شده به سبد خرید و هدایت
 window.proceedToCheckout = function() {
   if (!selectedPackage) {
     return showCustomAlert("خطا", "لطفاً ابتدا یک پکیج پایه انتخاب فرمایید.");
@@ -463,13 +490,28 @@ window.proceedToCheckout = function() {
   const addedList = appData.services.filter(s => extraSelectedIds.has(s.id));
   const deductedList = appData.services.filter(s => deductedIds.has(s.id));
 
+  // ارسال دقیق آبجکت‌ها با مشخصات کامل مدل و چرخه
+  const addedDetails = addedList.map(s => {
+    const eff = getEffectiveService(s);
+    return {
+      id: s.id,
+      title: s.title,
+      price: eff.price,
+      variantInfo: eff.variantTitle || '',
+      billingCycle: s.billingCycle || 'یکباره',
+      durationMonths: eff.cycles || 1
+    };
+  });
+
   const serviceOrder = {
+    packageId: selectedPackage.id,
     packageName: selectedPackage.title,
     pkgBaseSum: pkgBaseSum,
     discountPercent: selectedPackage.discount || 0,
     deductedSum: calculatedDeductedSum,
     finalPriceNumeric: calculatedFinalPrice,
     totalDaysNumeric: calculatedFinalDays,
+    addedDetails: addedDetails,
     addedServicesSummary: addedList.map(s => `${s.title} ${getEffectiveService(s).variantTitle ? '(' + getEffectiveService(s).variantTitle + ')' : ''}`),
     deductedServicesSummary: deductedList.map(s => s.title)
   };
