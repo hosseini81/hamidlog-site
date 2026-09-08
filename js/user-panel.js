@@ -341,3 +341,42 @@ window.logoutUser = function() {
   document.getElementById('userDashboard').style.display = 'none';
   document.getElementById('authBox').style.display = 'block';
 };
+
+
+
+
+// ==================== اصلاحات تعاملی پنل کاربری ====================
+
+// فراموشی رمز عبور
+window.startForgotPasswordFlow = async function() {
+  const phone = (document.getElementById('authPhone')?.value || '').trim();
+  if (!phone) {
+    return showCustomAlert('شماره تماس الزامی است', 'لطفاً ابتدا شماره موبایل خود را در کادر شماره همراه وارد کرده و مجدداً دکمه را بزنید.');
+  }
+
+  showCustomAlert('در حال بررسی', 'در حال صدور رمز عبور موقت و ارسال به ایمیل شما...', '⏳');
+
+  try {
+    const res = await sendToAppScript({ action: 'forgotPassword', phone: phone });
+    if (res && res.success) {
+      showCustomAlert('ارسال شد', res.message, '📧');
+    } else {
+      showCustomAlert('خطا', res ? res.message : 'حساب کاربری با این شماره یافت نشد.');
+    }
+  } catch (err) {
+    showCustomAlert('خطای ارتباطی', 'خطا در ارتباط با سرور.');
+  }
+};
+
+// ثبت امتیاز بدون باگ و رندر بلافاصله
+window.rateItem = async function(type, rowId, val) {
+  try {
+    const res = await sendToAppScript({ action: 'rateTask', type: type, rowId: rowId, rating: val });
+    if (res && res.success) {
+      showCustomAlert('سپاسگزاریم', 'امتیاز شما با موفقیت ثبت شد.', '⭐');
+      loadUserDashboard();
+    }
+  } catch (e) {
+    console.error('خطا در ثبت امتیاز:', e);
+  }
+};
