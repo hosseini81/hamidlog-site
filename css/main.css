@@ -1,9 +1,3 @@
-/* تنظیم ایمن فارسی‌سازی ارقام در فونت وزیرمتن بدون تداخل */
-body {
-  font-feature-settings: "ss01";
-}
-
-
 /* ==================== فایل اصلی و هماهنگ‌کننده استایل‌ها (Modular Architecture) ==================== */
 
 /* ۱. پایه‌ها، متغیرها و ریست */
@@ -24,3 +18,9 @@ body {
 @import url('contact.css');
 @import url('blog.css');
 @import url('testimonials.css'); /* ماژول اختصاصی نظرات */
+
+/* تنظیم فونت و فارسی‌سازی ارقام در انتهای ایمپورت‌ها */
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  font-feature-settings: "ss01";
+}
