@@ -33,6 +33,7 @@ window.toggleAuthMode = function() {
   const titleEl = document.getElementById('authTitle');
   const submitBtn = document.getElementById('authSubmitBtn');
   const regName = document.getElementById('regNameField');
+  const regEmail = document.getElementById('regEmailField');
   const toggleText = document.getElementById('authToggleText');
   const toggleLink = document.getElementById('authToggleLink');
 
@@ -40,12 +41,14 @@ window.toggleAuthMode = function() {
     if (titleEl) titleEl.textContent = 'ثبت‌نام کاربر جدید';
     if (submitBtn) submitBtn.textContent = 'ثبت‌نام و ایجاد حساب';
     if (regName) regName.style.display = 'block';
+    if (regEmail) regEmail.style.display = 'block';
     if (toggleText) toggleText.textContent = 'قبلاً ثبت‌نام کرده‌اید؟';
     if (toggleLink) toggleLink.textContent = 'وارد شوید';
   } else {
     if (titleEl) titleEl.textContent = 'ورود به حساب کاربری';
     if (submitBtn) submitBtn.textContent = 'ورود به حساب کاربری';
     if (regName) regName.style.display = 'none';
+    if (regEmail) regEmail.style.display = 'none';
     if (toggleText) toggleText.textContent = 'حساب کاربری ندارید؟';
     if (toggleLink) toggleLink.textContent = 'ثبت‌نام کنید';
   }
@@ -55,9 +58,17 @@ window.submitAuth = async function() {
   const phone = (document.getElementById('authPhone')?.value || '').trim();
   const pass = (document.getElementById('authPass')?.value || '').trim();
   const name = (document.getElementById('authName')?.value || '').trim();
+  const email = (document.getElementById('authEmail')?.value || '').trim().toLowerCase();
 
-  if (!phone || !pass || (isRegisterMode && !name)) {
-    return showCustomAlert('ورودی ناقص', 'تمامی فیلدها الزامی است.');
+  if (!phone || !pass) {
+    return showCustomAlert('ورودی ناقص', 'شماره موبایل و رمز عبور الزامی است.');
+  }
+
+  if (isRegisterMode) {
+    if (!name) return showCustomAlert('ورودی ناقص', 'نام و نام خانوادگی الزامی است.');
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      return showCustomAlert('ایمیل نامعتبر', 'لطفاً یک آدرس ایمیل معتبر جهت ارسال فاکتورها وارد فرمایید.');
+    }
   }
 
   const btn = document.getElementById('authSubmitBtn');
@@ -70,7 +81,8 @@ window.submitAuth = async function() {
       authType: isRegisterMode ? 'register' : 'login',
       phone: phone,
       pass: pass,
-      name: name
+      name: name,
+      email: email
     });
 
     if (res && res.success) {
@@ -84,7 +96,7 @@ window.submitAuth = async function() {
     } else {
       btn.disabled = false;
       btn.textContent = isRegisterMode ? 'ثبت‌نام و ایجاد حساب' : 'ورود به حساب کاربری';
-      showCustomAlert('خطا در ورود', res ? res.message : 'اطلاعات وارد شده نامعتبر است.');
+      showCustomAlert('خطا در احراز هویت', res ? res.message : 'اطلاعات وارد شده نامعتبر است.');
     }
   } catch (err) {
     btn.disabled = false;
@@ -98,14 +110,18 @@ async function loadUserDashboard() {
 
   const dashName = document.getElementById('dashUserName');
   const dashPhone = document.getElementById('dashUserPhone');
+  const dashEmail = document.getElementById('dashUserEmail');
   const editName = document.getElementById('editProfileName');
   const editPhone = document.getElementById('editProfilePhone');
+  const editEmail = document.getElementById('editProfileEmail');
   const avatarImg = document.getElementById('dashAvatarImg');
 
   if (dashName) dashName.textContent = currentUser.name || "کاربر گرامی";
   if (dashPhone) dashPhone.textContent = currentUser.phone || "";
+  if (dashEmail) dashEmail.textContent = currentUser.email || "";
   if (editName) editName.value = currentUser.name || "";
   if (editPhone) editPhone.value = currentUser.phone || "";
+  if (editEmail) editEmail.value = currentUser.email || "";
   if (currentUser.avatar && avatarImg) avatarImg.src = currentUser.avatar;
 
   const ordersContainer = document.getElementById('userProjectsList');
@@ -114,62 +130,113 @@ async function loadUserDashboard() {
     const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
+    // به‌روزرسانی اطلاعات پروفایل و ایمیل در صورت واکشی از شیت
     if (data.avatar) {
       currentUser.avatar = data.avatar;
       if (avatarImg) avatarImg.src = data.avatar;
-      localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-      if (typeof syncGlobalUserState === "function") syncGlobalUserState();
     }
+    if (data.email) {
+      currentUser.email = data.email;
+      if (dashEmail) dashEmail.textContent = data.email;
+      if (editEmail) editEmail.value = data.email;
+    }
+    localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
+    if (typeof syncGlobalUserState === "function") syncGlobalUserState();
 
-    // رندر دانلودها در ماژول shop.js انجام می‌شود
+    // رندر محصولات دانلودی در تب دوم
     if (typeof renderUserDownloads === "function") {
       renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // رندر پروژه‌ها و اقساط
+    // رندر پروژه‌ها، چک‌لیست مراحل و گزارش ۳ مرحله‌ای اقساط
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
+
       if (orders.length === 0) {
-        ordersContainer.innerHTML = '<div style="color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش فعالی برای شما ثبت نشده است.</div>';
+        ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش فعالی برای حساب شما ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
-          let stepsHtml = '';
-          const allServices = (o.addedServices && o.addedServices.length > 0) ? o.addedServices : ['بررسی و تحلیل اولیه'];
-          
-          allServices.forEach((item, idx) => {
-            const stepClass = idx === 0 ? 'done' : (idx === 1 ? 'in-progress' : '');
-            const icon = idx === 0 ? '✔' : (idx === 1 ? '⚡' : '⏳');
-            const stateText = idx === 0 ? 'انجام شد' : (idx === 1 ? 'در حال انجام' : 'در نوبت');
-            stepsHtml += `<li class="timeline-item ${stepClass}"><span>${icon} ${item}</span><span>${stateText}</span></li>`;
+          // ۱. ساخت بخش چک‌لیست مراحل کار (متصل به شیت مراحل پروژه‌ها)
+          let tasksHtml = '';
+          const tasks = (o.projectTasks && o.projectTasks.length > 0) ? o.projectTasks : [
+            { title: 'بررسی اولیه و تنظیم نیازمندی‌ها', completed: true },
+            { title: `پیکربندی هسته اصلی: ${o.packageName}`, completed: false },
+            { title: 'پیاده‌سازی ماژول‌های فنی و صفحات', completed: false },
+            { title: 'تحویل نهایی و اتصال درگاه پرداخت', completed: false }
+          ];
+
+          tasks.forEach(t => {
+            tasksHtml += `
+              <div class="task-item-row ${t.completed ? 'done' : ''}">
+                <span class="task-status-icon">${t.completed ? '✅' : '⏳'}</span>
+                <span class="task-name">${t.title}</span>
+                <span style="font-size:9px; margin-right:auto; color:${t.completed ? '#16a34a' : '#94a3b8'};">
+                  ${t.completed ? 'تکمیل شد' : 'در دست اقدام'}
+                </span>
+              </div>
+            `;
           });
 
-          const hasInstallment = Number(o.remainingAmount) > 0;
-          const installmentSection = hasInstallment ? `
-            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px; margin-top:10px; font-size:11px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <strong>اقساط باقی‌مانده فاکتور:</strong>
-                <span style="color:#dc2626; font-weight:900;">${Number(o.remainingAmount).toLocaleString('fa-IR')} تومان</span>
+          // ۲. ساخت بخش وضعیت پرداخت و اقساط
+          let paymentDetailsHtml = '';
+          if (o.paymentType && o.paymentType.includes('اقساطی')) {
+            paymentDetailsHtml = `
+              <div class="installments-grid-box">
+                <div class="inst-card paid">
+                  <strong>قسط ۱ (پیش‌پرداخت):</strong>
+                  <div>${o.installment1 || 'تسویه شده'}</div>
+                </div>
+                <div class="inst-card ${String(o.installment2 || '').includes('پرداخت شده') ? 'paid' : 'waiting'}">
+                  <strong>قسط ۲ (ماه اول):</strong>
+                  <div>${o.installment2 || 'در انتظار'}</div>
+                </div>
+                <div class="inst-card ${String(o.installment3 || '').includes('پرداخت شده') ? 'paid' : 'waiting'}">
+                  <strong>قسط ۳ (ماه دوم):</strong>
+                  <div>${o.installment3 || 'در انتظار'}</div>
+                </div>
               </div>
-              <div style="display:flex; gap:6px;">
-                <input type="number" id="pay_amt_${o.trackingCode}" value="${o.remainingAmount}" style="padding:6px; font-size:11px; border:1px solid #cbd5e1; border-radius:6px; width:130px;" />
-                <button type="button" class="btn-main" onclick="payCustomRemaining('${o.trackingCode}')" style="white-space:nowrap; font-size:11px; padding:6px 12px;">پرداخت قسط</button>
+            `;
+          } else {
+            paymentDetailsHtml = `
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px; margin-top:10px; font-size:11px; color:#166534; display:flex; justify-content:space-between; align-items:center;">
+                <span>💳 وضعیت فاکتور: <strong>تسویه نقدی کامل</strong></span>
+                <span style="font-weight:900;">${Number(o.totalPrice).toLocaleString('fa-IR')} تومان</span>
               </div>
-            </div>
-          ` : `<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px; margin-top:8px; font-size:11px; color:#166534; text-align:center;">✔ تمامی اقساط این فاکتور تسویه شده است.</div>`;
+            `;
+          }
 
           ordersContainer.innerHTML += `
-            <div style="border:1px solid var(--border-color); border-radius:12px; padding:16px; background:#fff; margin-bottom:12px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <strong style="font-size:13px;">${o.packageName}</strong>
-                <span class="badge badge-pkg">${o.trackingCode}</span>
+            <div style="border:1px solid var(--border-color); border-radius:14px; padding:18px; background:#ffffff; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong style="font-size:14px; color:var(--bg-dark);">${o.packageName}</strong>
+                <span class="badge badge-pkg" style="font-size:10px;">کد پیگیری: ${o.trackingCode}</span>
               </div>
-              <div style="font-size:11px; color:#64748b; margin-bottom:8px;">وضعیت: <strong>${o.projectStatus}</strong></div>
-              <div style="font-size:11px; font-weight:800; color:#334155;">📋 مراحل انجام پروژه:</div>
-              <ul class="timeline-steps-list">${stepsHtml}</ul>
-              ${installmentSection}
-              <div style="margin-top:12px; text-align:left;">
-                <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:10px; text-decoration:none;">📄 دانلود پیش‌فاکتور رسمی</a>
+
+              <!-- نوار وضعیت و درصد پیشرفت کار -->
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:10px;">
+                <span style="color:#64748b;">مدت اجرا: <strong>${o.deliveryDays || '-'} روز</strong> | تخفیف: <strong>${o.coupon || 'ندارد'}</strong></span>
+                <span class="badge-status-green">پیشرفت پروژه: ${o.progressPercent || '۰٪'}</span>
+              </div>
+
+              <!-- چک‌لیست وظایف پروژه -->
+              <div class="tasks-checklist-box">
+                <div class="tasks-checklist-title">
+                  <span>📋 چک‌لیست مراحل انجام کار (به‌روزرسانی زنده)</span>
+                  <span style="font-size:10px; color:#64748b;">تایید شده توسط تیم توسعه</span>
+                </div>
+                ${tasksHtml}
+              </div>
+
+              <!-- وضعیت اقساط یا تسویه -->
+              ${paymentDetailsHtml}
+
+              <!-- دکمه دریافت سند رسمی -->
+              <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:10px; color:#94a3b8;">تاریخ ثبت: ${o.date || '-'}</span>
+                <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:11px; padding:6px 14px; text-decoration:none;">
+                  📄 دانلود پیش‌فاکتور رسمی (PDF)
+                </a>
               </div>
             </div>
           `;
@@ -177,11 +244,11 @@ async function loadUserDashboard() {
       }
     }
   } catch (err) {
-    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center; font-size:11px;">خطا در دریافت اطلاعات.</div>';
+    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:14px; text-align:center; font-size:11px;">خطا در واکشی اطلاعات از سرور ابری.</div>';
   }
 }
 
-// سوئیچر تب‌های سه‌گانه پنل
+// سوئیچر تب‌های سه‌گانه داشبورد
 window.switchUserPanelTab = function(tabName) {
   document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.dash-panel-tab').forEach(t => t.classList.remove('active'));
@@ -213,7 +280,7 @@ window.saveUserProfileName = async function() {
       if (typeof syncGlobalUserState === "function") syncGlobalUserState();
       showCustomAlert('موفقیت‌آمیز', 'نام شما با موفقیت ذخیره شد.', '✔');
     } else {
-      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت نام.');
+      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت تغییرات نام.');
     }
   } catch (err) {
     showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور.');
@@ -230,41 +297,25 @@ window.uploadAvatarFile = function(event) {
     try {
       const res = await sendToAppScript({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
       if (res && res.success) {
-        currentUser.avatar = base64Data;
+        currentUser.avatar = res.avatar || base64Data;
         const img = document.getElementById('dashAvatarImg');
-        if (img) img.src = base64Data;
+        if (img) img.src = currentUser.avatar;
         localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
         if (typeof syncGlobalUserState === "function") syncGlobalUserState();
+        showCustomAlert('موفقیت', 'عکس پروفایل شما در فضای ابری ذخیره شد.', '✔');
       }
     } catch (err) {
-      showCustomAlert('خطا', 'خطا در ذخیره‌سازی نمایه.');
+      showCustomAlert('خطا', 'خطا در ذخیره‌سازی تصویر نمایه.');
     }
   };
   reader.readAsDataURL(file);
-};
-
-window.payCustomRemaining = async function(orderCode) {
-  const input = document.getElementById('pay_amt_' + orderCode);
-  const amount = input ? input.value : 0;
-  if (!amount || amount < 1000) return showCustomAlert('مبلغ نامعتبر', 'حداقل مبلغ ۱,۰۰۰ تومان است.');
-
-  try {
-    const res = await sendToAppScript({ action: 'payInstallment', orderCode: orderCode, amount: amount, phone: currentUser.phone });
-    if (res && res.success && res.paymentUrl) {
-      window.open(res.paymentUrl, '_blank');
-    } else {
-      showCustomAlert('خطا در درگاه', res ? res.error : 'خطا در اتصال به بانک.');
-    }
-  } catch (err) {
-    showCustomAlert('خطا', 'عدم امکان اتصال به درگاه.');
-  }
 };
 
 window.logoutUser = function() {
   currentUser = null;
   localStorage.removeItem('site_user_auth');
   if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-  
+
   const userDash = document.getElementById('userDashboard');
   const authBox = document.getElementById('authBox');
   if (userDash) userDash.style.display = 'none';
