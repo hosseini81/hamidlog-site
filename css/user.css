@@ -57,3 +57,44 @@
   .user-dash-header-card { flex-direction: column; gap: 14px; text-align: center; }
   .dash-user-meta { flex-direction: column; }
 }
+
+
+
+.dash-avatar-wrapper {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  border-radius: 50% !important;
+  overflow: hidden;
+  border: 2px solid var(--primary);
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-avatar-wrapper img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block;
+}
+
+.avatar-change-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+}
