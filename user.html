@@ -75,6 +75,145 @@
       background: #fff7ed;
       color: #9a3412;
     }
+
+    /* استایل‌های اختصاصی آکاردئون و تفکیک پکیج‌های نگهداری */
+    .support-contract-group {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+      transition: border-color 0.2s ease;
+    }
+    .support-contract-group:hover {
+      border-color: #cbd5e1;
+    }
+    .contract-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .contract-header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contract-badge-icon {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      background: #ecfdf5;
+      color: #059669;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .contract-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .contract-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .contract-duration-pill {
+      font-size: 10px;
+      font-weight: 800;
+      background: #ecfdf5;
+      color: #047857;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .contract-active-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .contract-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .contract-progress-bar {
+      width: 140px;
+      height: 6px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .contract-progress-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+    .contract-progress-text {
+      font-size: 10.5px;
+      color: #64748b;
+    }
+    .contract-toggle-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+    .support-contract-group.collapsed .contract-toggle-btn {
+      transform: rotate(-90deg);
+    }
+    .contract-group-body {
+      padding: 16px 20px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .support-contract-group.collapsed .contract-group-body {
+      display: none;
+    }
+    .contract-group-body .support-period-card {
+      margin-bottom: 0 !important;
+      background: #ffffff !important;
+    }
+    @media (max-width: 650px) {
+      .contract-group-header {
+        padding: 12px 14px;
+      }
+      .contract-progress-bar {
+        width: 85px;
+      }
+      .contract-badge-icon {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        font-size: 18px;
+      }
+      .contract-group-body {
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -177,21 +316,21 @@
           </div>
         </div>
 
-        <!-- تب جدید: گزارشات پشتیبانی دوره‌ای -->
+        <!-- تب دوم: گزارشات پشتیبانی دوره‌ای (تفکیک‌شده بر اساس پکیج) -->
         <div id="panelTabSupport" class="dash-panel-tab">
           <div id="userSupportContainer" class="projects-list-stack">
             <div class="loading-box"><span class="spinner"></span> در حال استعلام دوره‌های پشتیبانی...</div>
           </div>
         </div>
         
-        <!-- تب دوم: محصولات دانلودی خریداری‌شده -->
+        <!-- تب سوم: محصولات دانلودی خریداری‌شده -->
         <div id="panelTabDownloads" class="dash-panel-tab">
           <div id="userPurchasedDownloadsList" class="downloads-list-stack">
             <div class="loading-box"><span class="spinner"></span> در حال بررسی لایسنس‌های دانلودی...</div>
           </div>
         </div>
 
-       <!-- تب سوم: ویرایش مشخصات هویتی و ایمیل (قفل ایمیل برداشته شد) -->
+        <!-- تب چهارم: ویرایش مشخصات هویتی و ایمیل -->
         <div id="panelTabProfile" class="dash-panel-tab">
           <div class="profile-edit-box">
             <div class="box-title" style="margin-bottom:14px; font-size:13px; font-weight:800;">ویرایش اطلاعات هویتی و تماس</div>
