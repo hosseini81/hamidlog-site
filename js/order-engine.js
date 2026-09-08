@@ -86,7 +86,11 @@ function renderPackages() {
 
   projectPackages.forEach(pkg => {
     const isSelected = selectedPackage && String(selectedPackage.id) === String(pkg.id);
-    const mediaHtml = renderMediaThumbnail(pkg.imageUrl, pkg.title, '📦');
+    const mediaHtml = pkg.imageUrl 
+  ? `<div class="package-media-wrap">
+       <img src="${pkg.imageUrl}" class="package-card-media" alt="${pkg.title}" loading="lazy" onerror="this.outerHTML='<div class=\\'package-card-placeholder\\'>📦</div>'">
+     </div>`
+  : `<div class="package-card-placeholder">📦</div>`;
 
     grid.innerHTML += `
       <div class="package-card ${isSelected ? 'selected' : ''}" onclick="selectPackageById('${pkg.id}')">
