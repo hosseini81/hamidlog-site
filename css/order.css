@@ -439,3 +439,89 @@
     grid-template-columns: repeat(2, 1fr); /* در موبایل ۲ تا در هر ردیف */
   }
 }
+
+
+
+/* ۱. دو ستونه شدن پکیج‌ها در دسکتاپ و اسکرول‌بار پس از ۴ آیتم (ارتفاع ۲ ردیف کارت) */
+#supportPackagesGrid.packages-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+  max-height: 520px; /* تنظیم ارتفاع برای گنجایش دقیق ۴ آیتم (۲ سطر) */
+  overflow-y: auto !important;
+  padding: 4px 6px 12px 6px !important;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+/* اسکرول‌بار باریک و تمیز */
+#supportPackagesGrid.packages-grid::-webkit-scrollbar {
+  width: 6px;
+}
+#supportPackagesGrid.packages-grid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+#supportPackagesGrid.packages-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+#supportPackagesGrid.packages-grid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ۲. دکمه‌های تغییر چیدمان (شبکه / لیست) */
+.view-switch-box {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.view-btn {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.view-btn.active {
+  background: #ffffff;
+  color: var(--primary, #059669);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* حالت نمایش شبکه‌ای خدمات */
+.services-container.grid-view {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.services-container.grid-view .service-card {
+  height: 100%;
+}
+
+.services-container.grid-view .card-top {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* در موبایل پکیج‌ها تک ستونه شوند */
+@media (max-width: 680px) {
+  #supportPackagesGrid.packages-grid {
+    grid-template-columns: 1fr !important;
+    max-height: 500px;
+  }
+}
