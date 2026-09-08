@@ -33,7 +33,7 @@
       <button type="button" class="step-btn" id="sStepBtn3" onclick="goSupportStep(3)">۳. تنظیم دوره و فاکتور</button>
     </div>
 
-    <!-- گرید واکنش‌گرا (بدون استایل درون‌خطی مزاحم) -->
+    <!-- گرید واکنش‌گرا -->
     <div class="order-layout-grid support-layout-grid">
       
       <!-- محتوای استپ‌ها -->
@@ -45,12 +45,23 @@
           <div id="supportPackagesGrid" class="packages-grid"></div>
         </section>
 
-        <!-- استپ ۲: انتخاب خدمات ماهانه مازاد -->
+        <!-- استپ ۲: انتخاب خدمات ماهانه مازاد همراه با دکمه‌های تغییر نما -->
         <section id="sStep2" class="step-content">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <div style="font-weight:800; font-size:13px; color:var(--bg-dark);">⚡ خدمات و ماژول‌های مانیتورینگ و نگهداری مازاد (ماهانه):</div>
-            <div id="supportCatFilters" style="display:flex; gap:6px;"></div>
+            
+            <div style="display:flex; align-items:center; gap:8px;">
+              <!-- سوییچ چیدمان لیست / شبکه -->
+              <div class="view-switch-box">
+                <button type="button" class="view-btn active" id="btnSupportList" onclick="toggleSupportLayout('list')" title="نمایش لیستی">☰</button>
+                <button type="button" class="view-btn" id="btnSupportGrid" onclick="toggleSupportLayout('grid')" title="نمایش شبکه‌ای">⊞</button>
+              </div>
+
+              <!-- فیلتر دسته‌بندی‌ها -->
+              <div id="supportCatFilters" style="display:flex; gap:6px;"></div>
+            </div>
           </div>
+
           <div id="supportServicesList" class="services-container list-view"></div>
         </section>
 
@@ -59,7 +70,7 @@
           <div class="package-card" style="padding:22px; background:#fff; margin-bottom:18px;">
             <h3 style="font-size:14px; font-weight:800; margin-bottom:14px; color:var(--bg-dark);">⏱ مدت زمان دوره قرارداد پشتیبانی:</h3>
             
-            <!-- دکمه‌های کارتی خوش‌استایل با ارتفاع مناسب -->
+            <!-- دکمه‌های کارتی انتخاب دوره -->
             <div class="duration-cards-grid">
               <button type="button" class="duration-card-btn" onclick="setSupportContractDuration(1, this)">
                 <span class="d-title">۱ ماهه</span>
