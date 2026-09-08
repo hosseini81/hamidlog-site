@@ -7,90 +7,236 @@
   z-index: 1000;
   width: 100%;
 }
+
 .nav-container {
-  max-width: 1100px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 10px 16px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
+
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
+  flex-shrink: 0;
 }
+
 .brand-avatar {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
   background: var(--bg-dark);
   color: var(--primary);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 900;
 }
-.brand-name { font-size: 13px; font-weight: 900; color: var(--bg-dark); white-space: nowrap; }
-.brand-tagline { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
 
-.desktop-menu .nav-list { display: flex; list-style: none; gap: 12px; }
+.brand-name { 
+  font-size: 13px; 
+  font-weight: 900; 
+  color: var(--bg-dark); 
+  white-space: nowrap; 
+}
+
+.brand-tagline { 
+  font-size: 9.5px; 
+  color: var(--text-muted); 
+  white-space: nowrap; 
+}
+
+/* منوی دسکتاپ: تضمین تک‌خطی ماندن بدون wrap */
+.desktop-menu {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.desktop-menu .nav-list { 
+  display: flex; 
+  align-items: center;
+  list-style: none; 
+  gap: 4px; 
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap !important;
+}
+
 .nav-link {
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--text-muted);
-  padding: 8px 10px;
+  padding: 6px 9px;
   border-radius: 6px;
   transition: all 0.2s;
+  white-space: nowrap !important;
+  display: inline-block;
 }
+
 .nav-link:hover, .nav-link.active {
   color: var(--primary);
   background: rgba(16, 185, 129, 0.08);
 }
 
-.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  flex-shrink: 0;
+}
+
 .header-cta-btn {
   background: var(--primary);
   color: #ffffff;
   text-decoration: none;
   font-size: 11px;
   font-weight: 800;
-  padding: 8px 16px;
+  padding: 7px 14px;
   border-radius: 8px;
   box-shadow: 0 3px 10px var(--primary-glow);
   transition: background 0.2s, transform 0.2s;
   white-space: nowrap;
 }
-.header-cta-btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+.header-cta-btn:hover { 
+  background: var(--primary-hover); 
+  transform: translateY(-2px); 
+}
 
 /* دکمه پروفایل کاربری در هدر */
 .header-user-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   background: #f8fafc;
   border: 1px solid var(--border-color);
-  padding: 5px 12px 5px 8px;
+  padding: 4px 10px 4px 6px;
   border-radius: 28px;
   text-decoration: none;
   transition: all 0.25s ease;
+  flex-shrink: 0;
 }
+
 .header-user-btn:hover {
   border-color: var(--primary);
   background: #f0fdf4;
   transform: translateY(-2px);
 }
-.user-avatar-wrap { width: 32px; height: 32px; min-width: 32px; }
-.user-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
-.user-avatar-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #e2e8f0; color: var(--bg-dark); display: flex; align-items: center; justify-content: center; }
-.user-text-info { display: flex; flex-direction: column; line-height: 1.3; text-align: right; }
-.user-display-name { font-size: 11px; font-weight: 800; color: var(--bg-dark); max-width: 95px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.user-status-text { font-size: 9px; color: var(--text-muted); }
-.header-user-btn.logged-in .user-status-text { color: var(--success); font-weight: 700; }
+
+.user-avatar-wrap { 
+  width: 30px; 
+  height: 30px; 
+  min-width: 30px; 
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.user-avatar-wrap img { 
+  width: 100%; 
+  height: 100%; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  border: 1.5px solid var(--primary); 
+}
+
+.user-avatar-placeholder { 
+  width: 100%; 
+  height: 100%; 
+  border-radius: 50%; 
+  background: #e2e8f0; 
+  color: var(--bg-dark); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+.user-text-info { 
+  display: flex; 
+  flex-direction: column; 
+  line-height: 1.25; 
+  text-align: right; 
+  white-space: nowrap;
+}
+
+.user-display-name { 
+  font-size: 10.5px; 
+  font-weight: 800; 
+  color: var(--bg-dark); 
+  max-width: 90px; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap; 
+}
+
+.user-status-text { 
+  font-size: 8.5px; 
+  color: var(--text-muted); 
+}
+
+.header-user-btn.logged-in .user-status-text { 
+  color: var(--success); 
+  font-weight: 700; 
+}
+
+/* دکمه سبد خرید در هدر دسکتاپ */
+.header-cart-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.header-cart-btn:hover {
+  border-color: var(--primary);
+  background: var(--success-bg);
+  color: var(--primary);
+}
+
+.cart-count-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+}
+
+/* مدیریت فضا در مانیتورهای کوچک و تبلت‌های افقی */
+@media (max-width: 1100px) {
+  .brand-tagline { display: none; }
+  .user-text-info { display: none; }
+  .header-user-btn { padding: 3px; border-radius: 50%; }
+  .desktop-menu .nav-link { font-size: 11px; padding: 5px 6px; }
+  .desktop-menu .nav-list { gap: 2px; }
+}
 
 .hamburger-btn {
   display: none;
@@ -104,7 +250,14 @@
   cursor: pointer;
   padding: 7px;
 }
-.hamburger-btn span { display: block; height: 2px; width: 100%; background: var(--bg-dark); border-radius: 2px; }
+
+.hamburger-btn span { 
+  display: block; 
+  height: 2px; 
+  width: 100%; 
+  background: var(--bg-dark); 
+  border-radius: 2px; 
+}
 
 /* دراور موبایل */
 .drawer-backdrop {
@@ -117,7 +270,9 @@
   visibility: hidden;
   transition: opacity 0.35s ease, visibility 0.35s ease;
 }
+
 .drawer-backdrop.show { opacity: 1; visibility: visible; }
+
 .mobile-drawer {
   position: fixed;
   top: 0;
@@ -136,9 +291,20 @@
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   overflow-y: auto;
 }
+
 .mobile-drawer.show { transform: translateX(0); }
-.drawer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #1e293b; margin-bottom: 14px; }
+
+.drawer-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding-bottom: 14px; 
+  border-bottom: 1px solid #1e293b; 
+  margin-bottom: 14px; 
+}
+
 .drawer-brand { display: flex; align-items: center; gap: 10px; }
+
 .drawer-close-btn {
   background: #1e293b;
   color: #94a3b8;
@@ -152,6 +318,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .drawer-tabs-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -162,6 +329,7 @@
   margin-bottom: 18px;
   border: 1px solid #334155;
 }
+
 .drawer-tab-btn {
   background: transparent;
   border: none;
@@ -173,15 +341,24 @@
   cursor: pointer;
   transition: all 0.25s ease;
 }
+
 .drawer-tab-btn.active { background: var(--primary); color: #ffffff; }
 .drawer-tab-content { display: none; animation: drawerFade 0.25s ease forwards; }
 .drawer-tab-content.active { display: block; }
+
 @keyframes drawerFade {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.mobile-nav-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.mobile-nav-list { 
+  list-style: none; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  margin-bottom: 18px; 
+}
+
 .mobile-link {
   display: flex;
   justify-content: space-between;
@@ -196,12 +373,15 @@
   border: 1px solid rgba(51, 65, 85, 0.5);
   transition: all 0.25s ease;
 }
+
 .mobile-link:hover, .mobile-link.active {
   background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
   color: #ffffff;
 }
+
 .m-link-title { display: flex; align-items: center; gap: 8px; }
 .link-badge-hot { font-size: 9px; background: var(--danger); color: #fff; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+
 .mobile-cta-btn {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #fff;
@@ -216,6 +396,7 @@
 
 /* کارت‌های شبکه‌های اجتماعی در منوی موبایل */
 .social-cards-stack { display: flex; flex-direction: column; gap: 12px; }
+
 .social-card-rich {
   display: flex;
   align-items: center;
@@ -228,6 +409,7 @@
   color: #fff;
   transition: all 0.25s ease;
 }
+
 .social-card-rich:hover { transform: translateX(-4px); }
 .sc-icon-wrap { width: 42px; height: 42px; min-width: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; }
 .tg-gradient { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); }
@@ -240,7 +422,7 @@
 .sc-handle { font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
 .sc-desc { font-size: 10px; color: #94a3b8; line-height: 1.4; }
 
-/* نوار شناور جزیره‌ای کاملاً چسبان (Fixed) در پایین موبایل */
+/* نوار شناور جزیره‌ای کاملاً چسبان در پایین موبایل */
 .floating-island-bar {
   display: none;
   position: fixed !important;
@@ -261,7 +443,15 @@
   padding: 0 10px !important;
   direction: rtl !important;
 }
-.island-container { display: flex !important; align-items: center !important; justify-content: space-around !important; width: 100% !important; height: 100% !important; }
+
+.island-container { 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: space-around !important; 
+  width: 100% !important; 
+  height: 100% !important; 
+}
+
 .island-item {
   display: flex !important;
   flex-direction: column !important;
@@ -274,7 +464,9 @@
   padding: 4px 0 !important;
   transition: all 0.25s ease !important;
 }
+
 .island-item::after, .island-item::before { display: none !important; }
+
 .island-icon-halo {
   width: 32px !important;
   height: 32px !important;
@@ -285,6 +477,7 @@
   color: #94a3b8 !important;
   transition: all 0.25s ease !important;
 }
+
 .island-icon-halo svg { display: block !important; width: 20px !important; height: 20px !important; }
 .island-text { font-size: 11px !important; font-weight: 800 !important; color: #94a3b8 !important; line-height: 1 !important; margin-top: 3px !important; }
 .island-dot { width: 4px !important; height: 4px !important; border-radius: 50% !important; background: var(--primary) !important; margin-top: 3px !important; opacity: 0; transform: scale(0); transition: all 0.25s ease !important; }
@@ -294,57 +487,11 @@
   background: rgba(16, 185, 129, 0.16) !important;
   transform: translateY(-3px) scale(1.1) !important;
 }
+
 .island-item.active .island-icon-halo svg { stroke: var(--primary) !important; }
 .island-item.active .island-text { color: var(--primary) !important; }
 .island-item.active .island-dot { opacity: 1 !important; transform: scale(1) !important; }
 
-@media (max-width: 768px) {
-  .desktop-menu, .header-cta-btn, .header-user-btn { display: none !important; }
-  .hamburger-btn { display: flex !important; }
-  .floating-island-bar { display: flex !important; }
-  body { padding-bottom: 90px !important; }
-}
-
-
-
-/* دکمه سبد خرید در هدر دسکتاپ */
-.header-cart-btn {
-  position: relative;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--bg-dark);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.header-cart-btn:hover {
-  border-color: var(--primary);
-  background: var(--success-bg);
-  color: var(--primary);
-}
-.cart-count-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 900;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
-}
-
-/* نشانگر سبد خرید در نوار پایین موبایل */
 .island-cart-badge {
   position: absolute;
   top: 4px;
@@ -359,4 +506,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* سوییچ به حالت موبایل و فعال‌سازی نوار شناور */
+@media (max-width: 860px) {
+  .desktop-menu, .header-cta-btn, .header-user-btn { display: none !important; }
+  .hamburger-btn { display: flex !important; }
+  .floating-island-bar { display: flex !important; }
+  body { padding-bottom: 90px !important; }
 }
