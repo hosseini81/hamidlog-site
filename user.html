@@ -181,10 +181,10 @@
           </div>
         </div>
 
-        <!-- تب سوم: ویرایش مشخصات هویتی و ایمیل -->
+       <!-- تب سوم: ویرایش مشخصات هویتی و ایمیل (قفل ایمیل برداشته شد) -->
         <div id="panelTabProfile" class="dash-panel-tab">
           <div class="profile-edit-box">
-            <div class="box-title" style="margin-bottom:14px; font-size:13px; font-weight:800;">ویرایش اطلاعات هویتی</div>
+            <div class="box-title" style="margin-bottom:14px; font-size:13px; font-weight:800;">ویرایش اطلاعات هویتی و تماس</div>
             
             <div class="auth-input-group">
               <label for="editProfileName">نام و نام خانوادگی:</label>
@@ -192,19 +192,19 @@
             </div>
 
             <div class="auth-input-group">
-              <label for="editProfilePhone">شماره موبایل (شناسه یکتا):</label>
+              <label for="editProfileEmail">آدرس ایمیل:</label>
+              <input type="email" id="editProfileEmail" dir="ltr" placeholder="yourname@gmail.com" />
+              <div class="input-disabled-tip">📧 اعلان‌های پیشرفت کار و یادآوری اقساط به این ایمیل ارسال می‌شود.</div>
+            </div>
+
+            <div class="auth-input-group">
+              <label for="editProfilePhone">شماره موبایل (غیرقابل تغییر):</label>
               <input type="tel" id="editProfilePhone" dir="ltr" disabled style="background:#f1f5f9; color:#64748b; cursor:not-allowed;" />
               <div class="input-disabled-tip">🔒 شماره موبایل به عنوان شناسه یکتای حساب شما ثبت شده است.</div>
             </div>
 
-            <div class="auth-input-group">
-              <label for="editProfileEmail">ایمیل ثبت‌شده در سامانه:</label>
-              <input type="email" id="editProfileEmail" dir="ltr" disabled style="background:#f1f5f9; color:#64748b; cursor:not-allowed;" />
-              <div class="input-disabled-tip">📧 ایمیل جهت ارسال اعلان‌ها، فاکتورها و سررسید اقساط استفاده می‌شود.</div>
-            </div>
-
-            <button type="button" class="btn-main" onclick="saveUserProfileName()" style="width:100%; margin-top:12px;">
-              💾 ذخیره تغییرات نام
+            <button type="button" class="btn-main" onclick="saveUserProfileData()" style="width:100%; margin-top:12px;">
+              💾 ذخیره تغییرات مشخصات
             </button>
           </div>
         </div>
