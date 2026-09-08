@@ -34,6 +34,7 @@ window.toggleAuthMode = function() {
   const submitBtn = document.getElementById('authSubmitBtn');
   const regName = document.getElementById('regNameField');
   const regEmail = document.getElementById('regEmailField');
+  const passGroup = document.getElementById('passFieldGroup');
   const toggleText = document.getElementById('authToggleText');
   const toggleLink = document.getElementById('authToggleLink');
 
@@ -67,7 +68,7 @@ window.submitAuth = async function() {
   if (isRegisterMode) {
     if (!name) return showCustomAlert('ورودی ناقص', 'نام و نام خانوادگی الزامی است.');
     if (!email || !email.includes('@') || !email.includes('.')) {
-      return showCustomAlert('ایمیل نامعتبر', 'لطفاً یک آدرس ایمیل معتبر جهت ارسال فاکتورها وارد فرمایید.');
+      return showCustomAlert('ایمیل نامعتبر', 'لطفاً یک آدرس ایمیل معتبر جهت دریافت فاکتورها وارد فرمایید.');
     }
   }
 
@@ -105,6 +106,27 @@ window.submitAuth = async function() {
   }
 };
 
+// فرایند ارسال رمز موقت به ایمیل کاربر
+window.startForgotPasswordFlow = async function() {
+  const phone = (document.getElementById('authPhone')?.value || '').trim();
+  if (!phone) {
+    return showCustomAlert('شماره تماس الزامی است', 'لطفاً ابتدا شماره موبایل خود را در کادر شماره همراه وارد کرده و مجدداً روی فراموشی رمز کلیک کنید.');
+  }
+
+  showCustomAlert('در حال بررسی', 'در حال بررسی مشخصات و ارسال ایمیل بازیابی رمز...', '⏳');
+
+  try {
+    const res = await sendToAppScript({ action: 'forgotPassword', phone: phone });
+    if (res && res.success) {
+      showCustomAlert('ارسال شد', res.message, '📧');
+    } else {
+      showCustomAlert('خطا', res ? res.message : 'حساب کاربری با این شماره یافت نشد.');
+    }
+  } catch (err) {
+    showCustomAlert('خطای ارتباطی', 'خطا در ارسال درخواست بازیابی رمز عبور.');
+  }
+};
+
 async function loadUserDashboard() {
   if (!currentUser || !currentUser.phone) return;
 
@@ -130,7 +152,7 @@ async function loadUserDashboard() {
     const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
-    // به‌روزرسانی اطلاعات پروفایل و ایمیل در صورت واکشی از شیت
+    // به‌روزرسانی آواتار و ایمیل کاربر در صورت واکشی اطلاعات از سرور
     if (data.avatar) {
       currentUser.avatar = data.avatar;
       if (avatarImg) avatarImg.src = data.avatar;
@@ -148,7 +170,7 @@ async function loadUserDashboard() {
       renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // رندر پروژه‌ها، چک‌لیست مراحل و گزارش ۳ مرحله‌ای اقساط
+    // رندر پروژه‌ها، چک‌لیست مراحل کار و اقساط
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
@@ -157,28 +179,30 @@ async function loadUserDashboard() {
         ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش فعالی برای حساب شما ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
-          // ۱. ساخت بخش چک‌لیست مراحل کار (متصل به شیت مراحل پروژه‌ها)
+          // ساخت آیتم‌های چک‌لیست مراحل به همراه تاریخ شمسی تکمیل
           let tasksHtml = '';
           const tasks = (o.projectTasks && o.projectTasks.length > 0) ? o.projectTasks : [
-            { title: 'بررسی اولیه و تنظیم نیازمندی‌ها', completed: true },
-            { title: `پیکربندی هسته اصلی: ${o.packageName}`, completed: false },
-            { title: 'پیاده‌سازی ماژول‌های فنی و صفحات', completed: false },
-            { title: 'تحویل نهایی و اتصال درگاه پرداخت', completed: false }
+            { title: 'بررسی اولیه و تنظیم نیازمندی‌ها', completed: true, date: o.date || '' },
+            { title: `پیکربندی هسته اصلی: ${o.packageName}`, completed: false, date: '' },
+            { title: 'پیاده‌سازی ماژول‌های فنی و صفحات', completed: false, date: '' },
+            { title: 'تحویل نهایی و اتصال درگاه پرداخت', completed: false, date: '' }
           ];
 
           tasks.forEach(t => {
+            const dateBadge = t.completed && t.date 
+              ? `<span style="font-size:9px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px; margin-right:auto; white-space:nowrap;">تکمیل در: ${t.date}</span>` 
+              : `<span style="font-size:9px; margin-right:auto; color:#94a3b8; white-space:nowrap;">در دست اقدام</span>`;
+
             tasksHtml += `
               <div class="task-item-row ${t.completed ? 'done' : ''}">
                 <span class="task-status-icon">${t.completed ? '✅' : '⏳'}</span>
                 <span class="task-name">${t.title}</span>
-                <span style="font-size:9px; margin-right:auto; color:${t.completed ? '#16a34a' : '#94a3b8'};">
-                  ${t.completed ? 'تکمیل شد' : 'در دست اقدام'}
-                </span>
+                ${dateBadge}
               </div>
             `;
           });
 
-          // ۲. ساخت بخش وضعیت پرداخت و اقساط
+          // وضعیت مالی و اقساط فاکتور
           let paymentDetailsHtml = '';
           if (o.paymentType && o.paymentType.includes('اقساطی')) {
             paymentDetailsHtml = `
@@ -188,11 +212,11 @@ async function loadUserDashboard() {
                   <div>${o.installment1 || 'تسویه شده'}</div>
                 </div>
                 <div class="inst-card ${String(o.installment2 || '').includes('پرداخت شده') ? 'paid' : 'waiting'}">
-                  <strong>قسط ۲ (ماه اول):</strong>
+                  <strong>قسط ۲ (سررسید ۳۰ روزه):</strong>
                   <div>${o.installment2 || 'در انتظار'}</div>
                 </div>
                 <div class="inst-card ${String(o.installment3 || '').includes('پرداخت شده') ? 'paid' : 'waiting'}">
-                  <strong>قسط ۳ (ماه دوم):</strong>
+                  <strong>قسط ۳ (سررسید ۶۰ روزه):</strong>
                   <div>${o.installment3 || 'در انتظار'}</div>
                 </div>
               </div>
@@ -200,7 +224,7 @@ async function loadUserDashboard() {
           } else {
             paymentDetailsHtml = `
               <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px; margin-top:10px; font-size:11px; color:#166534; display:flex; justify-content:space-between; align-items:center;">
-                <span>💳 وضعیت فاکتور: <strong>تسویه نقدی کامل</strong></span>
+                <span>💳 روش تسویه: <strong>تسویه نقدی کامل (یکباره)</strong></span>
                 <span style="font-weight:900;">${Number(o.totalPrice).toLocaleString('fa-IR')} تومان</span>
               </div>
             `;
@@ -213,27 +237,24 @@ async function loadUserDashboard() {
                 <span class="badge badge-pkg" style="font-size:10px;">کد پیگیری: ${o.trackingCode}</span>
               </div>
 
-              <!-- نوار وضعیت و درصد پیشرفت کار -->
               <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:10px;">
                 <span style="color:#64748b;">مدت اجرا: <strong>${o.deliveryDays || '-'} روز</strong> | تخفیف: <strong>${o.coupon || 'ندارد'}</strong></span>
                 <span class="badge-status-green">پیشرفت پروژه: ${o.progressPercent || '۰٪'}</span>
               </div>
 
-              <!-- چک‌لیست وظایف پروژه -->
+              <!-- چک‌لیست اختصاصی خدمات و مراحل پروژه -->
               <div class="tasks-checklist-box">
                 <div class="tasks-checklist-title">
-                  <span>📋 چک‌لیست مراحل انجام کار (به‌روزرسانی زنده)</span>
-                  <span style="font-size:10px; color:#64748b;">تایید شده توسط تیم توسعه</span>
+                  <span>📋 چک‌لیست خدمات و مراحل انجام کار</span>
+                  <span style="font-size:10px; color:#64748b;">به‌روزرسانی آنلاین</span>
                 </div>
                 ${tasksHtml}
               </div>
 
-              <!-- وضعیت اقساط یا تسویه -->
               ${paymentDetailsHtml}
 
-              <!-- دکمه دریافت سند رسمی -->
               <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:10px; color:#94a3b8;">تاریخ ثبت: ${o.date || '-'}</span>
+                <span style="font-size:10px; color:#94a3b8;">تاریخ ثبت سفارش: ${o.date || '-'}</span>
                 <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:11px; padding:6px 14px; text-decoration:none;">
                   📄 دانلود پیش‌فاکتور رسمی (PDF)
                 </a>
@@ -244,11 +265,11 @@ async function loadUserDashboard() {
       }
     }
   } catch (err) {
-    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:14px; text-align:center; font-size:11px;">خطا در واکشی اطلاعات از سرور ابری.</div>';
+    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:14px; text-align:center; font-size:11px;">خطا در دریافت اطلاعات داشبورد از سرور.</div>';
   }
 }
 
-// سوئیچر تب‌های سه‌گانه داشبورد
+// تغییر وضعیت تب‌های داشبورد
 window.switchUserPanelTab = function(tabName) {
   document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.dash-panel-tab').forEach(t => t.classList.remove('active'));
@@ -265,28 +286,51 @@ window.switchUserPanelTab = function(tabName) {
   }
 };
 
-window.saveUserProfileName = async function() {
+// ذخیره همزمان تغییرات نام و ایمیل کاربر در پروفایل
+window.saveUserProfileData = async function() {
   const nameInput = document.getElementById('editProfileName');
+  const emailInput = document.getElementById('editProfileEmail');
+
   const newName = nameInput ? nameInput.value.trim() : '';
+  const newEmail = emailInput ? emailInput.value.trim().toLowerCase() : '';
 
   if (!newName) return showCustomAlert('خطا', 'نام نمی‌تواند خالی باشد.');
+  if (newEmail && (!newEmail.includes('@') || !newEmail.includes('.'))) {
+    return showCustomAlert('ایمیل نامعتبر', 'لطفاً فرمت ایمیل را صحیح وارد نمایید.');
+  }
 
   try {
-    const res = await sendToAppScript({ action: 'updateName', phone: currentUser.phone, name: newName });
+    const res = await sendToAppScript({ 
+      action: 'updateProfile', 
+      phone: currentUser.phone, 
+      name: newName,
+      email: newEmail 
+    });
+
     if (res && res.success) {
       currentUser.name = newName;
+      currentUser.email = newEmail;
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
-      document.getElementById('dashUserName').textContent = newName;
+      
+      const dashName = document.getElementById('dashUserName');
+      const dashEmail = document.getElementById('dashUserEmail');
+      if (dashName) dashName.textContent = newName;
+      if (dashEmail) dashEmail.textContent = newEmail;
+
       if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-      showCustomAlert('موفقیت‌آمیز', 'نام شما با موفقیت ذخیره شد.', '✔');
+      showCustomAlert('موفقیت‌آمیز', 'مشخصات شما با موفقیت ذخیره شد.', '✔');
     } else {
-      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت تغییرات نام.');
+      showCustomAlert('خطا', res ? res.error : 'خطا در به‌روزرسانی مشخصات.');
     }
   } catch (err) {
     showCustomAlert('خطا', 'عدم برقراری ارتباط با سرور.');
   }
 };
 
+// پشتیبانی از دکمه قبلی ذخیره نام
+window.saveUserProfileName = window.saveUserProfileData;
+
+// آپلود تصویر آواتار و نمایش فوری در صفحه
 window.uploadAvatarFile = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -294,15 +338,21 @@ window.uploadAvatarFile = function(event) {
   const reader = new FileReader();
   reader.onload = async function(e) {
     const base64Data = e.target.result;
+
+    // نمایش بلادرنگ در رابط کاربری
+    const img = document.getElementById('dashAvatarImg');
+    if (img) img.src = base64Data;
+
     try {
       const res = await sendToAppScript({ action: 'updateAvatar', phone: currentUser.phone, avatar: base64Data });
       if (res && res.success) {
         currentUser.avatar = res.avatar || base64Data;
-        const img = document.getElementById('dashAvatarImg');
-        if (img) img.src = currentUser.avatar;
+        if (img && res.avatar) img.src = res.avatar;
         localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
         if (typeof syncGlobalUserState === "function") syncGlobalUserState();
         showCustomAlert('موفقیت', 'عکس پروفایل شما در فضای ابری ذخیره شد.', '✔');
+      } else {
+        showCustomAlert('خطا', res ? res.message : 'خطا در بارگذاری عکس.');
       }
     } catch (err) {
       showCustomAlert('خطا', 'خطا در ذخیره‌سازی تصویر نمایه.');
