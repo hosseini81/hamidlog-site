@@ -265,11 +265,12 @@ function renderExtraItems() {
 
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
   
-  // فیلتر فقط خدمات مازاد مادام‌العمر یا پروژه‌ای که داخل پکیج پایه نیستند
+  // فیلتر فقط خدمات مازاد مادام‌العمر یا پروژه‌ای (حذف خدمات ماهانه به جهت انتقال به صفحه نگهداری سایت)
   const extras = appData.services.filter(s => {
     const currentId = String(s.id).trim().toLowerCase();
     const isInsidePkg = pkgServiceIds.includes(currentId);
-    return currentId && !isInsidePkg;
+    const isMonthly = String(s.billingCycle || '').trim() === 'ماهانه';
+    return currentId && !isInsidePkg && !isMonthly;
   });
 
   const categories = [...new Set(extras.map(s => s.category || 'عمومی'))];
@@ -353,7 +354,9 @@ function renderDeductItems() {
 
   const pkgServiceIds = (selectedPackage.services || []).map(id => String(id).trim().toLowerCase());
   const pkgServices = appData.services.filter(s => pkgServiceIds.includes(String(s.id).trim().toLowerCase()));
-  const extraServices = appData.services.filter(s => extraSelectedIds.has(s.id));
+  
+  // خدمات انتخابی غیرماهانه برای کسر از فاکتور پروژه
+  const extraServices = appData.services.filter(s => extraSelectedIds.has(s.id) && String(s.billingCycle || '').trim() !== 'ماهانه');
   const allItems = [...pkgServices.map(s => ({ ...s, source: 'پکیج پایه' })), ...extraServices.map(s => ({ ...s, source: 'خدمت جانبی' }))];
 
   const categories = [...new Set(allItems.map(s => s.category || 'عمومی'))];
