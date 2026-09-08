@@ -162,6 +162,14 @@ window.rateItem = async function(type, rowId, val) {
   }
 };
 
+// تابع تعاملی باز و بسته کردن پکیج‌های نگهداری (آکاردئون)
+window.toggleContractAccordion = function(headerEl) {
+  const group = headerEl.closest('.support-contract-group');
+  if (group) {
+    group.classList.toggle('collapsed');
+  }
+};
+
 async function loadUserDashboard() {
   if (!currentUser || !currentUser.phone) return;
 
@@ -188,12 +196,12 @@ async function loadUserDashboard() {
     const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
-    // لود محصولات دانلودی در تب سوم (حل مشکل معلق ماندن لایسنس‌ها)
+    // لود محصولات دانلودی در تب سوم
     if (typeof renderUserDownloads === "function") {
       renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // ۱. رندر پروژه‌ها و تفکیک دقیق خدمات پکیج از خدمات ویژه
+    // ۱. رندر پروژه‌ها
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
@@ -202,7 +210,6 @@ async function loadUserDashboard() {
         ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; text-align:center; font-size:12px;">سفارش فعالی در بخش پروژه‌ها ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
-          // خدمات اصلی پکیج
           let pkgHtml = '';
           (o.packageTasks || []).forEach(t => {
             const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در دست اجرا</span>`;
@@ -218,7 +225,6 @@ async function loadUserDashboard() {
             `;
           });
 
-          // خدمات مازاد و ویژه
           let extraHtml = '';
           (o.extraTasks || []).forEach(t => {
             const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در نوبت اجرا</span>`;
@@ -245,13 +251,11 @@ async function loadUserDashboard() {
                 <span class="badge-status-green">پیشرفت کل: ${o.progressPercent}</span>
               </div>
 
-              <!-- بخش خدمات پکیج -->
               <div class="tasks-checklist-box">
                 <div class="tasks-checklist-title">📦 خدمات اصلی پکیج انتخابی</div>
                 ${pkgHtml || '<div style="font-size:11px; color:#94a3b8;">در حال آماده‌سازی فاز اجرایی...</div>'}
               </div>
 
-              <!-- بخش خدمات ویژه و مازاد -->
               ${extraHtml ? `
                 <div class="tasks-checklist-box" style="margin-top:12px; background:#f0fdf4; border-color:#bbf7d0;">
                   <div class="tasks-checklist-title" style="color:#166534;">💎 خدمات ویژه و مازاد افزوده شده</div>
@@ -268,7 +272,7 @@ async function loadUserDashboard() {
       }
     }
 
-    // ۲. رندر تب خدمات پشتیبانی دوره‌ای (ماه به ماه، بازه زمانی، لینک و ستاره)
+    // ۲. رندر تفکیک‌شده و ساختاریافته خدمات پشتیبانی دوره‌ای زیرمجموعه هر پکیج
     if (supportContainer) {
       supportContainer.innerHTML = '';
       const supportList = data.supportList || [];
@@ -283,37 +287,101 @@ async function loadUserDashboard() {
           </div>
         `;
       } else {
-        const grouped = {};
+        // الف) دسته‌بندی سطح ۱: تفکیک بر اساس پکیج/قرارداد
+        const contractsMap = {};
         supportList.forEach(item => {
-          const key = `${item.supCode}_${item.period}`;
-          if (!grouped[key]) grouped[key] = { ...item, items: [] };
-          grouped[key].items.push(item);
+          const contractKey = item.supCode || item.planTitle || 'default-contract';
+          if (!contractsMap[contractKey]) {
+            contractsMap[contractKey] = {
+              planTitle: item.planTitle || 'قرارداد پشتیبانی سایت',
+              supCode: item.supCode || '',
+              periodsMap: {}
+            };
+          }
+
+          // ب) دسته‌بندی سطح ۲: تفکیک ماه‌ها درون همان پکیج
+          const periodKey = item.period || 'ماه اول';
+          if (!contractsMap[contractKey].periodsMap[periodKey]) {
+            contractsMap[contractKey].periodsMap[periodKey] = {
+              period: periodKey,
+              dateRange: item.dateRange || '',
+              tasks: []
+            };
+          }
+
+          contractsMap[contractKey].periodsMap[periodKey].tasks.push(item);
         });
 
-        for (const [k, p] of Object.entries(grouped)) {
-          let tasksRows = '';
-          p.items.forEach(it => {
-            const linkElem = it.link 
-              ? `<a href="${it.link}" target="_blank" class="support-task-link">🔗 ${it.taskText}</a>`
-              : `<span>${it.taskText}</span>`;
+        // رندر گروه‌های پکیج به صورت آکاردئونی منظم
+        for (const [cKey, contract] of Object.entries(contractsMap)) {
+          const periods = Object.values(contract.periodsMap);
+          const totalMonths = periods.length;
+          
+          // محاسبه ماه‌هایی که تسک تکمیل‌شده دارند
+          let completedMonthsCount = 0;
+          periods.forEach(p => {
+            if (p.tasks.some(t => t.completed)) completedMonthsCount++;
+          });
 
-            tasksRows += `
-              <div class="support-task-row ${it.completed ? 'done' : ''}">
-                <span class="task-status-icon">${it.completed ? '✅' : '🕒'}</span>
-                <div style="flex:1;">${linkElem}</div>
-                ${it.completed && it.date ? `<span class="task-date-tag">${it.date}</span>` : ''}
-                ${createRatingStars('support', it.rowId, it.rating)}
+          const progressPercent = totalMonths > 0 ? Math.round((completedMonthsCount / totalMonths) * 100) : 0;
+          const isVip = contract.planTitle.includes('VIP') || contract.planTitle.includes('سئو');
+
+          // ساخت محتوای ماه‌های درون این قرارداد
+          let periodsHtml = '';
+          periods.forEach(p => {
+            let tasksRows = '';
+            p.tasks.forEach(it => {
+              const linkElem = it.link 
+                ? `<a href="${it.link}" target="_blank" class="support-task-link">🔗 ${it.taskText}</a>`
+                : `<span>${it.taskText}</span>`;
+
+              tasksRows += `
+                <div class="support-task-row ${it.completed ? 'done' : ''}">
+                  <span class="task-status-icon">${it.completed ? '✅' : '🕒'}</span>
+                  <div style="flex:1;">${linkElem}</div>
+                  ${it.completed && it.date ? `<span class="task-date-tag">${it.date}</span>` : ''}
+                  ${createRatingStars('support', it.rowId, it.rating)}
+                </div>
+              `;
+            });
+
+            periodsHtml += `
+              <div class="support-period-card">
+                <div class="support-period-head">
+                  <strong>${isVip ? '💎' : '🛡️'} ${p.period}</strong>
+                  ${p.dateRange ? `<span class="support-range-badge">بازه: ${p.dateRange}</span>` : ''}
+                </div>
+                <div class="support-period-body">${tasksRows}</div>
               </div>
             `;
           });
 
+          // درج کادر اختصاصی پکیج همراه با هدر و نوار پیشرفت
           supportContainer.innerHTML += `
-            <div class="support-period-card">
-              <div class="support-period-head">
-                <strong>🛡️ ${p.planTitle} (${p.period})</strong>
-                <span class="support-range-badge">بازه: ${p.dateRange}</span>
+            <div class="support-contract-group">
+              <div class="contract-group-header" onclick="toggleContractAccordion(this)">
+                <div class="contract-header-right">
+                  <span class="contract-badge-icon" style="${isVip ? 'background:#eff6ff; color:#2563eb;' : ''}">${isVip ? '💎' : '🛡️'}</span>
+                  <div>
+                    <div class="contract-title-row">
+                      <strong class="contract-title">${contract.planTitle}</strong>
+                      <span class="contract-duration-pill" style="${isVip ? 'background:#eff6ff; color:#1d4ed8;' : ''}">دوره ${totalMonths} ماهه</span>
+                      <span class="contract-active-badge">${progressPercent === 100 ? 'تکمیل شده' : 'در حال اجرا'}</span>
+                    </div>
+                    <div class="contract-progress-wrap">
+                      <div class="contract-progress-bar">
+                        <div class="contract-progress-fill" style="width: ${progressPercent}%; ${isVip ? 'background:#2563eb;' : ''}"></div>
+                      </div>
+                      <span class="contract-progress-text">${completedMonthsCount} از ${totalMonths} ماه تکمیل شده (${progressPercent}٪)</span>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="contract-toggle-btn" aria-label="نمایش جزئیات">▾</button>
               </div>
-              <div class="support-period-body">${tasksRows}</div>
+
+              <div class="contract-group-body">
+                ${periodsHtml}
+              </div>
             </div>
           `;
         }
