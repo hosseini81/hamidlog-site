@@ -337,3 +337,105 @@
   height: 100%;
   border: none;
 }
+
+
+
+/* ==================== واکنش‌گرایی صفحه نگهداری و دکمه‌های دوره ==================== */
+
+/* لایه‌بندی در دسکتاپ: دو ستونه */
+.support-layout-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.support-summary-sidebar {
+  position: sticky;
+  top: 80px;
+}
+
+/* کارت‌ها و دکمه‌های انتخاب دوره با ارتفاع و ابعاد استاندارد */
+.duration-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.duration-card-btn {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px; /* افزایش ارتفاع کلیک‌پذیری */
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: inherit;
+}
+
+.duration-card-btn:hover {
+  border-color: var(--primary);
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+.duration-card-btn.active {
+  border-color: var(--primary);
+  background: #ecfdf5;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+}
+
+.duration-card-btn .d-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--bg-dark);
+}
+
+.duration-card-btn.active .d-title {
+  color: #065f46;
+}
+
+.duration-card-btn .d-subtitle {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.duration-card-btn.active .d-subtitle {
+  color: #047857;
+  font-weight: 700;
+}
+
+.d-badge-popular {
+  position: absolute;
+  top: -8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 6px;
+}
+
+/* نمایش در موبایل و تبلت: سایدبار در پایین و ستون‌ها زیر هم */
+@media (max-width: 860px) {
+  .support-layout-grid {
+    grid-template-columns: 1fr !important; /* تبدیل به تک‌ستونه */
+    gap: 20px;
+  }
+
+  .support-summary-sidebar {
+    position: static !important; /* خارج شدن از حالت چسبان */
+    order: 2; /* قرار گرفتن پیش‌فاکتور دقیقاً در زیر محتوا */
+    margin-top: 10px;
+  }
+
+  .duration-cards-grid {
+    grid-template-columns: repeat(2, 1fr); /* در موبایل ۲ تا در هر ردیف */
+  }
+}
