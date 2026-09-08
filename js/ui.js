@@ -320,3 +320,71 @@ function startPixelChaseGame() {
   // استارت اولین دور تعقیب پس از ۱ ثانیه
   setTimeout(runEpicChase, 1000);
 }
+
+
+
+// ==================== موتور هوشمند فارسی‌سازی فراگیر اعداد ====================
+(function () {
+  const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+  function toPersianDigits(str) {
+    if (!str) return str;
+    return str.replace(/\d/g, d => farsiDigits[d]);
+  }
+
+  // تگ‌ها یا کلاس‌هایی که نباید اعدادشان دستکاری شود
+  const ignoreTags = new Set(['SCRIPT', 'STYLE', 'CODE', 'PRE', 'INPUT', 'TEXTAREA']);
+
+  function convertElementNumbers(node) {
+    if (!node) return;
+
+    // گره متنی
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parent = node.parentNode;
+      if (!parent || ignoreTags.has(parent.nodeName)) return;
+      if (parent.closest && parent.closest('[dir="ltr"], .no-farsi-num, code, pre')) return;
+
+      const text = node.nodeValue;
+      // اگر عدد انگلیسی داشت و کد پیگیری ORD نبود
+      if (/\d/.test(text) && !text.includes('ORD-') && !text.includes('@')) {
+        node.nodeValue = toPersianDigits(text);
+      }
+      return;
+    }
+
+    // گره‌های تگ‌ها
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (ignoreTags.has(node.nodeName)) return;
+      if (node.hasAttribute('dir') && node.getAttribute('dir').toLowerCase() === 'ltr') return;
+      if (node.classList && node.classList.contains('no-farsi-num')) return;
+
+      for (let child of node.childNodes) {
+        convertElementNumbers(child);
+      }
+    }
+  }
+
+  function runPersianNumberConverter() {
+    convertElementNumbers(document.body);
+
+    // رصد تغییرات داینامیک صفحه (لود پروژه‌ها از شیت، تغییرات سبد خرید و...)
+    const observer = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        mutation.addedNodes.forEach(addedNode => {
+          convertElementNumbers(addedNode);
+        });
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runPersianNumberConverter);
+  } else {
+    runPersianNumberConverter();
+  }
+})();
