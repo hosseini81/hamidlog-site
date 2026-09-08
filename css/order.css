@@ -525,3 +525,43 @@
     max-height: 500px;
   }
 }
+
+
+
+/* محدودسازی ارتفاع گرید پکیج‌های خدمات پروژه به ۴ آیتم (۲ سطر دو ستونه) و ایجاد اسکرول‌بار */
+#packagesGrid.package-grid,
+#packagesGrid.packages-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+  max-height: 530px !important; /* ارتفاع گنجایش دقیق ۴ آیتم */
+  overflow-y: auto !important;
+  padding: 4px 6px 12px 6px !important;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+/* استایل اسکرول‌بار باریک و استاندارد */
+#packagesGrid::-webkit-scrollbar {
+  width: 6px;
+}
+#packagesGrid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+#packagesGrid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+#packagesGrid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* در صفحات موبایل به صورت تک‌ستونه زیر هم قرار گیرند */
+@media (max-width: 680px) {
+  #packagesGrid.package-grid,
+  #packagesGrid.packages-grid {
+    grid-template-columns: 1fr !important;
+    max-height: 500px !important;
+  }
+}
