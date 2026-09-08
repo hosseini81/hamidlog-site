@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نتیجه تراکنش بانکی | استودیو حمیدرضا</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .result-wrap {
+      max-width: 520px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .result-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .result-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+    .result-icon.success { background: #dcfce7; color: #16a34a; }
+    .result-icon.failed { background: #fee2e2; color: #dc2626; }
+    .result-meta-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 20px 0;
+      font-size: 12px;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+    }
+    .meta-row strong { color: var(--bg-dark); }
+  </style>
+</head>
+<body>
+  <div id="header-slot"></div>
+
+  <main>
+    <div class="result-wrap">
+      <!-- حالت پرداخت موفق -->
+      <div id="successBox" class="result-card" style="display:none;">
+        <div class="result-icon success">✔</div>
+        <h2 style="font-size:18px; color:#15803d; margin-bottom:8px;">پرداخت با موفقیت انجام شد</h2>
+        <p style="font-size:12px; color:#64748b;">پیش‌فاکتور شما تایید گردید و مراحل اجرای پروژه آغاز شد.</p>
+
+        <div class="result-meta-box">
+          <div class="meta-row"><span>کد رهگیری سفارش:</span><strong id="resTrackCode">---</strong></div>
+          <div class="meta-row"><span>شماره پیگیری بانکی (RefID):</span><strong id="resRefId" dir="ltr">---</strong></div>
+          <div class="meta-row"><span>مبلغ پرداختی:</span><strong id="resAmount">--- تومان</strong></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <a href="user.html" class="btn-main" style="text-decoration:none; padding:12px;">
+            📋 ورود به پنل کاربری و پیگیری مراحل پروژه
+          </a>
+          <a href="index.html" class="btn-step-prev" style="text-decoration:none; text-align:center;">
+            بازگشت به صفحه اصلی
+          </a>
+        </div>
+      </div>
+
+      <!-- حالت پرداخت ناموفق یا لغو شده -->
+      <div id="failedBox" class="result-card" style="display:none;">
+        <div class="result-icon failed">✕</div>
+        <h2 style="font-size:18px; color:#b91c1c; margin-bottom:8px;">تراکنش ناموفق بود</h2>
+        <p id="failedReasonText" style="font-size:12px; color:#64748b;">پرداخت توسط کاربر لغو شد یا مشکلی در ارتباط با درگاه پیش آمد.</p>
+
+        <div class="result-meta-box" style="background:#fff7ed; border-color:#ffedd5;">
+          <div class="meta-row"><span>وضعیت تراکنش:</span><strong style="color:#c2410c;">انصراف از پرداخت / عدم کسر وجه</strong></div>
+          <div class="meta-row"><span>شناسه درگاه:</span><span id="resAuthority" style="font-size:10px; color:#94a3b8;" dir="ltr">---</span></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <a href="checkout.html" class="btn-main" style="text-decoration:none; padding:12px; background:#2563eb;">
+            🔄 تلاش مجدد برای پرداخت
+          </a>
+          <a href="cart.html" class="btn-step-prev" style="text-decoration:none; text-align:center;">
+            بازگشت به سبد خرید
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const p = new URLSearchParams(window.location.search);
+      const status = p.get("status");
+
+      if (status === "success") {
+        document.getElementById("successBox").style.display = "block";
+        document.getElementById("resTrackCode").textContent = p.get("track") || "---";
+        document.getElementById("resRefId").textContent = p.get("ref") || "---";
+        const amt = Number(p.get("amount") || 0);
+        document.getElementById("resAmount").textContent = amt ? amt.toLocaleString("fa-IR") + " تومان" : "ثبت در فاکتور";
+      } else {
+        document.getElementById("failedBox").style.display = "block";
+        document.getElementById("resAuthority").textContent = p.get("authority") || "---";
+        if (p.get("msg")) {
+          document.getElementById("failedReasonText").textContent = decodeURIComponent(p.get("msg"));
+        }
+      }
+    });
+  </script>
+</body>
+</html>
