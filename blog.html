@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>وبلاگ و مقالات تخصصی | استودیو حمیدرضا</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/blog.css">
+</head>
+<body>
+  <div id="header-slot"></div>
+
+  <main>
+    <div class="blog-hero-header">
+      <span class="portfolio-badge">یادداشت‌ها و تجربیات مهندسی</span>
+      <h1>وبلاگ و مقالات آموزشی تخصصی وب</h1>
+      <p>راهکارهای عملی افزایش سرعت ووکامرس، سئو تکنیکال، امنیت و اتوماسیون داده با گوگل‌شیت</p>
+      
+      <!-- نوار جستجو -->
+      <div class="blog-search-box">
+        <input type="text" id="blogSearchInput" placeholder="جستجو در بین مقالات..." />
+      </div>
+
+      <!-- فیلتر دسته‌بندی‌ها -->
+      <div id="categoryFilterBar" class="category-filter-bar" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- گرید مقالات -->
+    <div id="articlesGrid" class="blog-grid-container">
+      <div class="loading-box"><span class="spinner"></span> در حال فراخوانی مقالات...</div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/blog.js"></script>
+</body>
+</html>
