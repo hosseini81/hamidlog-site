@@ -33,7 +33,8 @@
       <button type="button" class="step-btn" id="sStepBtn3" onclick="goSupportStep(3)">۳. تنظیم دوره و فاکتور</button>
     </div>
 
-    <div class="order-layout-grid" style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; align-items:start;">
+    <!-- گرید واکنش‌گرا (بدون استایل درون‌خطی مزاحم) -->
+    <div class="order-layout-grid support-layout-grid">
       
       <!-- محتوای استپ‌ها -->
       <div class="steps-content-area">
@@ -46,7 +47,7 @@
 
         <!-- استپ ۲: انتخاب خدمات ماهانه مازاد -->
         <section id="sStep2" class="step-content">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
             <div style="font-weight:800; font-size:13px; color:var(--bg-dark);">⚡ خدمات و ماژول‌های مانیتورینگ و نگهداری مازاد (ماهانه):</div>
             <div id="supportCatFilters" style="display:flex; gap:6px;"></div>
           </div>
@@ -55,21 +56,36 @@
 
         <!-- استپ ۳: انتخاب دوره و فاکتور نهایی -->
         <section id="sStep3" class="step-content">
-          <div class="package-card" style="padding:20px; background:#fff; margin-bottom:18px;">
-            <h3 style="font-size:14px; font-weight:800; margin-bottom:12px;">⏱ انتخاب دوره قرارداد پشتیبانی:</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
-              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(1, this)">۱ ماهه (آزمایشی)</button>
-              <button type="button" class="cat-pill-btn duration-btn active" onclick="setSupportContractDuration(3, this)">۳ ماهه (فصلی)</button>
-              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(6, this)">۶ ماهه (نیم‌سال)</button>
-              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(12, this)">۱۲ ماهه (سالانه - با تخفیف ویژه)</button>
+          <div class="package-card" style="padding:22px; background:#fff; margin-bottom:18px;">
+            <h3 style="font-size:14px; font-weight:800; margin-bottom:14px; color:var(--bg-dark);">⏱ مدت زمان دوره قرارداد پشتیبانی:</h3>
+            
+            <!-- دکمه‌های کارتی خوش‌استایل با ارتفاع مناسب -->
+            <div class="duration-cards-grid">
+              <button type="button" class="duration-card-btn" onclick="setSupportContractDuration(1, this)">
+                <span class="d-title">۱ ماهه</span>
+                <span class="d-subtitle">دوره آزمایشی</span>
+              </button>
+              <button type="button" class="duration-card-btn active" onclick="setSupportContractDuration(3, this)">
+                <span class="d-title">۳ ماهه</span>
+                <span class="d-subtitle">دوره فصلی (استاندارد)</span>
+              </button>
+              <button type="button" class="duration-card-btn" onclick="setSupportContractDuration(6, this)">
+                <span class="d-title">۶ ماهه</span>
+                <span class="d-subtitle">نیم‌سال (۵٪ تخفیف)</span>
+              </button>
+              <button type="button" class="duration-card-btn" onclick="setSupportContractDuration(12, this)">
+                <span class="d-badge-popular">پیشنهاد ویژه</span>
+                <span class="d-title">۱۲ ماهه</span>
+                <span class="d-subtitle">سالانه (۱۵٪ تخفیف)</span>
+              </button>
             </div>
           </div>
 
-          <div class="package-card" style="padding:20px; background:#f0fdf4; border-color:#bbf7d0;">
+          <div class="package-card" style="padding:20px; background:#f0fdf4; border:1px solid #bbf7d0;">
             <div style="font-size:13px; font-weight:900; color:#166534; margin-bottom:8px;">📋 تعهدات خدمات دوره نگهداری:</div>
-            <ul style="font-size:11px; color:#15803d; line-height:1.9; margin:0; padding-right:16px;">
-              <li>مانیتورینگ ۲۴ ساعته آپ‌تایم و امنیت سرور در کل دوره</li>
-              <li>بکاپ‌گیری منظم و هفتگی در فضای ابری ایزوله</li>
+            <ul style="font-size:11.5px; color:#15803d; line-height:2; margin:0; padding-right:18px;">
+              <li>مانیتورینگ ۲۴ ساعته آپ‌تایم و سلامت هسته سایت در کل دوره</li>
+              <li>بکاپ‌گیری منظم دوره‌ای در فضای ذخیره‌سازی ابری امن</li>
               <li>ارائه گزارش کارهای انجام‌شده در پنل کاربری در پایان هر ماه با لینک مستقیم</li>
               <li>قابلیت ثبت امتیاز و ارزیابی کیفیت عملکرد در پایان هر دوره ماهانه</li>
             </ul>
@@ -85,13 +101,13 @@
       </div>
 
       <!-- سایدبار فاکتور زنده و خلاصه محاسبات -->
-      <aside class="order-summary-sidebar" style="position:sticky; top:80px;">
+      <aside class="order-summary-sidebar support-summary-sidebar">
         <div class="order-dashboard-card" style="padding:18px;">
           <div style="font-size:14px; font-weight:900; color:var(--bg-dark); border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:12px;">
             📊 خلاصه پیش‌فاکتور نگهداری سایت
           </div>
 
-          <div id="supportOrderSummaryList" style="margin-bottom:14px; min-height:80px;"></div>
+          <div id="supportOrderSummaryList" style="margin-bottom:14px; min-height:60px;"></div>
 
           <div style="background:#f8fafc; border-radius:10px; padding:12px; font-size:11px; display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; color:#64748b;">
