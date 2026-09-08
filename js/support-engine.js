@@ -6,6 +6,7 @@ let supportExtraSelectedIds = new Set();
 let selectedSupportVariants = {};
 let selectedSupportDurationMonths = 3; // پیش‌فرض فصلی
 let currentSupportCategory = 'all';
+let supportViewMode = 'list';
 
 function initSupportEngine() {
   if (document.getElementById("supportDataLoader") || document.getElementById("supportPackagesGrid")) {
@@ -129,11 +130,29 @@ function getEffectiveSupportService(service) {
   };
 }
 
+// سوئیچ چیدمان لیست / شبکه
+window.toggleSupportLayout = function(mode) {
+  supportViewMode = mode;
+  const container = document.getElementById('supportServicesList');
+  const btnList = document.getElementById('btnSupportList');
+  const btnGrid = document.getElementById('btnSupportGrid');
+
+  if (container) {
+    container.className = `services-container ${mode}-view`;
+  }
+
+  if (btnList && btnGrid) {
+    btnList.classList.toggle('active', mode === 'list');
+    btnGrid.classList.toggle('active', mode === 'grid');
+  }
+};
+
 // ۲. رندر خدمات ماهانه مازاد
 function renderSupportExtraItems() {
   const container = document.getElementById('supportServicesList');
   if (!container || !selectedSupportPackage) return;
   container.innerHTML = '';
+  container.className = `services-container ${supportViewMode}-view`;
 
   const pkgServiceIds = (selectedSupportPackage.services || []).map(id => String(id).trim().toLowerCase());
   
@@ -151,7 +170,7 @@ function renderSupportExtraItems() {
   const filtered = currentSupportCategory === 'all' ? monthlyExtras : monthlyExtras.filter(s => (s.category || 'عمومی') === currentSupportCategory);
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div style="color:#64748b; font-size:12px; padding:20px; text-align:center;">خدمت ماهانه اضافه‌ای برای این بخش یافت نشد.</div>';
+    container.innerHTML = '<div style="color:#64748b; font-size:12px; padding:20px; text-align:center; grid-column:1/-1;">خدمت ماهانه اضافه‌ای برای این بخش یافت نشد.</div>';
     return;
   }
 
@@ -209,11 +228,20 @@ window.toggleSupportExtra = function(id, checked) {
   refreshSupportViews();
 };
 
-// تنظیم مدت قرارداد (۱، ۳، ۶ یا ۱۲ ماهه)
+// تنظیم مدت قرارداد (۱، ۳، ۶ یا ۱۲ ماهه) با رفع مشکل انتخاب چندتایی
 window.setSupportContractDuration = function(months, btnEl) {
   selectedSupportDurationMonths = Number(months);
-  document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
+
+  // پاک کردن کلاس active از همه دکمه‌ها
+  document.querySelectorAll('.duration-card-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  // افزودن active فقط به دکمه فشرده شده
+  if (btnEl) {
+    btnEl.classList.add('active');
+  }
+
   calculateSupportSummary();
 };
 
@@ -233,7 +261,7 @@ function calculateSupportSummary() {
 
   const totalMonthly = baseMonthlySum + extraMonthlySum;
 
-  // تخفیف بر اساس مدت زمان قرارداد (مثلاً ۱۲ ماهه = ۱۵٪ تخفیف، ۶ ماهه = ۵٪ تخفیف)
+  // تخفیف بر اساس مدت زمان قرارداد (۱۲ ماهه: ۱۵٪ تخفیف، ۶ ماهه: ۵٪ تخفیف)
   let durationDiscountPercent = selectedSupportPackage.discount || 0;
   if (selectedSupportDurationMonths === 12) durationDiscountPercent += 15;
   else if (selectedSupportDurationMonths === 6) durationDiscountPercent += 5;
@@ -243,10 +271,15 @@ function calculateSupportSummary() {
   const finalSupportPrice = Math.round(totalBeforeDiscount - discountAmount);
 
   // به‌روزرسانی شاخص‌های سایدبار
-  document.getElementById('kpiSupportDuration').textContent = `${selectedSupportDurationMonths} ماهه`;
-  document.getElementById('kpiSupportMonthly').textContent = `${totalMonthly.toLocaleString('fa-IR')} تومان`;
-  document.getElementById('kpiSupportDiscount').textContent = `${durationDiscountPercent}٪`;
-  document.getElementById('kpiSupportTotal').textContent = `${finalSupportPrice.toLocaleString('fa-IR')} تومان`;
+  const durEl = document.getElementById('kpiSupportDuration');
+  const mEl = document.getElementById('kpiSupportMonthly');
+  const dEl = document.getElementById('kpiSupportDiscount');
+  const totEl = document.getElementById('kpiSupportTotal');
+
+  if (durEl) durEl.textContent = `${selectedSupportDurationMonths} ماهه`;
+  if (mEl) mEl.textContent = `${totalMonthly.toLocaleString('fa-IR')} تومان`;
+  if (dEl) dEl.textContent = `${durationDiscountPercent}٪`;
+  if (totEl) totEl.textContent = `${finalSupportPrice.toLocaleString('fa-IR')} تومان`;
 
   renderSupportOrderItemsSummary();
 }
@@ -298,7 +331,7 @@ window.changeSupportStep = function(delta) {
   goSupportStep(currentSupportStep + delta);
 };
 
-// ثبت قرارداد و هدایت به پیش‌فاکتور و درگاه
+// ثبت قرارداد و هدایت به سبد خرید
 window.proceedSupportToCheckout = function() {
   if (!selectedSupportPackage) {
     return showCustomAlert("خطا", "لطفاً ابتدا یک پلن نگهداری انتخاب کنید.");
