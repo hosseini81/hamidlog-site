@@ -145,6 +145,7 @@ function getEffectiveService(service) {
   let basePrice = Number(service.price) || 0;
   let baseDays = Number(service.days) || 0;
   let vTitle = '';
+  let vDesc = '';
 
   if (service.variants && service.variants.length > 0) {
     const chosenVarId = selectedVariants[service.id] || service.variants[0].id;
@@ -152,6 +153,7 @@ function getEffectiveService(service) {
     basePrice = variant.price;
     baseDays = variant.days;
     vTitle = `${variant.brand ? variant.brand + ' - ' : ''}${variant.modelTitle}`;
+    vDesc = variant.desc || '';
   }
 
   const cycleMultiplier = (service.billingCycle === 'ماهانه') ? (selectedCycles[service.id] || 1) : 1;
@@ -161,7 +163,8 @@ function getEffectiveService(service) {
     days: baseDays,
     cycles: cycleMultiplier,
     isRecurring: service.billingCycle === 'ماهانه',
-    variantTitle: vTitle
+    variantTitle: vTitle,
+    variantDesc: vDesc
   };
 }
 
@@ -189,15 +192,40 @@ function checkPrerequisites(service) {
   return true;
 }
 
+// تابع کمکی تولید باکس مشخصات فنی برای هر مدل
+function renderVariantFeaturesBox(descText) {
+  if (!descText || !descText.trim()) return '';
+  const items = descText.split(/[|•]/).map(t => t.trim()).filter(Boolean);
+  if (items.length === 0) return '';
+
+  return `
+    <div class="variant-spec-box" style="margin-top: 8px; padding: 8px 10px; background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 11px; line-height: 1.6; color: #334155;">
+      <div style="font-weight: bold; margin-bottom: 4px; color: #1e293b; display: flex; align-items: center; gap: 4px;">
+        <span>📋 مشخصات و امکانات این مدل:</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+        ${items.map(item => `<span style="background: #ffffff; border: 1px solid #e2e8f0; color: #0284c7; padding: 2px 7px; border-radius: 5px; font-weight: 500;">✔ ${item}</span>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderOptionsControl(s) {
   let html = '';
   const hasVariants = s.variants && s.variants.length > 0;
   const isRecurring = s.billingCycle === 'ماهانه';
   if (!hasVariants && !isRecurring) return '';
 
+  let activeVariantDesc = '';
+
   html += `<div class="service-options-box" onclick="event.stopPropagation()">`;
   if (hasVariants) {
     const currentVal = selectedVariants[s.id] || s.variants[0].id;
+    const currentVariant = s.variants.find(v => String(v.id) === String(currentVal)) || s.variants[0];
+    if (currentVariant) {
+      activeVariantDesc = currentVariant.desc || '';
+    }
+
     const options = s.variants.map(v => `
       <option value="${v.id}" ${String(v.id) === String(currentVal) ? 'selected' : ''}>
         ${v.brand ? v.brand + ' / ' : ''}${v.modelTitle} (+${Number(v.price).toLocaleString('fa-IR')} ت)
@@ -214,6 +242,12 @@ function renderOptionsControl(s) {
     }
     html += `<span>دوره: <select onchange="onCycleChanged('${s.id}', this.value)">${cycleOptions}</select></span>`;
   }
+
+  // نمایش باکس مشخصات فنی برای مدل انتخاب‌شده
+  if (hasVariants && activeVariantDesc) {
+    html += renderVariantFeaturesBox(activeVariantDesc);
+  }
+
   html += `</div>`;
   return html;
 }
@@ -510,6 +544,7 @@ window.proceedToCheckout = function() {
       title: s.title,
       price: eff.price,
       variantInfo: eff.variantTitle || '',
+      variantDesc: eff.variantDesc || '',
       billingCycle: s.billingCycle || 'یکباره',
       durationMonths: eff.cycles || 1
     };
