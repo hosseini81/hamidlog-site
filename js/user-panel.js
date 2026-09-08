@@ -87,7 +87,7 @@ window.submitAuth = async function() {
     } else {
       btn.disabled = false;
       btn.textContent = isRegisterMode ? 'ثبت‌نام' : 'ورود';
-      showCustomAlert('خطا', res ? res.message : 'اطلاعات نامعتبر است.');
+      showCustomAlert('خطا در ورود', res ? res.message : 'اطلاعات وارد شده نامعتبر است.');
     }
   } catch (err) {
     btn.disabled = false;
@@ -95,29 +95,50 @@ window.submitAuth = async function() {
   }
 };
 
-// سوئیچر ۴ گانه تب‌های داشبورد
+// فرایند فراموشی رمز عبور و ارسال کد موقت به ایمیل
+window.startForgotPasswordFlow = async function() {
+  const phone = (document.getElementById('authPhone')?.value || '').trim();
+  if (!phone) {
+    return showCustomAlert('شماره تماس الزامی است', 'لطفاً ابتدا شماره موبایل خود را در کادر بالا وارد کرده و سپس دکمه فراموشی رمز را بزنید.');
+  }
+
+  showCustomAlert('در حال بررسی', 'در حال صدور رمز عبور موقت و ارسال به ایمیل شما...', '⏳');
+
+  try {
+    const res = await sendToAppScript({ action: 'forgotPassword', phone: phone });
+    if (res && res.success) {
+      showCustomAlert('ارسال شد', res.message, '📧');
+    } else {
+      showCustomAlert('خطا', res ? res.message : 'حساب کاربری با این شماره یافت نشد.');
+    }
+  } catch (err) {
+    showCustomAlert('خطای ارتباطی', 'خطا در ارتباط با سرور ابری.');
+  }
+};
+
+// سوئیچر تب‌های چهارگانه داشبورد
 window.switchUserPanelTab = function(tabName) {
   document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.dash-panel-tab').forEach(t => t.classList.remove('active'));
 
   if (tabName === 'projects') {
-    document.getElementById('tabBtnProjects').classList.add('active');
-    document.getElementById('panelTabProjects').classList.add('active');
+    document.getElementById('tabBtnProjects')?.classList.add('active');
+    document.getElementById('panelTabProjects')?.classList.add('active');
   } else if (tabName === 'support') {
-    document.getElementById('tabBtnSupport').classList.add('active');
-    document.getElementById('panelTabSupport').classList.add('active');
+    document.getElementById('tabBtnSupport')?.classList.add('active');
+    document.getElementById('panelTabSupport')?.classList.add('active');
   } else if (tabName === 'downloads') {
-    document.getElementById('tabBtnDownloads').classList.add('active');
-    document.getElementById('panelTabDownloads').classList.add('active');
+    document.getElementById('tabBtnDownloads')?.classList.add('active');
+    document.getElementById('panelTabDownloads')?.classList.add('active');
   } else if (tabName === 'profile') {
-    document.getElementById('tabBtnProfile').classList.add('active');
-    document.getElementById('panelTabProfile').classList.add('active');
+    document.getElementById('tabBtnProfile')?.classList.add('active');
+    document.getElementById('panelTabProfile')?.classList.add('active');
   }
 };
 
-// تولید ستاره‌های امتیازدهی
+// ساخت ستاره‌های امتیازدهی تعاملی
 function createRatingStars(type, rowId, currentRating) {
-  let h = `<div class="task-rating-bar">`;
+  let h = `<div class="task-rating-bar" title="ثبت رضایت شما">`;
   for (let i = 1; i <= 5; i++) {
     const act = i <= (currentRating || 0) ? 'active' : '';
     h += `<span class="star-rating-chip ${act}" onclick="rateItem('${type}', ${rowId}, ${i})">★</span>`;
@@ -126,14 +147,19 @@ function createRatingStars(type, rowId, currentRating) {
   return h;
 }
 
+// ثبت امتیاز در شیت و به‌روزرسانی زنده رابط کاربری
 window.rateItem = async function(type, rowId, val) {
   try {
     const res = await sendToAppScript({ action: 'rateTask', type: type, rowId: rowId, rating: val });
     if (res && res.success) {
-      showCustomAlert('ثبت شد', 'امتیاز شما با موفقیت ثبت گردید.', '⭐');
+      showCustomAlert('سپاسگزاریم', 'امتیاز شما با موفقیت ثبت گردید.', '⭐');
       loadUserDashboard();
+    } else {
+      showCustomAlert('خطا', res ? res.error : 'خطا در ثبت امتیاز.');
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('خطا در ثبت امتیاز:', e);
+  }
 };
 
 async function loadUserDashboard() {
@@ -162,16 +188,21 @@ async function loadUserDashboard() {
     const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
+    // لود محصولات دانلودی در تب سوم (حل مشکل معلق ماندن لایسنس‌ها)
+    if (typeof renderUserDownloads === "function") {
+      renderUserDownloads(data.purchasedDownloads || []);
+    }
+
     // ۱. رندر پروژه‌ها و تفکیک دقیق خدمات پکیج از خدمات ویژه
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
 
       if (orders.length === 0) {
-        ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; text-align:center;">سفارش فعالی در بخش پروژه‌ها ثبت نشده است.</div>';
+        ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; text-align:center; font-size:12px;">سفارش فعالی در بخش پروژه‌ها ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
-          // الف: خدمات پکیج
+          // خدمات اصلی پکیج
           let pkgHtml = '';
           (o.packageTasks || []).forEach(t => {
             const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در دست اجرا</span>`;
@@ -187,10 +218,10 @@ async function loadUserDashboard() {
             `;
           });
 
-          // ب: خدمات ویژه و مازاد
+          // خدمات مازاد و ویژه
           let extraHtml = '';
           (o.extraTasks || []).forEach(t => {
-            const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در نوبت</span>`;
+            const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در نوبت اجرا</span>`;
             const linkTag = t.link ? `<a href="${t.link}" target="_blank" class="task-link-badge">🔗 مشاهده گزارش</a>` : '';
             extraHtml += `
               <div class="task-item-row ${t.completed ? 'done' : ''}">
@@ -206,24 +237,24 @@ async function loadUserDashboard() {
           ordersContainer.innerHTML += `
             <div class="order-dashboard-card">
               <div class="order-header-row">
-                <strong style="font-size:14px;">${o.packageName}</strong>
+                <strong style="font-size:14px; color:var(--bg-dark);">${o.packageName}</strong>
                 <span class="badge badge-pkg">${o.trackingCode}</span>
               </div>
               <div class="order-meta-subbar">
-                <span>⏱ تحویل: ${o.deliveryDays} روز</span>
+                <span>⏱ تحویل: <strong>${o.deliveryDays} روز</strong></span>
                 <span class="badge-status-green">پیشرفت کل: ${o.progressPercent}</span>
               </div>
 
               <!-- بخش خدمات پکیج -->
               <div class="tasks-checklist-box">
                 <div class="tasks-checklist-title">📦 خدمات اصلی پکیج انتخابی</div>
-                ${pkgHtml || '<div style="font-size:11px; color:#94a3b8;">در انتظار شروع فاز اجرایی...</div>'}
+                ${pkgHtml || '<div style="font-size:11px; color:#94a3b8;">در حال آماده‌سازی فاز اجرایی...</div>'}
               </div>
 
               <!-- بخش خدمات ویژه و مازاد -->
               ${extraHtml ? `
                 <div class="tasks-checklist-box" style="margin-top:12px; background:#f0fdf4; border-color:#bbf7d0;">
-                  <div class="tasks-checklist-title" style="color:#166534;">💎 خدمات ویژه و امکانات مازاد</div>
+                  <div class="tasks-checklist-title" style="color:#166534;">💎 خدمات ویژه و مازاد افزوده شده</div>
                   ${extraHtml}
                 </div>
               ` : ''}
@@ -237,7 +268,7 @@ async function loadUserDashboard() {
       }
     }
 
-    // ۲. رندر تب خدمات پشتیبانی دوره‌ای (ماه به ماه، بازه زمانی، لینک و امتیاز)
+    // ۲. رندر تب خدمات پشتیبانی دوره‌ای (ماه به ماه، بازه زمانی، لینک و ستاره)
     if (supportContainer) {
       supportContainer.innerHTML = '';
       const supportList = data.supportList || [];
@@ -245,14 +276,13 @@ async function loadUserDashboard() {
       if (supportList.length === 0) {
         supportContainer.innerHTML = `
           <div style="text-align:center; padding:30px 20px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
-            <p style="color:#64748b; font-size:12px;">شما هنوز قرارداد پشتیبانی دوره‌ای فعالی ثبت نکرده‌اید.</p>
+            <p style="color:#64748b; font-size:12px;">قرارداد پشتیبانی دوره‌ای فعالی برای حساب شما ثبت نشده است.</p>
             <a href="support.html" class="btn-main" style="display:inline-block; font-size:11px; margin-top:8px; text-decoration:none;">
-              سفارش پلن پشتیبانی وب‌سایت ➔
+              مشاهده پلن‌های نگهداری سایت ➔
             </a>
           </div>
         `;
       } else {
-        // گروه‌بندی بر اساس شناسه و دوره
         const grouped = {};
         supportList.forEach(item => {
           const key = `${item.supCode}_${item.period}`;
@@ -291,11 +321,11 @@ async function loadUserDashboard() {
     }
 
   } catch (err) {
-    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center;">خطا در واکشی اطلاعات.</div>';
+    if (ordersContainer) ordersContainer.innerHTML = '<div style="color:#ef4444; padding:12px; text-align:center;">خطا در دریافت اطلاعات داشبورد.</div>';
   }
 }
 
-// ذخیره تغییرات پروفایل
+// ذخیره اطلاعات هویتی
 window.saveUserProfileData = async function() {
   const newName = (document.getElementById('editProfileName')?.value || '').trim();
   const newEmail = (document.getElementById('editProfileEmail')?.value || '').trim().toLowerCase();
@@ -309,11 +339,12 @@ window.saveUserProfileData = async function() {
       localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
       document.getElementById('dashUserName').textContent = newName;
       if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-      showCustomAlert('موفق', 'اطلاعات با موفقیت ذخیره شد.', '✔');
+      showCustomAlert('موفق', 'مشخصات شما با موفقیت ذخیره شد.', '✔');
     }
   } catch (e) {}
 };
 
+// آپلود و پیش‌نمایش بلادرنگ آواتار
 window.uploadAvatarFile = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -327,7 +358,7 @@ window.uploadAvatarFile = function(event) {
         currentUser.avatar = res.avatar || b64;
         localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
         if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-        showCustomAlert('موفق', 'آواتار ذخیره شد.', '✔');
+        showCustomAlert('موفق', 'عکس پروفایل شما ذخیره شد.', '✔');
       }
     } catch (e) {}
   };
@@ -340,43 +371,4 @@ window.logoutUser = function() {
   if (typeof syncGlobalUserState === "function") syncGlobalUserState();
   document.getElementById('userDashboard').style.display = 'none';
   document.getElementById('authBox').style.display = 'block';
-};
-
-
-
-
-// ==================== اصلاحات تعاملی پنل کاربری ====================
-
-// فراموشی رمز عبور
-window.startForgotPasswordFlow = async function() {
-  const phone = (document.getElementById('authPhone')?.value || '').trim();
-  if (!phone) {
-    return showCustomAlert('شماره تماس الزامی است', 'لطفاً ابتدا شماره موبایل خود را در کادر شماره همراه وارد کرده و مجدداً دکمه را بزنید.');
-  }
-
-  showCustomAlert('در حال بررسی', 'در حال صدور رمز عبور موقت و ارسال به ایمیل شما...', '⏳');
-
-  try {
-    const res = await sendToAppScript({ action: 'forgotPassword', phone: phone });
-    if (res && res.success) {
-      showCustomAlert('ارسال شد', res.message, '📧');
-    } else {
-      showCustomAlert('خطا', res ? res.message : 'حساب کاربری با این شماره یافت نشد.');
-    }
-  } catch (err) {
-    showCustomAlert('خطای ارتباطی', 'خطا در ارتباط با سرور.');
-  }
-};
-
-// ثبت امتیاز بدون باگ و رندر بلافاصله
-window.rateItem = async function(type, rowId, val) {
-  try {
-    const res = await sendToAppScript({ action: 'rateTask', type: type, rowId: rowId, rating: val });
-    if (res && res.success) {
-      showCustomAlert('سپاسگزاریم', 'امتیاز شما با موفقیت ثبت شد.', '⭐');
-      loadUserDashboard();
-    }
-  } catch (e) {
-    console.error('خطا در ثبت امتیاز:', e);
-  }
 };
