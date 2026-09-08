@@ -13,7 +13,11 @@ async function loadShopCatalog() {
     const result = await fetchInitialDataFromSheet();
     if (result && result.success && result.data) {
       if (loader) loader.style.display = "none";
-      renderShopProducts(result.data.downloadProducts || []);
+      if (typeof appData === "undefined") {
+        window.appData = {};
+      }
+      window.appData.downloadProducts = result.data.downloadProducts || [];
+      renderShopProducts(window.appData.downloadProducts);
     } else {
       throw new Error();
     }
@@ -21,7 +25,11 @@ async function loadShopCatalog() {
     window.onShopFallbackLoaded = function(res) {
       if (res && res.success && res.data) {
         if (loader) loader.style.display = "none";
-        renderShopProducts(res.data.downloadProducts || []);
+        if (typeof appData === "undefined") {
+          window.appData = {};
+        }
+        window.appData.downloadProducts = res.data.downloadProducts || [];
+        renderShopProducts(window.appData.downloadProducts);
       }
     };
     if (typeof loadSheetDataViaJsonp === "function") {
@@ -30,7 +38,7 @@ async function loadShopCatalog() {
   }
 }
 
-// رندر گرید کارتی محصولات در صفحه shop.html
+// رندر گرید کارتی محصولات همراه با توضیحات اختصاصی شیت
 function renderShopProducts(products) {
   const container = document.getElementById('shopProductsGrid');
   if (!container) return;
@@ -38,24 +46,36 @@ function renderShopProducts(products) {
 
   const prods = products || [];
   if (prods.length === 0) {
-    container.innerHTML = '<div style="color:#64748b; padding:20px; grid-column: 1/-1; text-align:center;">در حال حاضر محصول دانلودی فعالی در سیستم ثبت نشده است.</div>';
+    container.innerHTML = '<div style="color:#64748b; padding:24px; grid-column: 1/-1; text-align:center; font-size:12px;">در حال حاضر محصول دانلودی فعالی در سیستم ثبت نشده است.</div>';
     return;
   }
 
   prods.forEach(p => {
+    // استفاده مستقیم از ستون جدید توضیحات در شیت
+    const productDescription = (p.desc && p.desc.trim()) 
+      ? p.desc.trim() 
+      : 'محصول دانلودی اورجینال با دسترسی نامحدود، پشتیبانی و تحویل آنی فایل در پنل کاربری';
+
     container.innerHTML += `
-      <div class="package-card" style="cursor:default;">
-        <div class="package-card-placeholder">📦</div>
-        <div class="package-card-body">
-          <div class="package-card-title">
-            <span>${p.title}</span>
-            <span class="badge badge-pkg">نسخه ${p.version}</span>
+      <div class="package-card" style="cursor:default; display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div class="package-card-placeholder">📦</div>
+          <div class="package-card-body">
+            <div class="package-card-title">
+              <span>${p.title}</span>
+              <span class="badge badge-pkg">نسخه ${p.version || '1.0'}</span>
+            </div>
+            <div class="package-card-desc" style="font-size:11px; line-height:1.8; color:#64748b; margin:6px 0 10px;">
+              ${productDescription}
+            </div>
           </div>
-          <div class="package-card-desc">محصول دانلودی اورجینال با دسترسی نامحدود و دائمی در پنل کاربری</div>
-          <div style="font-size:14px; font-weight:800; color:#059669; margin:10px 0;">
+        </div>
+
+        <div style="padding: 0 16px 16px;">
+          <div style="font-size:14px; font-weight:900; color:#059669; margin-bottom:10px; text-align:left;">
             ${Number(p.price).toLocaleString('fa-IR')} تومان
           </div>
-          <button type="button" class="btn-main" onclick="buyProductNow('${p.id}')" style="width:100%; font-size:11px;">
+          <button type="button" class="btn-main" onclick="buyProductNow('${p.id}')" style="width:100%; font-size:11px; padding:10px;">
             🛒 افزودن به سبد خرید
           </button>
         </div>
@@ -71,7 +91,7 @@ window.buyProductNow = function(prodId) {
     product = appData.downloadProducts.find(p => String(p.id).trim() === String(prodId).trim());
   }
 
-  // اگر هنوز در appData نبود، از جدول رندر شده یا ریکوئست جدید جستجو می‌کند
+  // اگر در متغیر عمومی نبود، مقادیر اولیه پایه می‌سازد
   if (!product) {
     product = { id: prodId, title: 'محصول دانلودی', price: 0, version: '1.0' };
   }
@@ -90,16 +110,18 @@ function renderUserDownloads(downloads) {
   dlContainer.innerHTML = '';
 
   if (!downloads || downloads.length === 0) {
-    dlContainer.innerHTML = '<div style="font-size:11px; color:#64748b; padding:20px; background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; text-align:center;">هنوز فایل دانلودی خریداری نکرده‌اید.</div>';
+    dlContainer.innerHTML = '<div style="font-size:11px; color:#64748b; padding:24px; background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; text-align:center;">هنوز فایل دانلودی خریداری نکرده‌اید.</div>';
     return;
   }
 
   downloads.forEach(d => {
     dlContainer.innerHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px; margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px; margin-bottom:10px;">
         <div>
           <strong style="font-size:12px; color:#166534;">${d.title}</strong>
-          <div style="font-size:10px; color:#475569; margin-top:2px;">نسخه: ${d.version} | تاریخ ثبت: ${d.purchaseDate}</div>
+          <div style="font-size:10px; color:#475569; margin-top:3px;">
+            نسخه: ${d.version || '1.0'} | تاریخ خرید: ${d.purchaseDate || '-'}
+          </div>
         </div>
         <button type="button" class="btn-main" onclick="downloadProductSecurely('${d.id}')" style="padding:6px 14px; font-size:11px;">
           ⬇ دریافت فایل امن
