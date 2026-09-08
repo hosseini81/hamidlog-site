@@ -3,84 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>خدمات و پلن‌های پشتیبانی سایت | استودیو حمیدرضا</title>
+  <title>پلن‌ها و خدمات نگهداری و پشتیبانی سایت | استودیو حمیدرضا</title>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+
+  <!-- هدر سراسری -->
   <div id="header-slot"></div>
 
-  <main style="max-width:960px; margin:30px auto; padding:0 16px;">
-    <div style="text-align:center; margin-bottom:30px;">
-      <h1 style="font-size:22px; font-weight:900;">🛡️ پلن‌های پشتیبانی و مانیتورینگ سایت</h1>
-      <p style="font-size:12px; color:#64748b; margin-top:6px;">مانیتورینگ آپ‌تایم، بکاپ دوره‌ای، رفع خطاهای امنیتی و بهبود سئو</p>
+  <!-- لودر اولیه داده‌ها -->
+  <div id="supportDataLoader" style="text-align:center; padding:80px 20px;">
+    <div style="font-size:32px; animation:spin 1s linear infinite; display:inline-block;">⚙️</div>
+    <p style="color:#64748b; font-size:13px; margin-top:12px;">در حال دریافت پلن‌های نگهداری و خدمات ماهانه از سرور ابری...</p>
+  </div>
+
+  <!-- کانتینر اصلی استعلام نگهداری سایت -->
+  <main id="supportMainGrid" style="display:none; max-width:1180px; margin:24px auto; padding:0 16px;">
+    
+    <header style="text-align:center; margin-bottom:28px;">
+      <h1 style="font-size:22px; font-weight:900; color:var(--bg-dark); margin-bottom:6px;">🛠️ سیستم هوشمند استعلام و انتخاب پلن‌های نگهداری سایت</h1>
+      <p style="font-size:12px; color:#64748b;">پلن پایه خود را انتخاب کنید، خدمات ماهانه مازاد را سفارشی‌سازی کرده و پیش‌فاکتور دقیق دریافت کنید.</p>
+    </header>
+
+    <!-- نوار استپ‌های ۳ گانه -->
+    <div class="steps-nav-bar" style="margin-bottom:24px;">
+      <button type="button" class="step-btn active" id="sStepBtn1" onclick="goSupportStep(1)">۱. انتخاب پلن نگهداری</button>
+      <button type="button" class="step-btn" id="sStepBtn2" onclick="goSupportStep(2)">۲. خدمات مازاد ماهانه</button>
+      <button type="button" class="step-btn" id="sStepBtn3" onclick="goSupportStep(3)">۳. تنظیم دوره و فاکتور</button>
     </div>
 
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
-      <!-- پلن ۳ ماهه استاندارد -->
-      <div class="package-card" style="padding:24px; border-radius:16px; background:#fff; border:1px solid var(--border-color);">
-        <h3 style="font-size:16px; font-weight:800;">پشتیبانی فنی و امنیتی (۳ ماهه)</h3>
-        <p style="font-size:11px; color:#64748b; margin:8px 0 16px;">۳ دوره ماهانه مانیتورینگ فعال، آپدیت هسته و بهینه‌سازی دیتابیس</p>
-        <div style="font-size:18px; font-weight:900; color:#16a34a; margin-bottom:16px;">۲,۵۰۰,۰۰۰ تومان</div>
-        <button type="button" class="btn-main" onclick="orderSupportPlan('پشتیبانی فنی و امنیتی', 3, 2500000)" style="width:100%;">
-          سفارش آنلاین پلن
-        </button>
+    <div class="order-layout-grid" style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; align-items:start;">
+      
+      <!-- محتوای استپ‌ها -->
+      <div class="steps-content-area">
+        
+        <!-- استپ ۱: انتخاب پلن نگهداری -->
+        <section id="sStep1" class="step-content active">
+          <div style="margin-bottom:14px; font-weight:800; font-size:13px; color:var(--bg-dark);">📦 انتخاب پلن پایه نگهداری و پشتیبانی:</div>
+          <div id="supportPackagesGrid" class="packages-grid"></div>
+        </section>
+
+        <!-- استپ ۲: انتخاب خدمات ماهانه مازاد -->
+        <section id="sStep2" class="step-content">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div style="font-weight:800; font-size:13px; color:var(--bg-dark);">⚡ خدمات و ماژول‌های مانیتورینگ و نگهداری مازاد (ماهانه):</div>
+            <div id="supportCatFilters" style="display:flex; gap:6px;"></div>
+          </div>
+          <div id="supportServicesList" class="services-container list-view"></div>
+        </section>
+
+        <!-- استپ ۳: انتخاب دوره و فاکتور نهایی -->
+        <section id="sStep3" class="step-content">
+          <div class="package-card" style="padding:20px; background:#fff; margin-bottom:18px;">
+            <h3 style="font-size:14px; font-weight:800; margin-bottom:12px;">⏱ انتخاب دوره قرارداد پشتیبانی:</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(1, this)">۱ ماهه (آزمایشی)</button>
+              <button type="button" class="cat-pill-btn duration-btn active" onclick="setSupportContractDuration(3, this)">۳ ماهه (فصلی)</button>
+              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(6, this)">۶ ماهه (نیم‌سال)</button>
+              <button type="button" class="cat-pill-btn duration-btn" onclick="setSupportContractDuration(12, this)">۱۲ ماهه (سالانه - با تخفیف ویژه)</button>
+            </div>
+          </div>
+
+          <div class="package-card" style="padding:20px; background:#f0fdf4; border-color:#bbf7d0;">
+            <div style="font-size:13px; font-weight:900; color:#166534; margin-bottom:8px;">📋 تعهدات خدمات دوره نگهداری:</div>
+            <ul style="font-size:11px; color:#15803d; line-height:1.9; margin:0; padding-right:16px;">
+              <li>مانیتورینگ ۲۴ ساعته آپ‌تایم و امنیت سرور در کل دوره</li>
+              <li>بکاپ‌گیری منظم و هفتگی در فضای ابری ایزوله</li>
+              <li>ارائه گزارش کارهای انجام‌شده در پنل کاربری در پایان هر ماه با لینک مستقیم</li>
+              <li>قابلیت ثبت امتیاز و ارزیابی کیفیت عملکرد در پایان هر دوره ماهانه</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- دکمه‌های ناوبری بین مراحل -->
+        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+          <button type="button" id="sPrevBtn" class="btn-step-prev" style="visibility:hidden;" onclick="changeSupportStep(-1)">➔ مرحله قبل</button>
+          <button type="button" id="sNextBtn" class="btn-main" onclick="changeSupportStep(1)">مرحله بعد ⬅</button>
+        </div>
+
       </div>
 
-      <!-- پلن ۶ ماهه جامع -->
-      <div class="package-card" style="padding:24px; border-radius:16px; background:#fff; border:2px solid var(--primary);">
-        <span class="badge-status-green" style="margin-bottom:8px; display:inline-block;">پیشنهادی</span>
-        <h3 style="font-size:16px; font-weight:800;">پشتیبانی جامع VIP و سئو (۶ ماهه)</h3>
-        <p style="font-size:11px; color:#64748b; margin:8px 0 16px;">۶ دوره ماهانه شامل گزارش کلمات کلیدی، سرعت لود و مانیتورینگ ۲۴ ساعته</p>
-        <div style="font-size:18px; font-weight:900; color:#16a34a; margin-bottom:16px;">۴,۸۰۰,۰۰۰ تومان</div>
-        <button type="button" class="btn-main" onclick="orderSupportPlan('پشتیبانی جامع VIP و سئو', 6, 4800000)" style="width:100%;">
-          سفارش آنلاین پلن
-        </button>
-      </div>
+      <!-- سایدبار فاکتور زنده و خلاصه محاسبات -->
+      <aside class="order-summary-sidebar" style="position:sticky; top:80px;">
+        <div class="order-dashboard-card" style="padding:18px;">
+          <div style="font-size:14px; font-weight:900; color:var(--bg-dark); border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:12px;">
+            📊 خلاصه پیش‌فاکتور نگهداری سایت
+          </div>
+
+          <div id="supportOrderSummaryList" style="margin-bottom:14px; min-height:80px;"></div>
+
+          <div style="background:#f8fafc; border-radius:10px; padding:12px; font-size:11px; display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; color:#64748b;">
+              <span>مدت قرارداد:</span>
+              <strong id="kpiSupportDuration" style="color:var(--bg-dark);">۳ ماه</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#64748b;">
+              <span>هزینه پایه ماهانه:</span>
+              <strong id="kpiSupportMonthly" style="color:var(--bg-dark);">۰ تومان</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#64748b;">
+              <span>تخفیف دوره:</span>
+              <strong id="kpiSupportDiscount" style="color:#16a34a;">۰٪</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:900; color:var(--bg-dark); border-top:1px dashed #cbd5e1; padding-top:6px;">
+              <span>مبلغ کل دوره:</span>
+              <strong id="kpiSupportTotal" style="color:#2563eb;">۰ تومان</strong>
+            </div>
+          </div>
+
+          <button type="button" class="btn-main" style="width:100%; font-size:12px; padding:12px;" onclick="proceedSupportToCheckout()">
+            🛒 ثبت قرارداد و صدور پیش‌فاکتور
+          </button>
+        </div>
+      </aside>
+
     </div>
   </main>
 
+  <!-- پاپ‌آپ سراسری ویدیوهای معرفی -->
+  <div id="videoModalOverlay" class="video-modal-overlay" onclick="closeVideoModal()">
+    <div class="video-modal-content" onclick="event.stopPropagation()">
+      <div class="video-modal-header">
+        <span id="videoModalTitle" class="video-modal-title">ویدیو معرفی خدمت</span>
+        <button type="button" class="video-modal-close" onclick="closeVideoModal()" aria-label="بستن">✕</button>
+      </div>
+      <div class="video-modal-frame-wrap" id="videoModalPlayerBox"></div>
+    </div>
+  </div>
+
+  <!-- فوتر سراسری -->
   <div id="footer-slot"></div>
 
+  <!-- اسکریپت‌ها -->
   <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/ui.js"></script>
-  <script>
-    async function orderSupportPlan(title, months, price) {
-      const userRaw = localStorage.getItem("site_user_auth");
-      if (!userRaw) {
-        showCustomAlert("ورود به حساب", "لطفاً ابتدا وارد حساب کاربری خود شوید تا پشتیبانی روی حساب شما ثبت شود.");
-        setTimeout(() => window.location.href = "user.html", 1500);
-        return;
-      }
-      const user = JSON.parse(userRaw);
-
-      showCustomAlert("در حال ثبت", "در حال ثبت پلن پشتیبانی و اتصال به درگاه شاپرک...", "⏳");
-
-      try {
-        const res = await sendToAppScript({
-          action: "submitSupportOrder",
-          payload: {
-            phone: user.phone,
-            name: user.name,
-            planTitle: title,
-            months: months,
-            price: price
-          }
-        });
-
-        if (res && res.success) {
-          if (res.paymentUrl) {
-            window.location.href = res.paymentUrl;
-          } else {
-            showCustomAlert("موفقیت‌آمیز", "پلن پشتیبانی در حساب کاربری شما فعال گردید.", "✔");
-            setTimeout(() => window.location.href = "user.html", 1500);
-          }
-        }
-      } catch (e) {
-        showCustomAlert("خطا", "خطا در ارتباط با سرور.");
-      }
-    }
-  </script>
+  <script src="js/support-engine.js"></script>
 </body>
 </html>
