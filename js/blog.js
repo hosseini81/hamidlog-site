@@ -1,175 +1,85 @@
-// ==================== موتور کلاینت وبلاگ و نمایش مقالات ====================
-let allArticles = [];
+// ==================== مدیریت وبلاگ و مقالات آموزشی ====================
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("articlesGrid")) {
-    initBlogArchive();
-  } else if (document.getElementById("articleDetailContainer")) {
-    initArticleSingleView();
+// تبدیل انواع مقادیر تاریخ شیت به رشته تمیز و استاندارد خورشیدی
+function formatShamsiDate(rawDate) {
+  if (!rawDate) return '';
+
+  const str = String(rawDate).trim();
+  // اگر از قبل به فرمت عددی شمسی نوشته شده باشد (مثلاً 1405/06/18)
+  if (/^14\d{2}\/\d{1,2}\/\d{1,2}/.test(str)) {
+    return str;
   }
-});
-
-// ۱. راه‌اندازی آرشیو مقالات
-async function initBlogArchive() {
-  const grid = document.getElementById("articlesGrid");
-  const searchInput = document.getElementById("blogSearchInput");
 
   try {
-    const res = await sendToAppScript({ action: "getArticles" });
-    allArticles = (res && res.data) ? res.data : [];
-
-    if (allArticles.length === 0) {
-      grid.innerHTML = '<div style="color:#64748b; text-align:center; padding:40px; grid-column:1/-1;">هنوز مقاله‌ای منتشر نشده است.</div>';
-      return;
+    const d = new Date(rawDate);
+    if (!isNaN(d.getTime())) {
+      return new Intl.DateTimeFormat('fa-IR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Asia/Tehran'
+      }).format(d);
     }
+  } catch (e) {}
 
-    renderArticleCards(allArticles);
-    buildCategoryFilters(allArticles);
+  return str;
+}
 
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        const q = e.target.value.trim().toLowerCase();
-        const filtered = allArticles.filter(a => 
-          a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)
-        );
-        renderArticleCards(filtered);
+// واکشی لیست مقالات منتشر شده برای آرشیو
+function getPublishedArticles() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const bSheet = ss.getSheetByName('مقالات');
+  if (!bSheet) return [];
+
+  const data = bSheet.getDataRange().getValues();
+  const articles = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const status = String(data[i][10] || '').trim();
+    if (status === 'منتشر شده') {
+      articles.push({
+        slug: String(data[i][0]).trim(),
+        title: String(data[i][1]).trim(),
+        category: String(data[i][2] || 'عمومی').trim(),
+        excerpt: String(data[i][3] || '').trim(),
+        coverImage: String(data[i][5] || '').trim(),
+        readTime: Number(data[i][6]) || 5,
+        author: String(data[i][7] || 'حمیدرضا').trim(),
+        date: formatShamsiDate(data[i][8]),
+        tags: String(data[i][9] || '').split(',').map(t => t.trim()).filter(Boolean)
       });
     }
-  } catch (err) {
-    grid.innerHTML = '<div style="color:#ef4444; text-align:center; grid-column:1/-1;">خطا در دریافت مقالات از سرور.</div>';
   }
+  return articles.reverse();
 }
 
-// رندر کارت‌های مقاله
-function renderArticleCards(articles) {
-  const grid = document.getElementById("articlesGrid");
-  if (!grid) return;
-  grid.innerHTML = '';
+// واکشی متن کامل یک مقاله بر اساس شناسه (Slug)
+function getSingleArticleBySlug(slug) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const bSheet = ss.getSheetByName('مقالات');
+  if (!bSheet || !slug) return null;
 
-  if (articles.length === 0) {
-    grid.innerHTML = '<div style="color:#64748b; text-align:center; padding:30px; grid-column:1/-1;">مقاله‌ای با این مشخصات یافت نشد.</div>';
-    return;
-  }
+  const data = bSheet.getDataRange().getValues();
+  const cleanSlug = String(slug).trim().toLowerCase();
 
-  articles.forEach(a => {
-    const imgHtml = a.coverImage 
-      ? `<img src="${a.coverImage}" class="blog-card-img" alt="${a.title}" onerror="this.outerHTML='<div class=\\'blog-placeholder\\'>📝</div>'">`
-      : `<div class="blog-placeholder">📝</div>`;
+  for (let i = 1; i < data.length; i++) {
+    const rowSlug = String(data[i][0]).trim().toLowerCase();
+    const status = String(data[i][10] || '').trim();
 
-    grid.innerHTML += `
-      <article class="blog-card">
-        <a href="article.html?slug=${a.slug}" class="blog-thumb-link">
-          ${imgHtml}
-          <span class="blog-cat-badge">${a.category}</span>
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-meta-top">
-            <span>⏱ ${a.readTime} دقیقه مطالعه</span>
-            <span>📅 ${a.date}</span>
-          </div>
-          <h3 class="blog-card-title">
-            <a href="article.html?slug=${a.slug}">${a.title}</a>
-          </h3>
-          <p class="blog-card-excerpt">${a.excerpt}</p>
-          <div class="blog-card-footer">
-            <span class="blog-author">✍️ ${a.author}</span>
-            <a href="article.html?slug=${a.slug}" class="btn-read-more">مطالعه کامل ➔</a>
-          </div>
-        </div>
-      </article>
-    `;
-  });
-}
-
-// دکمه‌های فیلتر دسته‌بندی
-function buildCategoryFilters(articles) {
-  const container = document.getElementById("categoryFilterBar");
-  if (!container) return;
-
-  const categories = ['all', ...new Set(articles.map(a => a.category))];
-  container.innerHTML = '';
-
-  categories.forEach(cat => {
-    const label = cat === 'all' ? 'همه مقالات' : cat;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `cat-pill-btn ${cat === 'all' ? 'active' : ''}`;
-    btn.textContent = label;
-    btn.onclick = () => {
-      document.querySelectorAll("#categoryFilterBar .cat-pill-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const filtered = cat === 'all' ? allArticles : allArticles.filter(a => a.category === cat);
-      renderArticleCards(filtered);
-    };
-    container.appendChild(btn);
-  });
-}
-
-// ۲. راه‌اندازی صفحه تکی مقاله
-async function initArticleSingleView() {
-  const container = document.getElementById("articleDetailContainer");
-  const params = new URLSearchParams(window.location.search);
-  const slug = params.get("slug");
-
-  if (!slug) {
-    window.location.href = "blog.html";
-    return;
-  }
-
-  try {
-    const res = await sendToAppScript({ action: "getSingleArticle", slug: slug });
-    const a = (res && res.data) ? res.data : null;
-
-    if (!a) {
-      container.innerHTML = `
-        <div style="text-align:center; padding:60px 20px;">
-          <h2>مقاله یافت نشد!</h2>
-          <p style="color:#64748b; margin:10px 0 20px;">ممکن است این مقاله حذف یا تغییر نام داده شده باشد.</p>
-          <a href="blog.html" class="btn-main">بازگشت به لیست وبلاگ</a>
-        </div>
-      `;
-      return;
+    if (rowSlug === cleanSlug && status === 'منتشر شده') {
+      return {
+        slug: rowSlug,
+        title: String(data[i][1]).trim(),
+        category: String(data[i][2] || 'عمومی').trim(),
+        excerpt: String(data[i][3] || '').trim(),
+        content: String(data[i][4] || '').trim(),
+        coverImage: String(data[i][5] || '').trim(),
+        readTime: Number(data[i][6]) || 5,
+        author: String(data[i][7] || 'حمیدرضا').trim(),
+        date: formatShamsiDate(data[i][8]),
+        tags: String(data[i][9] || '').split(',').map(t => t.trim()).filter(Boolean)
+      };
     }
-
-    // به‌روزرسانی تایتل مرورگر بر اساس عنوان مقاله
-    document.title = `${a.title} | استودیو حمیدرضا`;
-
-    const tagsHtml = (a.tags && a.tags.length > 0) 
-      ? a.tags.map(t => `<span class="article-tag">#${t}</span>`).join(' ')
-      : '';
-
-    const heroImgHtml = a.coverImage 
-      ? `<img src="${a.coverImage}" class="article-hero-img" alt="${a.title}">`
-      : '';
-
-    container.innerHTML = `
-      <header class="article-header">
-        <div class="article-meta-tags">
-          <span class="badge badge-pkg">${a.category}</span>
-          <span>📅 ${a.date}</span>
-          <span>⏱ ${a.readTime} دقیقه زمان مطالعه</span>
-        </div>
-        <h1 class="article-main-title">${a.title}</h1>
-        <p class="article-lead-excerpt">${a.excerpt}</p>
-        <div class="article-author-badge">
-          <span>نویسنده و توسعه‌دهنده: <strong>${a.author}</strong></span>
-        </div>
-      </header>
-
-      ${heroImgHtml}
-
-      <div class="article-content-body">
-        ${a.content}
-      </div>
-
-      <footer class="article-footer-meta">
-        <div class="article-tags-wrap">${tagsHtml}</div>
-        <div style="margin-top:20px;">
-          <a href="blog.html" class="btn-step-prev" style="text-decoration:none;">➔ بازگشت به لیست مقالات</a>
-        </div>
-      </footer>
-    `;
-  } catch (err) {
-    container.innerHTML = '<div style="color:#ef4444; text-align:center;">خطا در بارگذاری محتوای مقاله.</div>';
   }
+  return null;
 }
