@@ -192,19 +192,24 @@ function checkPrerequisites(service) {
   return true;
 }
 
-// تابع کمکی تولید باکس مشخصات فنی برای هر مدل
+// تابع کمکی تولید باکس مشخصات فنی برای هر مدل (به صورت سراسری و زیر دراپ‌داون)
 function renderVariantFeaturesBox(descText) {
   if (!descText || !descText.trim()) return '';
   const items = descText.split(/[|•]/).map(t => t.trim()).filter(Boolean);
   if (items.length === 0) return '';
 
   return `
-    <div class="variant-spec-box" style="margin-top: 8px; padding: 8px 10px; background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 11px; line-height: 1.6; color: #334155;">
-      <div style="font-weight: bold; margin-bottom: 4px; color: #1e293b; display: flex; align-items: center; gap: 4px;">
-        <span>📋 مشخصات و امکانات این مدل:</span>
+    <div class="variant-spec-box" style="display: block; width: 100%; box-sizing: border-box; margin-top: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 11px; line-height: 1.6; color: #334155; clear: both;">
+      <div style="font-weight: 700; margin-bottom: 6px; color: #0f172a; display: flex; align-items: center; gap: 5px;">
+        <span style="font-size: 13px;">📋</span>
+        <span>مشخصات و امکانات این پلن:</span>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        ${items.map(item => `<span style="background: #ffffff; border: 1px solid #e2e8f0; color: #0284c7; padding: 2px 7px; border-radius: 5px; font-weight: 500;">✔ ${item}</span>`).join('')}
+      <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+        ${items.map(item => `
+          <span style="display: inline-flex; align-items: center; background: #ffffff; border: 1px solid #cbd5e1; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            ✔ ${item}
+          </span>
+        `).join('')}
       </div>
     </div>
   `;
@@ -218,7 +223,12 @@ function renderOptionsControl(s) {
 
   let activeVariantDesc = '';
 
-  html += `<div class="service-options-box" onclick="event.stopPropagation()">`;
+  // ساختار والد به صورت ستونی تا باکس مشخصات حتماً در زیر سلکتورها قرار بگیرد
+  html += `<div class="service-options-box" onclick="event.stopPropagation()" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; gap: 6px; margin-top: 10px;">`;
+  
+  // ردیف بالایی: منوهای کشویی مدل و دوره
+  html += `<div class="service-options-selectors" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; width: 100%;">`;
+  
   if (hasVariants) {
     const currentVal = selectedVariants[s.id] || s.variants[0].id;
     const currentVariant = s.variants.find(v => String(v.id) === String(currentVal)) || s.variants[0];
@@ -231,7 +241,7 @@ function renderOptionsControl(s) {
         ${v.brand ? v.brand + ' / ' : ''}${v.modelTitle} (+${Number(v.price).toLocaleString('fa-IR')} ت)
       </option>
     `).join('');
-    html += `<span>مدل: <select onchange="onVariantChanged('${s.id}', this.value)">${options}</select></span>`;
+    html += `<span style="display: inline-flex; align-items: center; gap: 4px;">مدل: <select onchange="onVariantChanged('${s.id}', this.value)" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit;">${options}</select></span>`;
   }
 
   if (isRecurring) {
@@ -240,10 +250,12 @@ function renderOptionsControl(s) {
     for (let i = 1; i <= 12; i++) {
       cycleOptions += `<option value="${i}" ${i === currentCycle ? 'selected' : ''}>${i} ماه</option>`;
     }
-    html += `<span>دوره: <select onchange="onCycleChanged('${s.id}', this.value)">${cycleOptions}</select></span>`;
+    html += `<span style="display: inline-flex; align-items: center; gap: 4px;">دوره: <select onchange="onCycleChanged('${s.id}', this.value)" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit;">${cycleOptions}</select></span>`;
   }
 
-  // نمایش باکس مشخصات فنی برای مدل انتخاب‌شده
+  html += `</div>`; // پایان ردیف سلکتورها
+
+  // ردیف پایینی: باکس مشخصات فنی به صورت تمام‌عرض زیر سلکتورها
   if (hasVariants && activeVariantDesc) {
     html += renderVariantFeaturesBox(activeVariantDesc);
   }
