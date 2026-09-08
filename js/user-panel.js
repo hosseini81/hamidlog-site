@@ -478,31 +478,48 @@ window.saveUserProfileData = async function() {
   } catch (e) {}
 };
 
-// آپلود و پیش‌نمایش بلادرنگ آواتار
+// آپلود و پیش‌نمایش بلادرنگ آواتار در گیت‌هاب بدون تاخیر کش
 window.uploadAvatarFile = function(event) {
   const file = event.target.files[0];
   if (!file) return;
+
+  // جلوگیری از ارسال فایل‌های سنگین (سقف ۲ مگابایت برای سرعت بالا)
+  if (file.size > 2 * 1024 * 1024) {
+    return showCustomAlert('حجم زیاد', 'حجم تصویر نباید بیشتر از ۲ مگابایت باشد.');
+  }
+
   const reader = new FileReader();
   reader.onload = async function(e) {
     const b64 = e.target.result;
-    document.getElementById('dashAvatarImg').src = b64;
+
+    // پیش‌نمایش اولیه برای تجربه کاربری روان
+    const dashAvatar = document.getElementById('dashAvatarImg');
+    if (dashAvatar) dashAvatar.src = b64;
+
+    showCustomAlert('در حال آپلود', 'در حال بهینه‌سازی و ذخیره آواتار در سرور ابری...', '⏳');
+
     try {
-      const res = await sendToAppScript({ action: 'updateAvatar', phone: currentUser.phone, avatar: b64 });
+      const res = await sendToAppScript({ 
+        action: 'updateAvatar', 
+        phone: currentUser.phone, 
+        avatar: b64 
+      });
+
       if (res && res.success) {
-        currentUser.avatar = res.avatar || b64;
+        // بروزرسانی آواتار در حافظه و رابط کاربری
+        currentUser.avatar = res.avatar;
         localStorage.setItem('site_user_auth', JSON.stringify(currentUser));
+
+        if (dashAvatar) dashAvatar.src = res.avatar;
         if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-        showCustomAlert('موفق', 'عکس پروفایل شما ذخیره شد.', '✔');
+
+        showCustomAlert('موفق', 'عکس پروفایل شما در لحظه ذخیره و بروزرسانی شد.', '✔');
+      } else {
+        showCustomAlert('خطا', res ? res.message : 'خطا در بارگذاری تصویر.');
       }
-    } catch (e) {}
+    } catch (e) {
+      showCustomAlert('خطای ارتباطی', 'عدم ارتباط با سرور ابری.');
+    }
   };
   reader.readAsDataURL(file);
-};
-
-window.logoutUser = function() {
-  currentUser = null;
-  localStorage.removeItem('site_user_auth');
-  if (typeof syncGlobalUserState === "function") syncGlobalUserState();
-  document.getElementById('userDashboard').style.display = 'none';
-  document.getElementById('authBox').style.display = 'block';
 };
