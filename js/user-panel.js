@@ -162,13 +162,24 @@ window.rateItem = async function(type, rowId, val) {
   }
 };
 
-// تابع تعاملی باز و بسته کردن پکیج‌های نگهداری (آکاردئون)
+// تابع تعاملی باز و بسته کردن پکیج‌های نگهداری و پروژه‌ها (آکاردئون)
 window.toggleContractAccordion = function(headerEl) {
-  const group = headerEl.closest('.support-contract-group');
+  const group = headerEl.closest('.support-contract-group, .project-accordion-card');
   if (group) {
     group.classList.toggle('collapsed');
   }
 };
+
+// تابع کمکی برای پاکسازی متن تکراری تسک‌ها
+function sanitizeTaskTitle(rawTitle) {
+  if (!rawTitle) return '';
+  return rawTitle
+    .replace(/^پروژه طراحی سایت:\s*/, '')
+    .replace(/^پیکربندی پایه و نصب ساختار پروژه طراحی سایت:\s*/, 'پیکربندی پایه و راه‌اندازی ساختار: ')
+    .replace(/^پیکربندی هسته اصلی پکیج:\s*/, 'پیکربندی هسته اصلی: ')
+    .replace(/\s*\([\d,٬]+\s*ت\)$/, '')
+    .trim();
+}
 
 async function loadUserDashboard() {
   if (!currentUser || !currentUser.phone) return;
@@ -201,23 +212,65 @@ async function loadUserDashboard() {
       renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // ۱. رندر پروژه‌ها
+    // ۱. رندر پروژه‌های طراحی سایت (فیلتر کردن قراردادهای نگهداری از تب پروژه‌ها)
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
-      const orders = data.orders || [];
+      const allOrders = data.orders || [];
 
-      if (orders.length === 0) {
-        ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; text-align:center; font-size:12px;">سفارش فعالی در بخش پروژه‌ها ثبت نشده است.</div>';
+      // فیلتر: فقط پروژه‌های واقعی طراحی سایت (قراردادهای نگهداری حذف می‌شوند)
+      const projectOrders = allOrders.filter(o => {
+        const title = String(o.packageName || '');
+        return !title.includes('قرارداد نگهداری') && !title.includes('پشتیبانی دوره‌ای');
+      });
+
+      if (projectOrders.length === 0) {
+        ordersContainer.innerHTML = `
+          <div style="text-align:center; padding:36px 20px; background:#f8fafc; border-radius:14px; border:1px solid #e2e8f0;">
+            <div style="font-size:32px; margin-bottom:10px;">📋</div>
+            <p style="color:#64748b; font-size:12px; margin-bottom:12px;">سفارش فعالی در بخش پروژه‌های طراحی سایت یافت نشد.</p>
+            <a href="services.html" class="btn-main" style="display:inline-block; font-size:11px; text-decoration:none;">
+              استعلام آنلاین پروژه جدید ➔
+            </a>
+          </div>
+        `;
       } else {
-        orders.forEach(o => {
+        projectOrders.forEach(o => {
+          // محاسبه درصد پیشرفت دقیق
+          const allTasks = [...(o.packageTasks || []), ...(o.extraTasks || [])];
+          const completedTasks = allTasks.filter(t => t.completed).length;
+          let numericPercent = 0;
+          if (allTasks.length > 0) {
+            numericPercent = Math.round((completedTasks / allTasks.length) * 100);
+          } else {
+            numericPercent = parseInt(String(o.progressPercent || '0').replace(/[^\d]/g, ''), 10) || 0;
+          }
+
+          // تمیزسازی عنوان پروژه
+          const displayProjectTitle = String(o.packageName || 'پروژه اختصاصی وب')
+            .replace(/^پروژه طراحی سایت:\s*/, '');
+
+          // مدت زمان تحویل
+          const deliveryText = Number(o.deliveryDays) > 0 ? `${o.deliveryDays} روز کاری` : 'طبق زمان‌بندی قرارداد';
+
+          // وضعیت برچسب پروژه
+          let statusBadgeText = 'در دست اقدام';
+          let statusBadgeClass = 'contract-active-badge';
+          if (numericPercent === 100) {
+            statusBadgeText = 'تحویل نهایی';
+            statusBadgeClass = 'badge-status-green';
+          } else if (numericPercent > 0) {
+            statusBadgeText = 'فاز اجرایی فعال';
+          }
+
+          // الف) رندر تسک‌های اصلی پکیج
           let pkgHtml = '';
           (o.packageTasks || []).forEach(t => {
             const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در دست اجرا</span>`;
-            const linkTag = t.link ? `<a href="${t.link}" target="_blank" class="task-link-badge">🔗 مشاهده</a>` : '';
+            const linkTag = t.link ? `<a href="${t.link}" target="_blank" class="task-link-badge">🔗 مشاهده فاز</a>` : '';
             pkgHtml += `
               <div class="task-item-row ${t.completed ? 'done' : ''}">
                 <span class="task-status-icon">${t.completed ? '✅' : '⏳'}</span>
-                <span class="task-name">${t.title}</span>
+                <span class="task-name">${sanitizeTaskTitle(t.title)}</span>
                 ${linkTag}
                 ${dateTag}
                 ${createRatingStars('project', t.rowId, t.rating)}
@@ -225,6 +278,7 @@ async function loadUserDashboard() {
             `;
           });
 
+          // ب) رندر خدمات مازاد و ویژه
           let extraHtml = '';
           (o.extraTasks || []).forEach(t => {
             const dateTag = t.completed && t.date ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` : `<span class="task-pending-tag">در نوبت اجرا</span>`;
@@ -232,7 +286,7 @@ async function loadUserDashboard() {
             extraHtml += `
               <div class="task-item-row ${t.completed ? 'done' : ''}">
                 <span class="task-status-icon">${t.completed ? '💎' : '⏳'}</span>
-                <span class="task-name">${t.title}</span>
+                <span class="task-name">${sanitizeTaskTitle(t.title)}</span>
                 ${linkTag}
                 ${dateTag}
                 ${createRatingStars('project', t.rowId, t.rating)}
@@ -240,31 +294,49 @@ async function loadUserDashboard() {
             `;
           });
 
+          // لینک پیش‌فاکتور رسمی
+          const invoiceBtn = o.pdfUrl 
+            ? `<a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:11px; text-decoration:none;">📄 دانلود پیش‌فاکتور و شرح قرارداد</a>`
+            : '';
+
           ordersContainer.innerHTML += `
-            <div class="order-dashboard-card">
-              <div class="order-header-row">
-                <strong style="font-size:14px; color:var(--bg-dark);">${o.packageName}</strong>
-                <span class="badge badge-pkg">${o.trackingCode}</span>
-              </div>
-              <div class="order-meta-subbar">
-                <span>⏱ تحویل: <strong>${o.deliveryDays} روز</strong></span>
-                <span class="badge-status-green">پیشرفت کل: ${o.progressPercent}</span>
-              </div>
-
-              <div class="tasks-checklist-box">
-                <div class="tasks-checklist-title">📦 خدمات اصلی پکیج انتخابی</div>
-                ${pkgHtml || '<div style="font-size:11px; color:#94a3b8;">در حال آماده‌سازی فاز اجرایی...</div>'}
-              </div>
-
-              ${extraHtml ? `
-                <div class="tasks-checklist-box" style="margin-top:12px; background:#f0fdf4; border-color:#bbf7d0;">
-                  <div class="tasks-checklist-title" style="color:#166534;">💎 خدمات ویژه و مازاد افزوده شده</div>
-                  ${extraHtml}
+            <div class="project-accordion-card">
+              <!-- سربرگ پروژه با نوار پیشرفت و قابلیت کلیک برای باز/بسته شدن -->
+              <div class="project-accordion-header" onclick="toggleContractAccordion(this)">
+                <div class="project-header-info">
+                  <div class="project-title-row">
+                    <strong class="project-card-title">${displayProjectTitle}</strong>
+                    <span class="badge badge-pkg">${o.trackingCode || 'ORD'}</span>
+                    <span class="${statusBadgeClass}">${statusBadgeText}</span>
+                  </div>
+                  <div class="project-meta-row">
+                    <div class="project-progress-wrap">
+                      <div class="project-progress-bar">
+                        <div class="project-progress-fill" style="width: ${numericPercent}%;"></div>
+                      </div>
+                      <span class="project-progress-text">${numericPercent}٪ تکمیل شده</span>
+                    </div>
+                    <span class="project-delivery-meta">⏱ تحویل: <strong>${deliveryText}</strong></span>
+                  </div>
                 </div>
-              ` : ''}
+                <button type="button" class="contract-toggle-btn" aria-label="نمایش جزئیات">▾</button>
+              </div>
 
-              <div style="margin-top:14px; text-align:left;">
-                <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:11px; text-decoration:none;">📄 دانلود پیش‌فاکتور رسمی</a>
+              <!-- بدنه کشویی مراحل و چک‌لیست کار -->
+              <div class="project-accordion-body">
+                <div class="tasks-checklist-box">
+                  <div class="tasks-checklist-title">📦 چک‌لیست مراحل اجرایی پروژه</div>
+                  ${pkgHtml || '<div style="font-size:11px; color:#94a3b8;">در حال آماده‌سازی مستندات فاز اول...</div>'}
+                </div>
+
+                ${extraHtml ? `
+                  <div class="tasks-checklist-box" style="margin-top:12px; background:#f0fdf4; border-color:#bbf7d0;">
+                    <div class="tasks-checklist-title" style="color:#166534;">💎 ماژول‌ها و خدمات مازاد سفارشی‌شده</div>
+                    ${extraHtml}
+                  </div>
+                ` : ''}
+
+                ${invoiceBtn ? `<div style="margin-top:14px; text-align:left;">${invoiceBtn}</div>` : ''}
               </div>
             </div>
           `;
@@ -287,7 +359,6 @@ async function loadUserDashboard() {
           </div>
         `;
       } else {
-        // الف) دسته‌بندی سطح ۱: تفکیک بر اساس پکیج/قرارداد
         const contractsMap = {};
         supportList.forEach(item => {
           const contractKey = item.supCode || item.planTitle || 'default-contract';
@@ -299,7 +370,6 @@ async function loadUserDashboard() {
             };
           }
 
-          // ب) دسته‌بندی سطح ۲: تفکیک ماه‌ها درون همان پکیج
           const periodKey = item.period || 'ماه اول';
           if (!contractsMap[contractKey].periodsMap[periodKey]) {
             contractsMap[contractKey].periodsMap[periodKey] = {
@@ -312,12 +382,10 @@ async function loadUserDashboard() {
           contractsMap[contractKey].periodsMap[periodKey].tasks.push(item);
         });
 
-        // رندر گروه‌های پکیج به صورت آکاردئونی منظم
         for (const [cKey, contract] of Object.entries(contractsMap)) {
           const periods = Object.values(contract.periodsMap);
           const totalMonths = periods.length;
           
-          // محاسبه ماه‌هایی که تسک تکمیل‌شده دارند
           let completedMonthsCount = 0;
           periods.forEach(p => {
             if (p.tasks.some(t => t.completed)) completedMonthsCount++;
@@ -326,7 +394,6 @@ async function loadUserDashboard() {
           const progressPercent = totalMonths > 0 ? Math.round((completedMonthsCount / totalMonths) * 100) : 0;
           const isVip = contract.planTitle.includes('VIP') || contract.planTitle.includes('سئو');
 
-          // ساخت محتوای ماه‌های درون این قرارداد
           let periodsHtml = '';
           periods.forEach(p => {
             let tasksRows = '';
@@ -356,7 +423,6 @@ async function loadUserDashboard() {
             `;
           });
 
-          // درج کادر اختصاصی پکیج همراه با هدر و نوار پیشرفت
           supportContainer.innerHTML += `
             <div class="support-contract-group">
               <div class="contract-group-header" onclick="toggleContractAccordion(this)">
