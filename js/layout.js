@@ -1,6 +1,6 @@
 // ==================== هسته لود قالب، ترنزیشن و وضعیت کاربر ====================
 document.addEventListener("DOMContentLoaded", async () => {
-  // الف) بارگذاری اسلات‌های ثابت
+  // الف) بارگذاری اسلات‌های ثابت (هدر و فوتر)
   const loadSlot = async (id, file) => {
     const el = document.getElementById(id);
     if (el) {
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadSlot("header-slot", "components/header.html");
   await loadSlot("footer-slot", "components/footer.html");
 
-  // همگام‌سازی وضعیت لاگین در هدر و نوار پایین
+  // همگام‌سازی وضعیت نشست کاربر در هدر و نوار پایین
   syncGlobalUserState();
 
   // ب) لود بازگشتی فایل‌های data-include
@@ -26,14 +26,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   initPageTransitions();
   if (typeof initUIInteractions === "function") initUIInteractions();
 
-  // علامت زدن صفحه فعال
-  const page = window.location.pathname.split("/").pop().replace(".html", "") || "index";
-  document.querySelectorAll(`[data-page="${page}"]`).forEach(el => el.classList.add("active"));
-  document.querySelectorAll(`[data-bottom-page="${page}"]`).forEach(el => el.classList.add("active"));
+  // علامت‌گذاری صفحه فعال در منوی دسکتاپ، منوی کشویی و نوار پایین موبایل
+  highlightActiveNavigation();
 
   // اعلام رویداد اتمام بارگذاری برای ماژول‌های نیازمند به DOM
   window.dispatchEvent(new Event("allModulesLoaded"));
 });
+
+// شناسایی هوشمند و دقیق صفحه فعلی و فعال‌سازی افکت Snake Border
+function highlightActiveNavigation() {
+  let path = window.location.pathname.split("/").pop().toLowerCase();
+  
+  // پاکسازی پارامترها و هش‌های احتمالی
+  path = path.split("?")[0].split("#")[0];
+  
+  // استخراج شناسه صفحه (پیش‌فرض index)
+  let page = path.replace(".html", "").trim();
+  if (!page || page === "" || page === "index") {
+    page = "index";
+  }
+
+  // پاکسازی فعال‌های قبلی و نشاندن کلاس active روی آیتم‌های متناظر
+  document.querySelectorAll("[data-page]").forEach(el => {
+    if (el.getAttribute("data-page") === page) {
+      el.classList.add("active");
+    } else {
+      el.classList.remove("active");
+    }
+  });
+
+  // پشتیبانی از اتریبیوت‌های اختصاصی نوار پایینی در صورت وجود
+  document.querySelectorAll("[data-bottom-page]").forEach(el => {
+    if (el.getAttribute("data-bottom-page") === page) {
+      el.classList.add("active");
+    } else {
+      el.classList.remove("active");
+    }
+  });
+}
+window.highlightActiveNavigation = highlightActiveNavigation;
 
 // جلوگیری از گیر افتادن کلاس خروج در صورت زدن دکمه Back مرورگر
 window.addEventListener("pageshow", (e) => {
