@@ -515,3 +515,163 @@
   .floating-island-bar { display: flex !important; }
   body { padding-bottom: 90px !important; }
 }
+
+
+
+
+/* ==================== افکت نوار چرخان پیرامون دکمه فعال منوی دسکتاپ ==================== */
+.desktop-menu .nav-list li {
+  position: relative;
+}
+
+.desktop-menu .nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  transition: color 0.25s ease;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.desktop-menu .nav-link:hover {
+  color: #0f172a;
+}
+
+/* آیتم فعال با نوار مارگونه چرخان */
+.desktop-menu .nav-link.active {
+  color: #065f46;
+  font-weight: 800;
+  background: #ffffff;
+}
+
+/* لایه چرخان خط نورانی در پس‌زمینه */
+.desktop-menu .nav-link.active::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent 0deg,
+    transparent 280deg,
+    rgba(16, 185, 129, 0.2) 320deg,
+    #10b981 360deg
+  );
+  animation: rotateSnakeBorder 4s linear infinite;
+  z-index: -2;
+}
+
+/* ماسک داخلی دکمه تا فقط حاشیه نازک ۱.۵ پیکسلی دیده شود */
+.desktop-menu .nav-link.active::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: #f0fdf4;
+  border-radius: 8.5px;
+  z-index: -1;
+}
+
+/* انیمیشن چرخش نرم و روان ۳۶۰ درجه */
+@keyframes rotateSnakeBorder {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== کارت‌های اینستاگرام و آپارات دراور موبایل ==================== */
+.social-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.social-card-rich {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.social-card-rich:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.sc-icon-wrap {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tg-gradient {
+  background: linear-gradient(135deg, #2aabee, #229ed9);
+  color: #ffffff;
+}
+
+.ins-gradient {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+  color: #ffffff;
+}
+
+.ap-gradient {
+  background: linear-gradient(135deg, #fb7185, #ea1d5d);
+  color: #ffffff;
+}
+
+.sc-body {
+  flex: 1;
+}
+
+.sc-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.sc-title-row strong {
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.sc-pill-online {
+  font-size: 9px;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.sc-pill-badge {
+  font-size: 9px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.sc-handle {
+  font-size: 10.5px;
+  color: #94a3b8;
+}
