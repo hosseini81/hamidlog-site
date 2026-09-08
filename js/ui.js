@@ -323,68 +323,57 @@ function startPixelChaseGame() {
 
 
 
-// ==================== موتور هوشمند فارسی‌سازی فراگیر اعداد ====================
+// ==================== فارسی‌ساز ایمن و هدفمند اعداد ====================
 (function () {
-  const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  const fDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
-  function toPersianDigits(str) {
-    if (!str) return str;
-    return str.replace(/\d/g, d => farsiDigits[d]);
-  }
+  window.toFarsiNumber = function(num) {
+    if (num === null || num === undefined) return '';
+    return String(num).replace(/\d/g, d => fDigits[d]);
+  };
 
-  // تگ‌ها یا کلاس‌هایی که نباید اعدادشان دستکاری شود
-  const ignoreTags = new Set(['SCRIPT', 'STYLE', 'CODE', 'PRE', 'INPUT', 'TEXTAREA']);
+  function applyPersianNumbers() {
+    // فقط المان‌های مشخصی که متن عمومی دارند
+    const targetSelectors = [
+      '.package-card',
+      '.service-card',
+      '.task-item-row',
+      '.support-period-card',
+      '.cart-table td',
+      '.contract-title-row',
+      '.project-title-row',
+      '.project-progress-text',
+      '.contract-progress-text',
+      '.comment-body',
+      '.comment-date',
+      '.faq-item',
+      '.hero-inner p',
+      '.section-head p',
+      '#kpiSupportMonthly',
+      '#kpiSupportTotal',
+      '#averageRatingText'
+    ];
 
-  function convertElementNumbers(node) {
-    if (!node) return;
+    const elements = document.querySelectorAll(targetSelectors.join(','));
+    elements.forEach(el => {
+      // فیلتر کردن کدهای پیگیری، ایمیل و فونت‌های انگلیسی
+      if (el.closest('[dir="ltr"], pre, code, script, style, .code-stream-terminal')) return;
 
-    // گره متنی
-    if (node.nodeType === Node.TEXT_NODE) {
-      const parent = node.parentNode;
-      if (!parent || ignoreTags.has(parent.nodeName)) return;
-      if (parent.closest && parent.closest('[dir="ltr"], .no-farsi-num, code, pre')) return;
-
-      const text = node.nodeValue;
-      // اگر عدد انگلیسی داشت و کد پیگیری ORD نبود
-      if (/\d/.test(text) && !text.includes('ORD-') && !text.includes('@')) {
-        node.nodeValue = toPersianDigits(text);
-      }
-      return;
-    }
-
-    // گره‌های تگ‌ها
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      if (ignoreTags.has(node.nodeName)) return;
-      if (node.hasAttribute('dir') && node.getAttribute('dir').toLowerCase() === 'ltr') return;
-      if (node.classList && node.classList.contains('no-farsi-num')) return;
-
-      for (let child of node.childNodes) {
-        convertElementNumbers(child);
-      }
-    }
-  }
-
-  function runPersianNumberConverter() {
-    convertElementNumbers(document.body);
-
-    // رصد تغییرات داینامیک صفحه (لود پروژه‌ها از شیت، تغییرات سبد خرید و...)
-    const observer = new MutationObserver(mutations => {
-      for (const mutation of mutations) {
-        mutation.addedNodes.forEach(addedNode => {
-          convertElementNumbers(addedNode);
-        });
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
+      el.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && /\d/.test(node.nodeValue)) {
+          // کدهای پیگیری مانند ORD-xxx نباید فارسی شوند
+          if (!node.nodeValue.includes('ORD-') && !node.nodeValue.includes('@')) {
+            node.nodeValue = node.nodeValue.replace(/\d/g, d => fDigits[d]);
+          }
+        }
+      });
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runPersianNumberConverter);
-  } else {
-    runPersianNumberConverter();
-  }
+  // اجرا پس از لود صفحه و همچنین پس از دریافت اطلاعات داینامیک از شیت
+  document.addEventListener('DOMContentLoaded', applyPersianNumbers);
+  window.addEventListener('allModulesLoaded', () => {
+    setTimeout(applyPersianNumbers, 300);
+    setTimeout(applyPersianNumbers, 1200);
+  });
 })();
