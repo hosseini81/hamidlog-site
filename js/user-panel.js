@@ -34,7 +34,6 @@ window.toggleAuthMode = function() {
   const submitBtn = document.getElementById('authSubmitBtn');
   const regName = document.getElementById('regNameField');
   const regEmail = document.getElementById('regEmailField');
-  const passGroup = document.getElementById('passFieldGroup');
   const toggleText = document.getElementById('authToggleText');
   const toggleLink = document.getElementById('authToggleLink');
 
@@ -127,6 +126,42 @@ window.startForgotPasswordFlow = async function() {
   }
 };
 
+// تولید ستاره‌های تعاملی امتیازدهی
+function renderInteractiveStars(type, rowId, currentRating) {
+  let starsHtml = `<div class="task-rating-bar" title="ثبت میزان رضایت شما از این بخش">`;
+  for (let i = 1; i <= 5; i++) {
+    const activeClass = i <= (currentRating || 0) ? 'active' : '';
+    starsHtml += `<span class="star-rating-chip ${activeClass}" onclick="rateTaskItemAction('${type}', ${rowId}, ${i})">★</span>`;
+  }
+  starsHtml += `</div>`;
+  return starsHtml;
+}
+
+// ثبت امتیاز کارفرما به یک تسک در شیت مراحل یا پشتیبانی
+window.rateTaskItemAction = async function(type, rowId, rating) {
+  try {
+    const res = await sendToAppScript({
+      action: 'rateTask',
+      type: type,
+      rowId: rowId,
+      rating: rating
+    });
+
+    if (res && res.success) {
+      if (typeof showCustomAlert === 'function') {
+        showCustomAlert('سپاسگزاریم', 'امتیاز شما با موفقیت ثبت شد.', '⭐');
+      }
+      loadUserDashboard(); // رفرش داده‌ها برای به‌روزرسانی رنگ ستاره‌ها
+    } else {
+      if (typeof showCustomAlert === 'function') {
+        showCustomAlert('خطا', res ? res.error : 'خطا در ثبت امتیاز.');
+      }
+    }
+  } catch (e) {
+    console.error('خطا در ثبت امتیاز:', e);
+  }
+};
+
 async function loadUserDashboard() {
   if (!currentUser || !currentUser.phone) return;
 
@@ -152,7 +187,7 @@ async function loadUserDashboard() {
     const res = await sendToAppScript({ action: 'getDashboard', phone: currentUser.phone });
     const data = (res && res.data) ? res.data : (res || {});
 
-    // به‌روزرسانی آواتار و ایمیل کاربر در صورت واکشی اطلاعات از سرور
+    // به‌روزرسانی اطلاعات پروفایل و ایمیل در صورت واکشی از شیت
     if (data.avatar) {
       currentUser.avatar = data.avatar;
       if (avatarImg) avatarImg.src = data.avatar;
@@ -170,7 +205,7 @@ async function loadUserDashboard() {
       renderUserDownloads(data.purchasedDownloads || []);
     }
 
-    // رندر پروژه‌ها، چک‌لیست مراحل کار و اقساط
+    // رندر پروژه‌ها، تفکیک سه‌گانه مراحل، خدمات پشتیبانی و امتیازدهی
     if (ordersContainer) {
       ordersContainer.innerHTML = '';
       const orders = data.orders || [];
@@ -179,30 +214,108 @@ async function loadUserDashboard() {
         ordersContainer.innerHTML = '<div style="color:#64748b; padding:24px; background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; text-align:center; font-size:12px;">سفارش فعالی برای حساب شما ثبت نشده است.</div>';
       } else {
         orders.forEach(o => {
-          // ساخت آیتم‌های چک‌لیست مراحل به همراه تاریخ شمسی تکمیل
-          let tasksHtml = '';
-          const tasks = (o.projectTasks && o.projectTasks.length > 0) ? o.projectTasks : [
-            { title: 'بررسی اولیه و تنظیم نیازمندی‌ها', completed: true, date: o.date || '' },
-            { title: `پیکربندی هسته اصلی: ${o.packageName}`, completed: false, date: '' },
-            { title: 'پیاده‌سازی ماژول‌های فنی و صفحات', completed: false, date: '' },
-            { title: 'تحویل نهایی و اتصال درگاه پرداخت', completed: false, date: '' }
-          ];
+          // ۱. رندر خدمات داخل پکیج انتخابی
+          let packageTasksHtml = '';
+          const pkgList = (o.packageTasks && o.packageTasks.length > 0) ? o.packageTasks : [];
 
-          tasks.forEach(t => {
-            const dateBadge = t.completed && t.date 
-              ? `<span style="font-size:9px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:4px; margin-right:auto; white-space:nowrap;">تکمیل در: ${t.date}</span>` 
-              : `<span style="font-size:9px; margin-right:auto; color:#94a3b8; white-space:nowrap;">در دست اقدام</span>`;
+          if (pkgList.length > 0) {
+            pkgList.forEach(t => {
+              const dateBadge = t.completed && t.date 
+                ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` 
+                : `<span class="task-pending-tag">در دست اقدام</span>`;
+              const linkHtml = t.link ? `<a href="${t.link}" target="_blank" class="task-link-badge">🔗 مشاهده</a>` : '';
 
-            tasksHtml += `
-              <div class="task-item-row ${t.completed ? 'done' : ''}">
-                <span class="task-status-icon">${t.completed ? '✅' : '⏳'}</span>
-                <span class="task-name">${t.title}</span>
-                ${dateBadge}
-              </div>
-            `;
-          });
+              packageTasksHtml += `
+                <div class="task-item-row ${t.completed ? 'done' : ''}">
+                  <span class="task-status-icon">${t.completed ? '✅' : '⏳'}</span>
+                  <span class="task-name">${t.title}</span>
+                  ${linkHtml}
+                  ${dateBadge}
+                  ${renderInteractiveStars('project', t.id, t.rating)}
+                </div>
+              `;
+            });
+          } else {
+            packageTasksHtml = '<div style="font-size:11px; color:#94a3b8; padding:6px 0;">در حال آماده‌سازی نیازمندی‌های اولیه...</div>';
+          }
 
-          // وضعیت مالی و اقساط فاکتور
+          // ۲. رندر خدمات مازاد و ویژه (Extra Tasks)
+          let extraTasksHtml = '';
+          const extraList = (o.extraTasks && o.extraTasks.length > 0) ? o.extraTasks : [];
+
+          if (extraList.length > 0) {
+            extraList.forEach(t => {
+              const dateBadge = t.completed && t.date 
+                ? `<span class="task-date-tag">تکمیل: ${t.date}</span>` 
+                : `<span class="task-pending-tag">در نوبت اجرا</span>`;
+              const linkHtml = t.link ? `<a href="${t.link}" target="_blank" class="task-link-badge">🔗 مشاهده گزارش</a>` : '';
+
+              extraTasksHtml += `
+                <div class="task-item-row ${t.completed ? 'done' : ''}">
+                  <span class="task-status-icon">${t.completed ? '💎' : '⏳'}</span>
+                  <span class="task-name">${t.title}</span>
+                  ${linkHtml}
+                  ${dateBadge}
+                  ${renderInteractiveStars('project', t.id, t.rating)}
+                </div>
+              `;
+            });
+          }
+
+          // ۳. رندر خدمات دوره‌ای پشتیبانی (Support Tasks به تفکیک دوره و ماه)
+          let supportSectionsHtml = '';
+          const supportList = (o.supportTasks && o.supportTasks.length > 0) ? o.supportTasks : [];
+
+          if (supportList.length > 0) {
+            // گروه‌بندی بر اساس نام دوره (مثلاً ماه اول، ماه دوم و...)
+            const periods = {};
+            supportList.forEach(st => {
+              const pKey = st.period || 'دوره اول';
+              if (!periods[pKey]) {
+                periods[pKey] = {
+                  title: st.title || 'پشتیبانی فنی و سئو',
+                  dateRange: st.dateRange || 'مشخص نشده',
+                  tasks: []
+                };
+              }
+              periods[pKey].tasks.push(st);
+            });
+
+            for (const [pName, pObj] of Object.entries(periods)) {
+              let periodRows = '';
+              pObj.tasks.forEach(task => {
+                const linkElem = task.link 
+                  ? `<a href="${task.link}" target="_blank" class="support-task-link">🔗 ${task.taskText}</a>`
+                  : `<span>${task.taskText}</span>`;
+                const finishDate = task.completed && task.date 
+                  ? `<span class="task-date-tag">${task.date}</span>` 
+                  : '';
+
+                periodRows += `
+                  <div class="support-task-row ${task.completed ? 'done' : ''}">
+                    <span class="task-status-icon">${task.completed ? '✅' : '🕒'}</span>
+                    <div style="flex: 1;">${linkElem}</div>
+                    ${finishDate}
+                    ${renderInteractiveStars('support', task.id, task.rating)}
+                  </div>
+                `;
+              });
+
+              supportSectionsHtml += `
+                <div class="support-period-card">
+                  <div class="support-period-head">
+                    <strong>🛡️ ${pObj.title} - ${pName}</strong>
+                    <span class="support-range-badge">بازه زمانی: ${pObj.dateRange}</span>
+                  </div>
+                  <div class="support-period-body">
+                    ${periodRows}
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          // وضعیت مالی و اقساط
           let paymentDetailsHtml = '';
           if (o.paymentType && o.paymentType.includes('اقساطی')) {
             paymentDetailsHtml = `
@@ -230,29 +343,53 @@ async function loadUserDashboard() {
             `;
           }
 
+          // تجمیع کارت سفارش در خروجی نهایی
           ordersContainer.innerHTML += `
-            <div style="border:1px solid var(--border-color); border-radius:14px; padding:18px; background:#ffffff; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <strong style="font-size:14px; color:var(--bg-dark);">${o.packageName}</strong>
+            <div class="order-dashboard-card">
+              <div class="order-header-row">
+                <strong style="font-size:15px; color:var(--bg-dark);">${o.packageName}</strong>
                 <span class="badge badge-pkg" style="font-size:10px;">کد پیگیری: ${o.trackingCode}</span>
               </div>
 
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:10px;">
-                <span style="color:#64748b;">مدت اجرا: <strong>${o.deliveryDays || '-'} روز</strong> | تخفیف: <strong>${o.coupon || 'ندارد'}</strong></span>
-                <span class="badge-status-green">پیشرفت پروژه: ${o.progressPercent || '۰٪'}</span>
+              <div class="order-meta-subbar">
+                <span>⏱ مدت زمان تحویل: <strong>${o.deliveryDays || '-'} روز</strong></span>
+                <span class="badge-status-green">پیشرفت کل پروژه: ${o.progressPercent || '۰٪'}</span>
               </div>
 
-              <!-- چک‌لیست اختصاصی خدمات و مراحل پروژه -->
+              <!-- بخش اول: خدمات داخل پکیج انتخابی -->
               <div class="tasks-checklist-box">
                 <div class="tasks-checklist-title">
-                  <span>📋 چک‌لیست خدمات و مراحل انجام کار</span>
-                  <span style="font-size:10px; color:#64748b;">به‌روزرسانی آنلاین</span>
+                  <span>📦 خدمات اصلی پکیج انتخابی</span>
+                  <span style="font-size:10px; color:#64748b;">به‌روزرسانی اختصاصی</span>
                 </div>
-                ${tasksHtml}
+                ${packageTasksHtml}
               </div>
 
+              <!-- بخش دوم: خدمات ویژه و مازاد -->
+              ${extraTasksHtml ? `
+                <div class="tasks-checklist-box" style="margin-top:12px; background:#f0fdf4; border-color:#bbf7d0;">
+                  <div class="tasks-checklist-title" style="color:#166534;">
+                    <span>💎 خدمات ویژه و مازاد افزوده شده</span>
+                    <span style="font-size:10px; color:#15803d;">شخصی‌سازی شده</span>
+                  </div>
+                  ${extraTasksHtml}
+                </div>
+              ` : ''}
+
+              <!-- بخش سوم: خدمات دوره‌ای پشتیبانی -->
+              ${supportSectionsHtml ? `
+                <div style="margin-top:14px;">
+                  <div style="font-size:12px; font-weight:800; color:#1e293b; margin-bottom:8px;">
+                    🛠 گزارش مانیتورینگ و اقدامات دوره‌ای پشتیبانی:
+                  </div>
+                  ${supportSectionsHtml}
+                </div>
+              ` : ''}
+
+              <!-- باکس وضعیت اقساط یا پرداخت نقدی -->
               ${paymentDetailsHtml}
 
+              <!-- دکمه دریافت نسخه رسمی PDF فاکتور -->
               <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:10px; color:#94a3b8;">تاریخ ثبت سفارش: ${o.date || '-'}</span>
                 <a href="${o.pdfUrl}" target="_blank" class="btn-step-prev" style="font-size:11px; padding:6px 14px; text-decoration:none;">
