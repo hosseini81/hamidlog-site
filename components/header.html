@@ -72,12 +72,12 @@
     </div>
 
     <div class="drawer-tabs-nav">
-      <button type="button" class="drawer-tab-btn" id="btnDrawerPages" onclick="switchDrawerTab('pages')">📑 صفحات سایت</button>
-      <button type="button" class="drawer-tab-btn active" id="btnDrawerSocials" onclick="switchDrawerTab('socials')">🌐 ارتباط</button>
+      <button type="button" class="drawer-tab-btn active" id="btnDrawerPages" onclick="switchDrawerTab('pages')">📑 صفحات سایت</button>
+      <button type="button" class="drawer-tab-btn" id="btnDrawerSocials" onclick="switchDrawerTab('socials')">🌐 ارتباط</button>
     </div>
 
     <!-- تب صفحات سایت -->
-    <div id="drawerTabPages" class="drawer-tab-content">
+    <div id="drawerTabPages" class="drawer-tab-content active">
       <ul class="mobile-nav-list">
         <li><a href="index.html" class="mobile-link" data-page="index"><span class="m-link-title">🏠 صفحه اصلی</span><span class="link-arrow">‹</span></a></li>
         <li><a href="services.html" class="mobile-link" data-page="services"><span class="m-link-title">💻 خدمات طراحی سایت (پروژه‌ای)</span><span class="link-badge-hot">استعلام</span></a></li>
@@ -92,8 +92,8 @@
       </ul>
     </div>
 
-    <!-- تب ارتباط و شبکه‌های اجتماعی (کامل با تلگرام، اینستاگرام و آپارات) -->
-    <div id="drawerTabSocials" class="drawer-tab-content active">
+    <!-- تب ارتباط و شبکه‌های اجتماعی -->
+    <div id="drawerTabSocials" class="drawer-tab-content">
       <div class="social-cards-stack">
         <!-- ۱. تلگرام -->
         <a href="https://t.me/seeep7" target="_blank" rel="noopener noreferrer" class="social-card-rich tg-rich">
@@ -146,3 +146,36 @@
     </div>
   </div>
 </header>
+
+<!-- نوار دسترسی چسبان پایین موبایل (Bottom Navigation Bar) -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-inner">
+    <a href="index.html" class="bottom-nav-item" data-page="index">
+      <span class="bottom-nav-icon">🏠</span>
+      <span class="bottom-nav-label">خانه</span>
+    </a>
+
+    <a href="services.html" class="bottom-nav-item" data-page="services">
+      <span class="bottom-nav-icon">💻</span>
+      <span class="bottom-nav-label">پروژه‌ها</span>
+    </a>
+
+    <a href="support.html" class="bottom-nav-item" data-page="support">
+      <span class="bottom-nav-icon">🛠️</span>
+      <span class="bottom-nav-label">نگهداری</span>
+    </a>
+
+    <a href="cart.html" class="bottom-nav-item" data-page="cart">
+      <div class="bottom-icon-wrap">
+        <span class="bottom-nav-icon">🛒</span>
+        <span class="cart-count-badge bottom-cart-badge" id="bottomCartCount" style="display:none;">0</span>
+      </div>
+      <span class="bottom-nav-label">سبد خرید</span>
+    </a>
+
+    <a href="user.html" class="bottom-nav-item" data-page="user">
+      <span class="bottom-nav-icon">👤</span>
+      <span class="bottom-nav-label">حساب من</span>
+    </a>
+  </div>
+</nav>
