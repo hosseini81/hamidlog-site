@@ -87,10 +87,10 @@ function renderPackages() {
   projectPackages.forEach(pkg => {
     const isSelected = selectedPackage && String(selectedPackage.id) === String(pkg.id);
     const mediaHtml = pkg.imageUrl 
-  ? `<div class="package-media-wrap">
-       <img src="${pkg.imageUrl}" class="package-card-media" alt="${pkg.title}" loading="lazy" onerror="this.outerHTML='<div class=\\'package-card-placeholder\\'>📦</div>'">
-     </div>`
-  : `<div class="package-card-placeholder">📦</div>`;
+      ? `<div class="package-media-wrap">
+           <img src="${pkg.imageUrl}" class="package-card-media" alt="${pkg.title}" loading="lazy" onerror="this.outerHTML='<div class=\\'package-card-placeholder\\'>📦</div>'">
+         </div>`
+      : `<div class="package-card-placeholder">📦</div>`;
 
     grid.innerHTML += `
       <div class="package-card ${isSelected ? 'selected' : ''}" onclick="selectPackageById('${pkg.id}')">
@@ -281,7 +281,12 @@ function renderExtraItems() {
     const eff = getEffectiveService(s);
     const isChecked = extraSelectedIds.has(s.id);
     const hasReq = s.prerequisites && s.prerequisites.length > 0;
-    const videoBtn = (s.videoUrl && s.videoUrl.trim()) ? `<a href="${s.videoUrl}" target="_blank" class="btn-video-badge" onclick="event.stopPropagation()">🎥 معرفی</a>` : '';
+    
+    // اجرای ویدیو در پنجره پاپ‌آپ با متد openVideoModal
+    const videoBtn = (s.videoUrl && s.videoUrl.trim()) 
+      ? `<button type="button" class="btn-video-badge" onclick="event.stopPropagation(); openVideoModal('${s.videoUrl}', '${s.title}')">🎥 معرفی</button>` 
+      : '';
+      
     const thumbHtml = renderMediaThumbnail(s.imageUrl, s.title, '⚡');
 
     container.innerHTML += `
@@ -528,3 +533,53 @@ window.proceedToCheckout = function() {
     window.location.href = "checkout.html";
   }
 };
+
+// ==================== مدیریت پاپ‌آپ ویدیوهای معرفی ====================
+
+// باز کردن مودال و لود فریم یا فایل ویدیو
+window.openVideoModal = function(videoUrl, title) {
+  const modal = document.getElementById('videoModalOverlay');
+  const playerBox = document.getElementById('videoModalPlayerBox');
+  const titleEl = document.getElementById('videoModalTitle');
+  if (!modal || !playerBox) return;
+
+  if (titleEl && title) {
+    titleEl.textContent = 'معرفی خدمت: ' + title;
+  }
+
+  const cleanUrl = String(videoUrl).trim();
+
+  // در صورت ارسال فایل مستقیم MP4
+  if (cleanUrl.toLowerCase().endsWith('.mp4')) {
+    playerBox.innerHTML = `
+      <video controls autoplay playsinline style="width:100%; height:100%;">
+        <source src="${cleanUrl}" type="video/mp4">
+        مرورگر شما از تگ ویدیو پشتیبانی نمی‌کند.
+      </video>
+    `;
+  } else {
+    // لینک embed آپارات یا فریم وب
+    playerBox.innerHTML = `
+      <iframe src="${cleanUrl}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    `;
+  }
+
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+// بستن مودال و قطع پخش ویدیو
+window.closeVideoModal = function() {
+  const modal = document.getElementById('videoModalOverlay');
+  const playerBox = document.getElementById('videoModalPlayerBox');
+  if (modal) modal.classList.remove('active');
+  if (playerBox) playerBox.innerHTML = '';
+  document.body.style.overflow = '';
+};
+
+// بستن با کلید Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeVideoModal();
+  }
+});
