@@ -1,0 +1,56 @@
+<!-- ==================== سکشن ماژولار نظرات و رضایت کارفرمایان ==================== -->
+<section class="testimonials-section">
+  <div class="testimonials-container">
+    <div class="section-title-wrap" style="text-align:center; margin-bottom:28px;">
+      <span class="portfolio-badge">دیدگاه و رضایت کارفرمایان</span>
+      <h2 style="font-size:22px; font-weight:900; margin:8px 0;">تجربه همکاری با استودیو حمیدرضا</h2>
+      <p style="font-size:12px; color:#64748b;" id="averageRatingText">در حال محاسبه میانگین رضایت...</p>
+    </div>
+
+    <!-- گرید دو ستونه: فرم ثبت دیدگاه + ویترین نظرات مشتریان -->
+    <div class="testimonials-grid">
+      
+      <!-- ستون ۱: فرم ثبت نظر جدید -->
+      <div class="comment-form-card">
+        <h3 style="font-size:14px; font-weight:800; margin-bottom:12px;">✍️ ثبت دیدگاه و امتیاز شما</h3>
+        
+        <span id="commentAutoFillTip" style="display:none; font-size:10px; color:#16a34a; margin-bottom:10px;">
+          ✔ مشخصات شما از حساب کاربری تکمیل شد
+        </span>
+
+        <!-- امتیازدهی ستاره‌ای -->
+        <div class="star-rating-select" id="starRatingSelect">
+          <span class="star-item active" data-value="1">★</span>
+          <span class="star-item active" data-value="2">★</span>
+          <span class="star-item active" data-value="3">★</span>
+          <span class="star-item active" data-value="4">★</span>
+          <span class="star-item active" data-value="5">★</span>
+        </div>
+
+        <input type="text" id="commentName" placeholder="نام و نام خانوادگی شما *" required />
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <input type="tel" id="commentPhone" dir="ltr" placeholder="شماره موبایل (09...)" />
+          <input type="email" id="commentEmail" dir="ltr" placeholder="ایمیل شما" />
+        </div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:-4px; margin-bottom:10px;">
+          * وارد کردن یکی از موارد (تلفن یا ایمیل) کافی است.
+        </div>
+
+        <textarea id="commentText" rows="4" placeholder="دیدگاه شما درباره کیفیت طراحی، پشتیبانی یا سرعت تحویل... *" required></textarea>
+
+        <button type="button" class="btn-main" id="commentSubmitBtn" onclick="submitUserFeedback(event)" style="width:100%; padding:12px; font-size:12px;">
+          🚀 ارسال دیدگاه و امتیاز
+        </button>
+      </div>
+
+      <!-- ستون ۲: لیست نظرات تایید شده و پاسخ‌های مدیریت -->
+      <div class="comments-display-col">
+        <div id="commentsCardsList" class="comments-cards-stack">
+          <div class="loading-box"><span class="spinner"></span> در حال فراخوانی نظرات مشتریان...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
