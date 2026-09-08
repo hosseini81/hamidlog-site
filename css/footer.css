@@ -110,7 +110,7 @@
   pointer-events: none;
   z-index: 35;
   overflow: hidden;
-  direction: ltr !important; /* خنثی‌سازی کامل جهت RTL */
+  direction: ltr !important;
 }
 
 .grid-actor {
@@ -213,7 +213,6 @@
   opacity: 1;
   transform: scale(1);
 }
-
 
 /* ۳. ستون‌ها و محتوای فوتر */
 .footer-container {
@@ -349,8 +348,6 @@
   .footer-bottom-inner { flex-direction: column; text-align: center; gap: 6px; }
 }
 
-
-
 /* ==================== استایل شبکه‌های اجتماعی فوتر ==================== */
 .footer-social-links {
   display: flex;
@@ -399,43 +396,81 @@
   box-shadow: 0 4px 12px rgba(234, 29, 93, 0.3);
 }
 
-/* ==================== باکس نمادهای اعتماد و شاپرک ==================== */
+/* ==================== باکس نمادهای اعتماد و درگاه‌های پرداخت ==================== */
 .footer-trust-badges {
   display: flex;
   gap: 10px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  align-items: stretch;
 }
 
 .trust-badge-item {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 8px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  min-width: 0;
 }
 
 .trust-badge-item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
-.trust-badge-icon {
-  font-size: 20px;
+/* کادر سفید یکپارچه و فیکس برای هم‌اندازه شدن نمادها */
+.trust-badge-icon-box {
+  width: 58px;
+  height: 58px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* تنظیم دقیق ابعاد و عدم دفرمه شدن تصویر */
+.trust-badge-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.trust-badge-fallback-icon {
+  font-size: 24px;
+  line-height: 1;
 }
 
 .trust-badge-text {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #cbd5e1;
+  text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: color 0.2s ease;
+}
+
+.trust-badge-item:hover .trust-badge-text {
+  color: #38bdf8;
 }
