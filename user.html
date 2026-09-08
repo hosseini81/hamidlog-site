@@ -154,10 +154,13 @@
           <button type="button" class="btn-logout-dash" onclick="logoutUser()">خروج از حساب</button>
         </div>
 
-        <!-- تب‌های سه‌گانه داشبورد -->
+        <!-- تب‌های ۴ گانه داشبورد کارفرما -->
         <div class="dash-tabs-bar">
           <button type="button" class="dash-tab-btn active" id="tabBtnProjects" onclick="switchUserPanelTab('projects')">
-            📋 پروژه‌ها و اقساط
+            📋 پروژه‌ها و مراحل کار
+          </button>
+          <button type="button" class="dash-tab-btn" id="tabBtnSupport" onclick="switchUserPanelTab('support')">
+            🛡️ خدمات پشتیبانی دوره‌ای
           </button>
           <button type="button" class="dash-tab-btn" id="tabBtnDownloads" onclick="switchUserPanelTab('downloads')">
             📦 محصولات دانلودی
@@ -174,6 +177,13 @@
           </div>
         </div>
 
+        <!-- تب جدید: گزارشات پشتیبانی دوره‌ای -->
+        <div id="panelTabSupport" class="dash-panel-tab">
+          <div id="userSupportContainer" class="projects-list-stack">
+            <div class="loading-box"><span class="spinner"></span> در حال استعلام دوره‌های پشتیبانی...</div>
+          </div>
+        </div>
+        
         <!-- تب دوم: محصولات دانلودی خریداری‌شده -->
         <div id="panelTabDownloads" class="dash-panel-tab">
           <div id="userPurchasedDownloadsList" class="downloads-list-stack">
