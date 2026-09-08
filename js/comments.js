@@ -2,17 +2,21 @@
 let selectedRating = 5;
 const ADMIN_PHONE = '09965206696';
 
-document.addEventListener("DOMContentLoaded", () => {
-  initCommentsSystem();
-});
-
-function initCommentsSystem() {
-  autoFillUserFields();
-  loadCommentsList();
-  setupStarRating();
+// شروع کار پس از لود ماژول‌های data-include
+function initCommentsModule() {
+  if (document.getElementById("commentsCardsList")) {
+    autoFillUserFields();
+    setupStarRating();
+    loadCommentsList();
+  }
 }
 
-// پر کردن خودکار فیلدها در صورت ورود کاربر به حساب
+window.addEventListener("allModulesLoaded", initCommentsModule);
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(initCommentsModule, 400);
+});
+
+// پر کردن خودکار فیلدها در صورت لاگین بودن کاربر
 function autoFillUserFields() {
   const userRaw = localStorage.getItem("site_user_auth");
   if (!userRaw) return;
@@ -34,6 +38,8 @@ function autoFillUserFields() {
 // مدیریت انتخاب ستاره‌های امتیازدهی
 function setupStarRating() {
   const stars = document.querySelectorAll(".star-rating-select .star-item");
+  if (!stars || stars.length === 0) return;
+
   stars.forEach(star => {
     star.addEventListener("click", () => {
       selectedRating = Number(star.getAttribute("data-value"));
@@ -59,13 +65,15 @@ async function loadCommentsList() {
       return;
     }
 
-    // محاسبه میانگین امتیاز
     const avgRating = (comments.reduce((sum, c) => sum + (c.rating || 5), 0) / comments.length).toFixed(1);
     const avgEl = document.getElementById("averageRatingText");
     if (avgEl) avgEl.textContent = `${avgRating} از ۵ ستاره رضایت`;
 
-    // بررسی آیا کاربر لاگین شده همان مدیر است؟
-    const currentUser = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
+    let currentUser = {};
+    try {
+      currentUser = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
+    } catch (e) {}
+
     const isAdmin = currentUser.phone === ADMIN_PHONE;
 
     let html = '';
@@ -73,7 +81,6 @@ async function loadCommentsList() {
       let starsHtml = '★'.repeat(c.rating || 5) + '☆'.repeat(5 - (c.rating || 5));
       const avatarSrc = c.avatar || 'https://via.placeholder.com/48?text=User';
 
-      // بخش پاسخ مدیریت در صورت وجود
       let replyHtml = '';
       if (c.adminReply && c.adminReply.trim()) {
         replyHtml = `
@@ -86,7 +93,6 @@ async function loadCommentsList() {
           </div>
         `;
       } else if (isAdmin) {
-        // اگر پاسخی ثبت نشده و کاربر فعلی مدیر باشد، دکمه پاسخگویی ظاهر می‌شود
         replyHtml = `
           <div class="admin-action-box" id="replyBox_${c.id}">
             <button type="button" class="btn-step-prev" onclick="toggleAdminReplyForm('${c.id}')" style="font-size:10px; padding:4px 10px;">
@@ -127,26 +133,38 @@ async function loadCommentsList() {
 }
 
 // ارسال نظر توسط کاربر
-window.submitUserFeedback = async function() {
-  const name = (document.getElementById("commentName")?.value || "").trim();
-  const phone = (document.getElementById("commentPhone")?.value || "").trim();
-  const email = (document.getElementById("commentEmail")?.value || "").trim();
-  const text = (document.getElementById("commentText")?.value || "").trim();
+window.submitUserFeedback = async function(event) {
+  if (event && event.preventDefault) event.preventDefault();
+
+  const nameEl = document.getElementById("commentName");
+  const phoneEl = document.getElementById("commentPhone");
+  const emailEl = document.getElementById("commentEmail");
+  const textEl = document.getElementById("commentText");
+  const btn = document.getElementById("commentSubmitBtn");
+
+  const name = nameEl ? nameEl.value.trim() : "";
+  const phone = phoneEl ? phoneEl.value.trim() : "";
+  const email = emailEl ? emailEl.value.trim() : "";
+  const text = textEl ? textEl.value.trim() : "";
 
   if (!name || !text) {
     return showCustomAlert("ورودی ناقص", "نام و متن دیدگاه الزامی است.");
   }
 
   if (!phone && !email) {
-    return showCustomAlert("اطلاعات تماس", "لطفاً حداقل یکی از موارد شماره تماس یا ایمیل را وارد فرمایید.");
+    return showCustomAlert("اطلاعات تماس", "لطفاً حداقل یکی از موارد شماره همراه یا ایمیل را وارد فرمایید.");
   }
 
-  const btn = document.getElementById("commentSubmitBtn");
-  btn.disabled = true;
-  btn.textContent = "در حال ثبت نظر...";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "در حال ثبت نظر...";
+  }
 
-  const user = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
-  const avatar = user.avatar || "";
+  let avatar = "";
+  try {
+    const user = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
+    avatar = user.avatar || "";
+  } catch (e) {}
 
   try {
     const res = await sendToAppScript({
@@ -162,8 +180,8 @@ window.submitUserFeedback = async function() {
     });
 
     if (res && res.success) {
-      showCustomAlert("سپاسگزاریم", res.message, "🌟");
-      document.getElementById("commentText").value = "";
+      showCustomAlert("سپاسگزاریم", res.message || "نظر شما ثبت شد.", "🌟");
+      if (textEl) textEl.value = "";
       loadCommentsList();
     } else {
       showCustomAlert("خطا", res ? res.message : "خطا در ثبت دیدگاه.");
@@ -171,23 +189,26 @@ window.submitUserFeedback = async function() {
   } catch (err) {
     showCustomAlert("خطای ارتباطی", "عدم برقراری ارتباط با سرور ابری.");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "🚀 ارسال دیدگاه و امتیاز";
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "🚀 ارسال دیدگاه و امتیاز";
+    }
   }
 };
 
-// باز و بسته کردن کادر پاسخ مدیر
 window.toggleAdminReplyForm = function(cid) {
   const form = document.getElementById("replyFormWrap_" + cid);
   if (form) form.style.display = form.style.display === "none" ? "block" : "none";
 };
 
-// ثبت پاسخ توسط مدیر
 window.sendAdminReply = async function(cid) {
   const txt = (document.getElementById("replyText_" + cid)?.value || "").trim();
   if (!txt) return showCustomAlert("خطا", "متن پاسخ نمی‌تواند خالی باشد.");
 
-  const currentUser = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
+  let currentUser = {};
+  try {
+    currentUser = JSON.parse(localStorage.getItem("site_user_auth") || "{}");
+  } catch (e) {}
 
   try {
     const res = await sendToAppScript({
