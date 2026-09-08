@@ -17,6 +17,19 @@
     <div data-include="sections/order/form.html"></div>
   </main>
 
+  <!-- پاپ‌آپ سراسری نمایش ویدیوهای معرفی خدمات -->
+  <div id="videoModalOverlay" class="video-modal-overlay" onclick="closeVideoModal()">
+    <div class="video-modal-content" onclick="event.stopPropagation()">
+      <div class="video-modal-header">
+        <span id="videoModalTitle" class="video-modal-title">ویدیو معرفی خدمت</span>
+        <button type="button" class="video-modal-close" onclick="closeVideoModal()" aria-label="بستن">✕</button>
+      </div>
+      <div class="video-modal-frame-wrap" id="videoModalPlayerBox">
+        <!-- پلیر یا آی‌فریم ویدیو اینجا لود می‌شود -->
+      </div>
+    </div>
+  </div>
+
   <!-- فوتر -->
   <div id="footer-slot"></div>
 
