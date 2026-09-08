@@ -331,22 +331,32 @@ window.changeSupportStep = function(delta) {
   goSupportStep(currentSupportStep + delta);
 };
 
-// ثبت قرارداد و هدایت به سبد خرید
+// ثبت قرارداد نگهداری و ارسال دقیق به سبد خرید
 window.proceedSupportToCheckout = function() {
   if (!selectedSupportPackage) {
     return showCustomAlert("خطا", "لطفاً ابتدا یک پلن نگهداری انتخاب کنید.");
   }
 
   const addedList = supportAppData.services.filter(s => supportExtraSelectedIds.has(s.id));
-  const finalPrice = parseInt(document.getElementById('kpiSupportTotal').textContent.replace(/[^\d]/g, '')) || 0;
+
+  // استخراج دقیق قیمت و تبدیل ارقام فارسی به انگلیسی جهت جلوگیری از صفر شدن مبلغ
+  const rawPriceText = document.getElementById('kpiSupportTotal')?.textContent || '0';
+  const cleanNumericStr = rawPriceText
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+    .replace(/[^\d]/g, '');
+  const finalPrice = parseInt(cleanNumericStr, 10) || 0;
 
   const supportOrder = {
     packageId: selectedSupportPackage.id,
     packageName: `قرارداد نگهداری: ${selectedSupportPackage.title} (${selectedSupportDurationMonths} ماهه)`,
-    durationMonths: selectedSupportDurationMonths,
+    title: `قرارداد نگهداری: ${selectedSupportPackage.title} (${selectedSupportDurationMonths} ماهه)`,
+    price: finalPrice,              // فیلد استاندارد قیمت برای سبد خرید
+    finalPrice: finalPrice,         // فیلد جایگزین جهت سازگاری کامل
     finalPriceNumeric: finalPrice,
+    durationMonths: selectedSupportDurationMonths,
     totalDaysNumeric: selectedSupportDurationMonths * 30,
-    isSupportContract: true,
+    isSupportContract: true,        // شناسه تفکیک نگهداری از طراحی سایت
+    type: 'support',
     addedServicesSummary: addedList.map(s => `${s.title} [ماهانه]`),
     deductedServicesSummary: []
   };
