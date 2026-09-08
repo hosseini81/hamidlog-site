@@ -16,74 +16,32 @@
   <!-- هدر ماژولار سایت -->
   <div id="header-slot"></div>
 
-  <!-- محتوای بخش‌های صفحه اصلی -->
+  <!-- پاپ‌آپ سراسری پیام‌های سیستم -->
+  <div id="customAlert" class="custom-alert-overlay">
+    <div class="custom-alert-card">
+      <div id="customAlertIcon" class="custom-alert-icon">⚠️</div>
+      <div id="customAlertTitle" class="custom-alert-title">پیام سیستم</div>
+      <div id="customAlertText" class="custom-alert-text"></div>
+      <button type="button" class="btn-main" onclick="closeCustomAlert()" style="width: 100%;">متوجه شدم</button>
+    </div>
+  </div>
+
+  <!-- محتوای بخش‌های ماژولار صفحه اصلی -->
   <main>
     <div data-include="sections/home/hero.html"></div>
     <div data-include="sections/home/services.html"></div>
+    <div data-include="sections/home/testimonials.html"></div>
     <div data-include="sections/home/faq.html"></div>
   </main>
-
-<!-- سکشن نظرات و تجربیات مشتریان -->
-<section class="testimonials-section">
-  <div class="testimonials-container">
-    <div class="section-title-wrap" style="text-align:center; margin-bottom:28px;">
-      <span class="portfolio-badge">دیدگاه و رضایت کارفرمایان</span>
-      <h2 style="font-size:22px; font-weight:900; margin:8px 0;">تجربه همکاری با استودیو حمیدرضا</h2>
-      <p style="font-size:12px; color:#64748b;" id="averageRatingText">در حال محاسبه میانگین رضایت...</p>
-    </div>
-
-    <!-- گرید اصلی: فرم ثبت نظر + ویترین نظرات -->
-    <div class="testimonials-grid">
-      <!-- ستون راست: فرم ثبت نظر جدید -->
-      <div class="comment-form-card">
-        <h3 style="font-size:14px; font-weight:800; margin-bottom:12px;">✍️ ثبت نظر و امتیاز شما</h3>
-        <span id="commentAutoFillTip" style="display:none; font-size:10px; color:#16a34a; margin-bottom:10px;">
-          ✔ مشخصات شما از حساب کاربری تکمیل شد
-        </span>
-
-        <div class="star-rating-select" id="starRatingSelect">
-          <span class="star-item active" data-value="1">★</span>
-          <span class="star-item active" data-value="2">★</span>
-          <span class="star-item active" data-value="3">★</span>
-          <span class="star-item active" data-value="4">★</span>
-          <span class="star-item active" data-value="5">★</span>
-        </div>
-
-        <input type="text" id="commentName" placeholder="نام و نام خانوادگی شما *" required />
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-          <input type="tel" id="commentPhone" dir="ltr" placeholder="شماره موبایل (09...)" />
-          <input type="email" id="commentEmail" dir="ltr" placeholder="ایمیل شما" />
-        </div>
-        <div style="font-size:10px; color:#94a3b8; margin-top:-4px; margin-bottom:10px;">
-          * نوشتن یکی از موارد (تلفن یا ایمیل) برای پاسخ‌گویی کافی است.
-        </div>
-
-        <textarea id="commentText" rows="4" placeholder="تجربه شما از همکاری، کیفیت سفارش، سرعت تحویل یا پشتیبانی... *" required></textarea>
-
-        <button type="button" class="btn-main" id="commentSubmitBtn" onclick="submitUserFeedback()" style="width:100%; padding:12px; font-size:12px;">
-          🚀 ارسال دیدگاه و امتیاز
-        </button>
-      </div>
-
-      <!-- ستون چپ: لیست نظرات همراه با پاسخ مدیریت -->
-      <div class="comments-display-col">
-        <div id="commentsCardsList" class="comments-cards-stack">
-          <div class="loading-box"><span class="spinner"></span> در حال فراخوانی نظرات مشتریان...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- اضافه کردن اسکریپت نظرات به انتهای index.html -->
-<script src="js/comments.js"></script>
   
   <!-- فوتر ماژولار سایت -->
   <div id="footer-slot"></div>
 
-  <!-- اسکریپت‌های ماژولار قالب و رفتارهای تعاملی -->
+  <!-- اسکریپت‌های ماژولار به ترتیب وابستگی -->
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/comments.js"></script>
 </body>
 </html>
