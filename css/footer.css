@@ -348,3 +348,94 @@
   .footer-container { grid-template-columns: 1fr; padding: 30px 16px 20px; }
   .footer-bottom-inner { flex-direction: column; text-align: center; gap: 6px; }
 }
+
+
+
+/* ==================== استایل شبکه‌های اجتماعی فوتر ==================== */
+.footer-social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.social-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.social-icon-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* رنگ‌های شناسه هر شبکه */
+.social-icon-btn.tg:hover {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.social-icon-btn.ins:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  border-color: #f472b6;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(214, 36, 159, 0.3);
+}
+
+.social-icon-btn.ap:hover {
+  background: #ea1d5d;
+  border-color: #fb7185;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(234, 29, 93, 0.3);
+}
+
+/* ==================== باکس نمادهای اعتماد و شاپرک ==================== */
+.footer-trust-badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.trust-badge-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trust-badge-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.trust-badge-icon {
+  font-size: 20px;
+}
+
+.trust-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
