@@ -170,3 +170,78 @@
   .order-main-grid { grid-template-columns: 1fr; }
   .invoice-sticky-box { position: static; }
 }
+
+
+
+/* ==================== بنر پکیج‌ها و تصاویر بندانگشتی خدمات ==================== */
+
+/* بنر تمام‌عرض بالای کارت‌های پکیج */
+.package-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  transition: all 0.25s ease;
+}
+
+.package-media-wrap {
+  width: 100%;
+  height: 160px; /* ارتفاع استاندارد کادر تصویر/گیف پکیج */
+  background: #f1f5f9;
+  overflow: hidden;
+  display: block;
+}
+
+.package-card-media {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.package-card-placeholder {
+  width: 100%;
+  height: 140px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  color: #94a3b8;
+}
+
+/* کادر تصاویر بندانگشتی خدمات مازاد */
+.service-thumb-wrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.service-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.service-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-left: 10px;
+}
