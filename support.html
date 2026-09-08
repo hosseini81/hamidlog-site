@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خدمات و پلن‌های پشتیبانی سایت | استودیو حمیدرضا</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="header-slot"></div>
+
+  <main style="max-width:960px; margin:30px auto; padding:0 16px;">
+    <div style="text-align:center; margin-bottom:30px;">
+      <h1 style="font-size:22px; font-weight:900;">🛡️ پلن‌های پشتیبانی و مانیتورینگ سایت</h1>
+      <p style="font-size:12px; color:#64748b; margin-top:6px;">مانیتورینگ آپ‌تایم، بکاپ دوره‌ای، رفع خطاهای امنیتی و بهبود سئو</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+      <!-- پلن ۳ ماهه استاندارد -->
+      <div class="package-card" style="padding:24px; border-radius:16px; background:#fff; border:1px solid var(--border-color);">
+        <h3 style="font-size:16px; font-weight:800;">پشتیبانی فنی و امنیتی (۳ ماهه)</h3>
+        <p style="font-size:11px; color:#64748b; margin:8px 0 16px;">۳ دوره ماهانه مانیتورینگ فعال، آپدیت هسته و بهینه‌سازی دیتابیس</p>
+        <div style="font-size:18px; font-weight:900; color:#16a34a; margin-bottom:16px;">۲,۵۰۰,۰۰۰ تومان</div>
+        <button type="button" class="btn-main" onclick="orderSupportPlan('پشتیبانی فنی و امنیتی', 3, 2500000)" style="width:100%;">
+          سفارش آنلاین پلن
+        </button>
+      </div>
+
+      <!-- پلن ۶ ماهه جامع -->
+      <div class="package-card" style="padding:24px; border-radius:16px; background:#fff; border:2px solid var(--primary);">
+        <span class="badge-status-green" style="margin-bottom:8px; display:inline-block;">پیشنهادی</span>
+        <h3 style="font-size:16px; font-weight:800;">پشتیبانی جامع VIP و سئو (۶ ماهه)</h3>
+        <p style="font-size:11px; color:#64748b; margin:8px 0 16px;">۶ دوره ماهانه شامل گزارش کلمات کلیدی، سرعت لود و مانیتورینگ ۲۴ ساعته</p>
+        <div style="font-size:18px; font-weight:900; color:#16a34a; margin-bottom:16px;">۴,۸۰۰,۰۰۰ تومان</div>
+        <button type="button" class="btn-main" onclick="orderSupportPlan('پشتیبانی جامع VIP و سئو', 6, 4800000)" style="width:100%;">
+          سفارش آنلاین پلن
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-slot"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    async function orderSupportPlan(title, months, price) {
+      const userRaw = localStorage.getItem("site_user_auth");
+      if (!userRaw) {
+        showCustomAlert("ورود به حساب", "لطفاً ابتدا وارد حساب کاربری خود شوید تا پشتیبانی روی حساب شما ثبت شود.");
+        setTimeout(() => window.location.href = "user.html", 1500);
+        return;
+      }
+      const user = JSON.parse(userRaw);
+
+      showCustomAlert("در حال ثبت", "در حال ثبت پلن پشتیبانی و اتصال به درگاه شاپرک...", "⏳");
+
+      try {
+        const res = await sendToAppScript({
+          action: "submitSupportOrder",
+          payload: {
+            phone: user.phone,
+            name: user.name,
+            planTitle: title,
+            months: months,
+            price: price
+          }
+        });
+
+        if (res && res.success) {
+          if (res.paymentUrl) {
+            window.location.href = res.paymentUrl;
+          } else {
+            showCustomAlert("موفقیت‌آمیز", "پلن پشتیبانی در حساب کاربری شما فعال گردید.", "✔");
+            setTimeout(() => window.location.href = "user.html", 1500);
+          }
+        }
+      } catch (e) {
+        showCustomAlert("خطا", "خطا در ارتباط با سرور.");
+      }
+    }
+  </script>
+</body>
+</html>
