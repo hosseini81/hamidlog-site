@@ -1,21 +1,7 @@
-/* فعال‌سازی نمایش فارسی اعداد در فونت وزیرمتن */
-body, * {
-  font-feature-settings: "ss01" on, "locl" on, "numr" on !important;
-  font-variant-numeric: tabular-nums;
+/* تنظیم ایمن فارسی‌سازی ارقام در فونت وزیرمتن بدون تداخل */
+body {
+  font-feature-settings: "ss01";
 }
-
-/* استثنا برای شماره تماس‌ها، کدهای پیگیری انگلیسی و فیلدهای ایمیل */
-input[type="email"],
-input[type="password"],
-input[type="tel"],
-[dir="ltr"],
-code,
-pre {
-  font-feature-settings: normal !important;
-}
-
-
-
 
 
 /* ==================== فایل اصلی و هماهنگ‌کننده استایل‌ها (Modular Architecture) ==================== */
