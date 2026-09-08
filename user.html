@@ -96,10 +96,10 @@
         </div>
       </div>
 
-      <!-- وضعیت ۱: فرم ورود و ثبت‌نام (در صورت عدم لاگین) -->
+     <!-- فرم ورود و ثبت‌نام با فراموشی رمز عبور -->
       <div id="authBox" class="user-auth-card">
         <h2 id="authTitle">ورود به حساب کاربری</h2>
-        <p>جهت دسترسی به پروژه‌ها، تسویه اقساط و محصولات دانلودی وارد شوید</p>
+        <p id="authSubtitle">جهت دسترسی به پروژه‌ها، تسویه اقساط و محصولات دانلودی وارد شوید</p>
 
         <div id="regNameField" class="auth-input-group" style="display:none;">
           <label for="authName">نام و نام خانوادگی:</label>
@@ -107,7 +107,7 @@
         </div>
 
         <div id="regEmailField" class="auth-input-group" style="display:none;">
-          <label for="authEmail">ایمیل (جهت دریافت فاکتورها و یادآوری اقساط):</label>
+          <label for="authEmail">ایمیل (جهت دریافت فاکتورها و بازیابی رمز):</label>
           <input type="email" id="authEmail" dir="ltr" placeholder="example@gmail.com" />
         </div>
 
@@ -116,8 +116,11 @@
           <input type="tel" id="authPhone" dir="ltr" placeholder="09xxxxxxxxx" />
         </div>
 
-        <div class="auth-input-group">
-          <label for="authPass">رمز عبور:</label>
+        <div class="auth-input-group" id="passFieldGroup">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label for="authPass">رمز عبور:</label>
+            <a href="javascript:void(0)" onclick="startForgotPasswordFlow()" style="font-size:10px; color:#2563eb; text-decoration:none;">فراموشی رمز عبور؟</a>
+          </div>
           <input type="password" id="authPass" placeholder="••••••••" />
         </div>
 
